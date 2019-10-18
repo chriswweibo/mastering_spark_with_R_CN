@@ -5,6 +5,13 @@ date: "2019/10/18"
 output: word_document
 ---
 
+```{r, echo=F}
+library(knitr)
+library(formatR)
+opts_chunk$set(tidy=T, message=FALSE, fig.align='center',eval=F)
+```
+
+
 # Mastering Spark with R
   The Complete Guide to Large-Scale Analysis 
 and Modeling
@@ -133,7 +140,7 @@ tune large-scale computations.
 
 Tables generated from code are formatted as follows:
 
-```{r}
+```{r eval=F}
 # A tibble: 3 x 2
 numbers text
 <dbl> <chr>
@@ -249,9 +256,9 @@ Watch us on YouTube: http://www.youtube.com/oreillymedia
 
 ## 第一章 引言
 
-Introduction
-You know nothing, Jon Snow.
+>You know nothing, Jon Snow.
 —Ygritte
+
 With information growing at exponential rates, it’s no surprise that historians are
 referring to this period of history as the Information Age. The increasing speed at
 which data is being collected has created new opportunities and is certainly poised to
@@ -284,7 +291,9 @@ Symposium on Operating Systems Principles. ISBN 1-58113-757-5.
 We hope that this is a journey you will enjoy, that will help you to solve problems in
 your professional career, and to nudge the world into making better decisions that
 can benefit us all.
-Overview
+
+### Overview
+
 As humans, we have been storing, retrieving, manipulating, and communicating
 information since the Sumerians in Mesopotamia developed writing around 3000
 BC. Based on the storage and processing technologies employed, it is possible to dis‐
@@ -314,8 +323,11 @@ known as the Google File System, and was presented in a research paper published
 2003 by Google.4
 2 | Chapter 1: Introduction5 Dean J, Ghemawat S (2004). “MapReduce: Simplified data processing on large clusters.” In USENIX Sympo‐
 sium on Operating System Design and Implementation (OSDI).
-Figure 1-1. World’s capacity to store information
-Hadoop
+
+![Figure 1-1. World’s capacity to store information](figures/1_1.png)
+
+### Hadoop
+
 One year later, Google published a new paper describing how to perform operations
 across the Google File System, an approach that came to be known as MapReduce.5 As
 you would expect, there are two operations in MapReduce: map and reduce. The map
@@ -351,7 +363,9 @@ support to Hadoop. This meant that data analysis could now be performed at large
 scale without the need to write code for each MapReduce operation; instead, one
 could write generic data analysis statements in SQL, which are much easier to under‐
 stand and write.
-Spark
+
+### Spark
+
 In 2009, Apache Spark began as a research project at UC Berkeley’s AMPLab to
 improve on MapReduce. Specifically, Spark provided a richer set of verbs beyond
 MapReduce to facilitate optimizing code running in multiple machines. Spark also
@@ -373,16 +387,19 @@ To give you a sense of how much faster and efficient Spark is, it takes 72 minut
 2,100 computers to sort 100 terabytes of data using Hadoop, but only 23 minutes and
 206 computers using Spark. In addition, Spark holds the cloud sorting record, which
 makes it the most cost-effective solution for sorting large-datasets in the cloud.
-Hadoop record Spark record
-Data size 102.5 TB 100 TB
-Elapsed time 72 mins 23 mins
-Nodes 2,100 206
-Cores 50,400 6,592
-Spark | 5Hadoop record Spark record
-Disk 3,150 GB/s 618 GB/s
-Network 10 GB/s 10 GB/s
-Sort rate 1.42 TB/min 4.27 TB/min
-Sort rate/node 0.67 GB/min 20.7 GB/min
+
+ |Hadoop record |Spark record
+-----|-----|------
+Data size| 102.5 TB |100 TB
+Elapsed time| 72 mins |23 mins
+Nodes| 2,100 |206
+Cores| 50,400 |6,592
+Disk| 3,150 GB/s| 618 GB/s
+Network| 10 GB/s| 10 GB/s
+Sort rate| 1.42 TB/min |4.27 TB/min
+Sort rate/node| 0.67 GB/min| 20.7 GB/min
+
+
 Spark is also easier to use than Hadoop; for instance, the word-counting MapReduce
 example takes about 50 lines of code in Hadoop, but it takes only 2 lines of code in
 Spark. As you can see, Spark is much faster, more efficient, and easier to use than
@@ -486,7 +503,9 @@ data and big compute.
 Our hope is that this book will help you to understand the opportunities and limita‐
 tions of cluster computing and, specifically, the opportunities and limitations of using
 Apache Spark with R.
-R
+
+### R
+
 The R computing language has its origins in the S language, which was created at Bell
 Laboratories. Rick Becker explained in useR 2016 that at that time in Bell Labs, com‐
 puting was done by calling subroutines written in the Fortran language, which, appa‐
@@ -615,7 +634,9 @@ using specialized tools and frameworks like Apache Spark.
 This last point brings us closer to the purpose of this book, which is to bring the
 power of distributed computing systems provided by Apache Spark to solve mean‐
 ingful computation problems in data science and related fields, using R.
-sparklyr
+
+### sparklyr
+
 When you think of the computation power that Spark provides and the ease of use of
 the R language, it is natural to want them to work together, seamlessly. This is also
 what the R community expected: an R package that would provide an interface to
@@ -657,7 +678,9 @@ skills and backgrounds; therefore, it is our hope that sparklyr can be a fertile
 for innovation, a welcoming place for newcomers, a productive environment for
 experienced data scientists, and an open community where cluster computing, data
 science, and machine learning can come together.
-Recap
+
+### Recap
+
 This chapter presented Spark as a modern and powerful computing platform, R as an
 easy-to-use computing language with solid foundations in statistical methods, and
 sparklyr as a project bridging both technologies and communities. In a world in
@@ -670,9 +693,9 @@ become familiar resources that you use and love.
 
 ## 第二章 开始
 
-Getting Started
-I always wanted to be a wizard.
+> I always wanted to be a wizard.
 —Samwell Tarly
+
 After reading Chapter 1, you should now be familiar with the kinds of problems that
 Spark can help you solve. And it should be clear that Spark solves problems by mak‐
 ing use of multiple computers when data does not fit in a single machine or when
@@ -689,7 +712,9 @@ In Chapter 3 we dive into analysis followed by modeling, which presents examples
 using a single-cluster machine: your personal computer. Subsequent chapters intro‐
 duce cluster computing and the concepts and techniques that you’ll need to success‐
 fully run code across multiple machines.
-Overview
+
+### Overview
+
 From R, getting started with Spark using sparklyr and a local cluster is as easy as
 installing and loading the sparklyr package followed by installing Spark using
 sparklyr; however, we assume you are starting with a brand new computer running
@@ -720,7 +745,9 @@ sparklyr implements. However, if you are inclined to use Jupyter Notebooks or if
 your cluster is already equipped with a different R user interface, rest assured that you
 can use Spark with R through plain R code. Let’s move along and get your prerequi‐
 sites properly configured.
-Prerequisites
+
+### Prerequisites
+
 R can run in many platforms and environments; therefore, whether you use Win‐
 dows, Mac, or Linux, the first step is to install R from r-project.org; detailed instruc‐
 tions are provided in “Installing R” on page 251.
@@ -739,32 +766,51 @@ by the Java Virtual Machine (JVM), you also need to install Java 8 on your syste
 is likely that your system already has Java installed, but you should still check the ver‐
 sion and update or downgrade as described in “Installing Java” on page 252. You can
 use the following R command to check which version is installed on your system:
+
+```
 system("java -version")
 java version "1.8.0_201"
 Java(TM) SE Runtime Environment (build 1.8.0_201-b09)
 Java HotSpot(TM) 64-Bit Server VM (build 25.201-b09, mixed mode)
+```
 You can also use the JAVA_HOME environment variable to point to a specific Java ver‐
 sion by running Sys.setenv(JAVA_HOME = "path-to-java-8"); either way, before
 moving on to installing sparklyr, make sure that Java 8 is the version available for R.
-Installing sparklyr
+
+#### Installing sparklyr
+
 As with many other R packages, you can install sparklyr from CRAN as follows:
+
+```{r eval=F}
 install.packages("sparklyr")
+```
 The examples in this book assume you are using the latest version of sparklyr. You
 can verify your version is as new as the one we are using by running the following:
+
+```{r eval=F}
 packageVersion("sparklyr")
 [1] '1.0.2'
-Installing Spark
+```
+
+#### Installing Spark
+
 Start by loading sparklyr:
+
+```{r}
 library(sparklyr)
+```
 This makes all sparklyr functions available in R, which is really helpful; otherwise,
 you would need to run each sparklyr command prefixed with sparklyr::.
 You can easily install Spark by running spark_install(). This downloads, installs,
 and configures the latest version of Spark locally on your computer; however, because
 we’ve written this book with Spark 2.3, you should also install this version to make
 sure that you can follow all the examples provided without any surprises:
+```{r}
 spark_install("2.3")
-Prerequisites | 17You can display all of the versions of Spark that are available for installation by run‐
-ning the following:
+```
+Prerequisites | 17You can display all of the versions of Spark that are available for installation by running the following:
+
+```{r}
 spark_available_versions()
 ## spark
 ## 1 1.6
@@ -773,38 +819,51 @@ spark_available_versions()
 ## 4 2.2
 ## 5 2.3
 ## 6 2.4
+```
 You can install a specific version by using the Spark version and, optionally, by also
 specifying the Hadoop version. For instance, to install Spark 1.6.3, you would run:
+```{r}
 spark_install(version = "1.6.3")
+```
 You can also check which versions are installed by running this command:
+```{r}
 spark_installed_versions()
 spark hadoop dir
 7 2.3.1 2.7 /spark/spark-2.3.1-bin-hadoop2.7
+```
 The path where Spark is installed is known as Spark’s home, which is defined in R
 code and system configuration settings with the SPARK_HOME identifier. When you are
 using a local Spark cluster installed with sparklyr, this path is already known and no
 additional configuration needs to take place.
 Finally, to uninstall a specific version of Spark you can run spark_uninstall() by
 specifying the Spark and Hadoop versions, like so:
+```{r}
 spark_uninstall(version = "1.6.3", hadoop = "2.6")
-The default installation paths are ~/spark for macOS and Linux,
+```
+
+> The default installation paths are ~/spark for macOS and Linux,
 and %LOCALAPPDATA%/spark for Windows. To customize the
 installation path, you can run options(spark.install.dir =
 "installation-path") before spark_install() and spark_con
 nect().
-Connecting
+
+### Connecting
+
 It’s important to mention that, so far, we’ve installed only a local Spark cluster. A local
 cluster is really helpful to get started, test code, and troubleshoot with ease. Later
 chapters explain where to find, install, and connect to real Spark clusters with many
 machines, but for the first few chapters, we focus on using local clusters.
 To connect to this local cluster, simply run the following:
-18 | Chapter 2: Getting Startedlibrary(sparklyr)
+```{r}
+library(sparklyr)
 sc <- spark_connect(master = "local", version = "2.3")
-If you are using your own or online Spark cluster, make sure that
+```
+> If you are using your own or online Spark cluster, make sure that
 you connect as specified by your cluster administrator or the
 online documentation. If you need some pointers, you can take a
 quick look at Chapter 7, which explains in detail how to connect to
 any Spark cluster.
+
 The master parameter identifies which is the “main” machine from the Spark cluster;
 this machine is often called the driver node. While working with real clusters using
 many machines, you’ll find that most machines will be worker machines and one will
@@ -815,12 +874,18 @@ tion, which most code usually names sc; you will then make use of sc to execute
 Spark commands.
 If the connection fails, Chapter 7 contains a troubleshooting section that can help you
 to resolve your connection issue.
-Using Spark
+
+### Using Spark
+
 Now that you are connected, we can run a few simple commands. For instance, let’s
 start by copying the mtcars dataset into Apache Spark by using copy_to():
+```{r}
 cars <- copy_to(sc, mtcars)
+```
 The data was copied into Spark, but we can access it from R using the cars reference.
 To print its contents, we can simply type *cars*:
+
+```{r}
 cars
 # Source: spark<mtcars> [?? x 11]
 mpg cyl disp hp drat wt qsec vs am gear carb
@@ -836,7 +901,8 @@ mpg cyl disp hp drat wt qsec vs am gear carb
 9 22.8 4 141. 95 3.92 3.15 22.9 1 0 4 2
 10 19.2 6 168. 123 3.92 3.44 18.3 1 0 4 4
 # … with more rows
-Using Spark | 19Congrats! You have successfully connected and loaded your first dataset into Spark.
+```
+Congrats! You have successfully connected and loaded your first dataset into Spark.
 Let’s explain what’s going on in copy_to(). The first parameter, sc, gives the function
 a reference to the active Spark connection that was created earlier with spark_con
 nect(). The second parameter specifies a dataset to load into Spark. Now, copy_to()
@@ -845,11 +911,16 @@ Spark dataset is printed, Spark collects some of the records and displays them f
 In this particular case, that dataset contains only a few rows describing automobile
 models and some of their specifications like horsepower and expected miles per
 gallon.
-Web Interface
+
+### Web Interface
+
 Most of the Spark commands are executed from the R console; however, monitoring
 and analyzing execution is done through Spark’s web interface, shown in Figure 2-1.
 This interface is a web application provided by Spark that you can access by running:
+```{r}
 spark_web(sc)
+```
+
 Figure 2-1. The Apache Spark web interface
 Printing the cars dataset collected a few records to be displayed in the R console. You
 can see in the Spark web interface that a job was started to collect this information
@@ -868,80 +939,108 @@ The last tab to explore is the Environment tab, shown in Figure 2-4; this tab li
 the settings for this Spark application, which we look at in Chapter 9. As you will
 learn, most settings don’t need to be configured explicitly, but to properly run them at
 scale, you need to become familiar with some of them, eventually.
-Using Spark | 21Figure 2-4. The Environment tab on the Apache Spark web interface
+
+Figure 2-4. The Environment tab on the Apache Spark web interface
 Next, you will make use of a small subset of the practices that we cover in depth in
 Chapter 3.
-Analysis
+
+### Analysis
+
 When using Spark from R to analyze data, you can use SQL (Structured Query Lan‐
 guage) or dplyr (a grammar of data manipulation). You can use SQL through the DBI
 package; for instance, to count how many records are available in our cars dataset,
 we can run the following:
+
+```{r}
 library(DBI)
 dbGetQuery(sc, "SELECT count(*) FROM mtcars")
 count(1)
 1 32
+```
+
 When using dplyr, you write less code, and it’s often much easier to write than SQL.
 This is precisely why we won’t make use of SQL in this book; however, if you are pro‐
 ficient in SQL, this is a viable option for you. For instance, counting records in dplyr
 is more compact and easier to understand:
-22 | Chapter 2: Getting Startedlibrary(dplyr)
+```{r}
+library(dplyr)
 count(cars)
 # Source: spark<?> [?? x 1]
 n
 <dbl>
 1 32
+```
+
 In general, we usually start by analyzing data in Spark with dplyr, followed by sam‐
 pling rows and selecting a subset of the available columns. The last step is to collect
 data from Spark to perform further data processing in R, like data visualization. Let’s
 perform a very simple data analysis example by selecting, sampling, and plotting the
 cars dataset in Spark:
+```{r}
 select(cars, hp, mpg) %>%
 sample_n(100) %>%
 collect() %>%
 plot()
+```
+
 The plot in Figure 2-5 shows that as we increase the horsepower in a vehicle, its fuel
 efficiency measured in miles per gallon decreases. Although this is insightful, it’s diffi‐
 cult to predict numerically how increased horsepower would affect fuel efficiency.
 Modeling can help us overcome this.
 Figure 2-5. Horsepower versus miles per gallon
-Modeling
+
+### Modeling
+
 Although data analysis can take you quite far toward understanding data, building a
 mathematical model that describes and generalizes the dataset is quite powerful. In
 Chapter 1 you learned that the fields of machine learning and data science make use
 of mathematical models to perform predictions and find additional insights.
 Using Spark | 23For instance, we can use a linear model to approximate the relationship between fuel
 efficiency and horsepower:
+
+```{r}
 model <- ml_linear_regression(cars, mpg ~ hp)
 model
 Formula: mpg ~ hp
 Coefficients:
 (Intercept) hp
 30.09886054 -0.06822828
+```
 Now we can use this model to predict values that are not in the original dataset. For
 instance, we can add entries for cars with horsepower beyond 250 and also visualize
 the predicted values, as shown in Figure 2-6.
+
+```{r}
 model %>%
 ml_predict(copy_to(sc, data.frame(hp = 250 + 10 * 1:10))) %>%
 transmute(hp = hp, mpg = prediction) %>%
 full_join(select(cars, hp, mpg)) %>%
 collect() %>%
 plot()
+```
+
 Figure 2-6. Horsepower versus miles per gallon with predictions
 Even though the previous example lacks many of the appropriate techniques that you
 should use while modeling, it’s also a simple example to briefly introduce the model‐
 ing capabilities of Spark. We introduce all of the Spark models, techniques, and best
 practices in Chapter 4.
-24 | Chapter 2: Getting StartedData
+
+### Data
 For simplicity, we copied the mtcars dataset into Spark; however, data is usually not
 copied into Spark. Instead, data is read from existing data sources in a variety of for‐
 mats, like plain text, CSV, JSON, Java Database Connectivity (JDBC), and many
 more, which we examine in detail in Chapter 8. For instance, we can export our cars
 dataset as a CSV file:
+```{r}
 spark_write_csv(cars, "cars.csv")
+```
 In practice, we would read an existing dataset from a distributed storage system like
 HDFS, but we can also read back from the local file system:
+```{r}
 cars <- spark_read_csv(sc, "cars.csv")
-Extensions
+```
+
+### Extensions
 In the same way that R is known for its vibrant community of package authors, at a
 smaller scale, many extensions for Spark and R have been written and are available to
 you. Chapter 10 introduces many interesting ones to perform advanced modeling,
@@ -951,9 +1050,12 @@ help you manage values that contain nested information. A common use case
 involves JSON files that contain nested lists that require preprocessing before you can
 do meaningful data analysis. To use this extension, we first need to install it as
 follows:
+```{r}
 install.packages("sparklyr.nested")
+```
 Then, we can use the sparklyr.nested extension to group all of the horsepower data
 points over the number of cylinders:
+```{r}
 sparklyr.nested::sdf_nest(cars, hp) %>%
 group_by(cyl) %>%
 summarise(data = collect_list(data))
@@ -963,16 +1065,19 @@ cyl data
 1 6 <list [7]>
 2 4 <list [11]>
 3 8 <list [14]>
+```
 Even though nesting data makes it more difficult to read, it is a requirement when
 you are dealing with nested data formats like JSON using the spark_read_json()
 and spark_write_json() functions.
-Using Spark | 25Distributed R
+
+### Distributed R
 For those few cases when a particular functionality is not available in Spark and no
 extension has been developed, you can consider distributing your own R code across
 the Spark cluster. This is a powerful tool, but it comes with additional complexity, so
 you should only use it as a last resort.
 Suppose that we need to round all of the values across all the columns in our dataset.
 One approach would be running custom R code, making use of R’s round() function:
+```{r}
 cars %>% spark_apply(~round(.x))
 # Source: spark<?> [?? x 11]
 mpg cyl disp hp drat wt qsec vs am gear carb
@@ -988,11 +1093,15 @@ mpg cyl disp hp drat wt qsec vs am gear carb
 9 23 4 141 95 4 3 23 1 0 4 2
 10 19 6 168 123 4 3 18 1 0 4 4
 # … with more rows
+```
+
 If you are a proficient R user, it can be quite tempting to use spark_apply() for
 everything, but please, don’t! spark_apply() was designed for advanced use cases
 where Spark falls short. You will learn how to do proper data analysis and modeling
 without having to distribute custom R code across your cluster.
-Streaming
+
+### Streaming
+
 While processing large static datasets is the most typical use case for Spark, process‐
 ing dynamic datasets in real time is also possible and, for some applications, a
 requirement. You can think of a streaming dataset as a static data source with new
@@ -1001,64 +1110,90 @@ from Kafka (an open source stream-processing software platform) or from dis‐
 tributed storage that receives new data continuously.
 To try out streaming, let’s first create an input/ folder with some data that we will use
 as the input for this stream:
+```{r}
 dir.create("input")
 write.csv(mtcars, "input/cars_1.csv", row.names = F)
+```
 Then, we define a stream that processes incoming data from the input/ folder, per‐
 forms a custom transformation in R, and pushes the output into an output/ folder:
-26 | Chapter 2: Getting Startedstream <- stream_read_csv(sc, "input/") %>%
+```{r}
+stream <- stream_read_csv(sc, "input/") %>%
 select(mpg, cyl, disp) %>%
 stream_write_csv("output/")
+```
 As soon as the stream of real-time data starts, the input/ folder is processed and
 turned into a set of new files under the output/ folder containing the new transformed
 files. Since the input contained only one file, the output folder will also contain a sin‐
 gle file resulting from applying the custom spark_apply() transformation.
+```{r}
 dir("output", pattern = ".csv")
 [1] "part-00000-eece04d8-7cfa-4231-b61e-f1aef8edeb97-c000.csv"
+```
 Up to this point, this resembles static data processing; however, we can keep adding
 files to the input/ location, and Spark will parallelize and process data automatically.
 Let’s add one more file and validate that it’s automatically processed:
+
+```{r}
 # Write more data into the stream source
 write.csv(mtcars, "input/cars_2.csv", row.names = F)
+```
 Wait a few seconds and validate that the data is processed by the Spark stream:
+
+```{r}
 # Check the contents of the stream destination
 dir("output", pattern = ".csv")
 [1] "part-00000-2d8e5c07-a2eb-449d-a535-8a19c671477d-c000.csv"
 [2] "part-00000-eece04d8-7cfa-4231-b61e-f1aef8edeb97-c000.csv"
+```
 You should then stop the stream:
+```{r}
 stream_stop(stream)
+```
 You can use dplyr, SQL, Spark models, or distributed R to analyze streams in real
 time. In Chapter 12 we properly introduce you to all the interesting transformations
 you can perform to analyze real-time data.
-Logs
+
+### Logs
+
 Logging is definitely less interesting than real-time data processing; however, it’s a
 tool you should be or become familiar with. A log is just a text file to which Spark
 appends information relevant to the execution of tasks in the cluster. For local clus‐
 ters, we can retrieve all the recent logs by running the following:
+```{r}
 spark_log(sc)
 18/10/09 19:41:46 INFO Executor: Finished task 0.0 in stage 5.0 (TID 5)...
 18/10/09 19:41:46 INFO TaskSetManager: Finished task 0.0 in stage 5.0...
 18/10/09 19:41:46 INFO TaskSchedulerImpl: Removed TaskSet 5.0, whose...
 18/10/09 19:41:46 INFO DAGScheduler: ResultStage 5 (collect at utils...
 18/10/09 19:41:46 INFO DAGScheduler: Job 3 finished: collect at utils...
+```
 Or, we can retrieve specific log entries containing, say, sparklyr, by using the filter
 parameter, as follows:
-Using Spark | 27spark_log(sc, filter = "sparklyr")
+```{r}
+spark_log(sc, filter = "sparklyr")
 ## 18/10/09 18:53:23 INFO SparkContext: Submitted application: sparklyr
 ## 18/10/09 18:53:23 INFO SparkContext: Added JAR...
 ## 18/10/09 18:53:27 INFO Executor: Fetching spark://localhost:52930/...
 ## 18/10/09 18:53:27 INFO Utils: Fetching spark://localhost:52930/...
 ## 18/10/09 18:53:27 INFO Executor: Adding file:/private/var/folders/...
+```
 Most of the time, you won’t need to worry about Spark logs, except in cases for which
 you need to troubleshoot a failed computation; in those cases, logs are an invaluable
 resource to be aware of. Now you know.
-Disconnecting
+
+### Disconnecting
+
 For local clusters (really, any cluster), after you are done processing data, you should
 disconnect by running the following:
+```{r}
 spark_disconnect(sc)
+```
 This terminates the connection to the cluster as well as the cluster tasks. If multiple
 Spark connections are active, or if the connection instance sc is no longer available,
 you can also disconnect all your Spark connections by running this command:
+```{r}
 spark_disconnect_all()
+```
 Notice that exiting R, or RStudio, or restarting your R session, also causes the Spark
 connection to terminate, which in turn terminates the Spark cluster and cached data
 that is not explicitly saved.
@@ -1092,7 +1227,9 @@ Disconnects from Spark; a shortcut to spark_disconnect(sc).
 The rest of this book will use plain R code. It is up to you whether to execute this code
 in the R console, RStudio, Jupyter Notebooks, or any other tool that supports execut‐
 ing R code, since the examples provided in this book execute in any R environment.
-Resources
+
+### Resources
+
 While we’ve put significant effort into simplifying the onboarding process, there are
 many additional resources that can help you to troubleshoot particular issues while
 getting started and, in general, introduce you to the broader Spark and R communi‐
