@@ -1,0 +1,1133 @@
+---
+title: "Spark_R"
+author: "Bo"
+date: "2019/10/18"
+output: word_document
+---
+
+# Mastering Spark with R
+  The Complete Guide to Large-Scale Analysis 
+and Modeling
+Javier Luraschi, 
+Kevin Kuo & Edgar Ruiz 
+Foreword by Matei Zaharia
+
+-------
+
+## Foreword
+
+Apache Spark is a distributed computing platform built on extensibility: Spark’s APIs
+make it easy to combine input from many data sources and process it using diverse
+programming languages and algorithms to build a data application. R is one of the
+most powerful languages for data science and statistics, so it makes a lot of sense to
+connect R to Spark. Fortunately, R’s rich language features enable simple APIs for
+calling Spark from R that look similar to running R on local data sources. With a bit
+of background about both systems, you will be able to invoke massive computations
+in Spark or run your R code in parallel from the comfort of your favorite R program‐
+ming environment.
+This book explores using Spark from R in detail, focusing on the `sparklyr` package
+that enables support for `dplyr` and other packages known to the R community. It
+covers all of the main use cases in detail, ranging from querying data using the Spark
+engine to exploratory data analysis, machine learning, parallel execution of R code,
+and streaming. It also has a self-contained introduction to running Spark and moni‐
+toring job execution. The authors are exactly the right people to write about this
+topic—Javier, Kevin, and Edgar have been involved in sparklyr development since
+the project started. I was excited to see how well they’ve assembled this clear and
+focused guide about using Spark with R.
+I hope that you enjoy this book and use it to scale up your R workloads and connect
+them to the capabilities of the broader Spark ecosystem. And because all of the infra‐
+structure here is open source, don’t hesitate to give the developers feedback about
+making these tools better.
+— Matei Zaharia
+Assistant Professor at Stanford University,
+Chief Technologist at Databricks,
+and original creator of Apache Spark
+
+## Preface
+
+In a world where information is growing exponentially, leading tools like Apache
+Spark provide support to solve many of the relevant problems we face today. From
+companies looking for ways to improve based on data-driven decisions, to research
+organizations solving problems in health care, finance, education, and energy, Spark
+enables analyzing much more information faster and more reliably than ever before.
+Various books have been written for learning Apache Spark; for instance, Spark: The
+Definitive Guide is a comprehensive resource, and Learning Spark is an introductory
+book meant to help users get up and running (both are from O’Reilly). However, as of
+this writing, there is neither a book to learn Apache Spark using the R computing lan‐
+guage nor a book specifically designed for the R user or the aspiring R user.
+There are some resources online to learn Apache Spark with R, most notably the
+spark.rstudio.com site and the Spark documentation site at spark.apache.org. Both
+sites are great online resources; however, the content is not intended to be read from
+start to finish and assumes you, the reader, have some knowledge of Apache Spark, R,
+and cluster computing.
+The goal of this book is to help anyone get started with Apache Spark using R. Addi‐
+tionally, because the R programming language was created to simplify data analysis, it
+is also our belief that this book provides the easiest path for you to learn the tools
+used to solve data analysis problems with Spark. The first chapters provide an intro‐
+duction to help anyone get up to speed with these concepts and present the tools
+required to work on these problems on your own computer. We then quickly ramp
+up to relevant data science topics, cluster computing, and advanced topics that should
+interest even the most experienced users.
+Therefore, this book is intended to be a useful resource for a wide range of users,
+from beginners curious to learn Apache Spark, to experienced readers seeking to
+understand why and how to use Apache Spark from R.
+This book has the following general outline:
+xiiiIntroduction
+In the first two chapters, Chapter 1, Introduction, and Chapter 2, Getting Started,
+you learn about Apache Spark, R and the tools to perform data analysis with
+Spark and R.
+Analysis
+In Chapter 3, Analysis, you learn how to analyze, explore, transform, and visual‐
+ize data in Apache Spark with R.
+Modeling
+In the Chapter 4, Modeling and Chapter 5, Pipelines, you learn how to create stat‐
+istical models with the purpose of extracting information, predicticting out‐
+comes, and automating this process in production-ready workflows.
+Scaling
+Up to this point, the book has focused on performing operations on your per‐
+sonal computer and with limited data formats. Chapter 6, Clusters, Chapter 7,
+Connections, Chapter 8, Data, and Chapter 9, Tuning, introduce distributed com‐
+puting techniques required to perform analysis and modeling across many
+machines and data formats to tackle the large-scale data and computation prob‐
+lems for which Apache Spark was designed.
+Extensions
+Chapter 10, Extensions, describes optional components and extended functional‐
+ity applicable to specific, relevant use cases. You learn about alternative modeling
+frameworks, graph processing, preprocessing data for deep learning, geospatial
+analysis, and genomics at scale.
+Advanced
+The book closes with a set of advanced chapters, Chapter 11, Distributed R,
+Chapter 12, Streaming, and Chapter 13, Contributing; these will be of greatest
+interest to advanced users. However, by the time you reach this section, the con‐
+tent won’t seem as intimidating; instead, these chapters will be equally relevant,
+useful, and interesting as the previous ones.
+The first group of chapters, 1–5, provides a gentle introduction to performing data
+science and machine learning at scale. If you are planning to read this book while also
+following along with code examples, these are great chapters to consider executing
+the code line by line. Because these chapters teach all of the concepts using your per‐
+sonal computer, you won’t be taking advantage of multiple computers, which Spark
+was designed to use. But worry not: the next set of chapters will teach this in detail!
+The second group of chapters, 6–9, introduces fundamental concepts in the exciting
+world of cluster computing using Spark. To be honest, they also introduce some of
+the not-so-fun parts of cluster computing, but believe us, it’s worth learning the con‐
+cepts we present. Besides, the overview sections in each chapter are especially
+xiv | Prefaceinteresting, informative, and easy to read, and help you develop intuitions as to how
+cluster computing truly works. For these chapters, we actually don’t recommend exe‐
+cuting the code line by line—especially not if you are trying to learn Spark from start
+to finish. You can always come back and execute code after you have a proper Spark
+cluster. If you already have a cluster at work or you are really motivated to get one,
+however, you might want to use Chapter 6 to pick one and then Chapter 7 to connect
+to it.
+The third group of chapters, 10–13, presents tools that should be quite interesting to
+most readers and will make it easier to follow along. Many advanced topics are pre‐
+sented, and it is natural to be more interested in some topics than others; for instance,
+you might be interested in analyzing geographic datasets, or perhaps you’re more
+interested in processing real-time datasets, or maybe you’d like to do both! Based on
+your personal interests or problems at hand, we encourage you to execute the code
+examples that are most relevant to you. All of the code in these chapters is written to
+be executed on your personal computer, but you are also encouraged to use proper
+Spark clusters given that you’ll have the tools required to troubleshoot issues and
+tune large-scale computations.
+
+### Formatting
+
+Tables generated from code are formatted as follows:
+
+```{r}
+# A tibble: 3 x 2
+numbers text
+<dbl> <chr>
+1 1 one
+2 2 two
+3 3 three
+```
+
+The dimensions of the table (number of rows and columns) are described in the first
+row, followed by column names in the second row and column types in the third row.
+There are also various subtle visual improvements provided by the tibble package
+that we make use of throughout this book.
+Most plots are rendered using the ggplot2 package and a custom theme available in
+the appendix; however, because this book is not focused on data visualization, we
+only provide code to render a basic plot that won’t match the formatting we applied.
+If you are interested in learning more about visualization in R, consider specialized
+books like R Graphics Cookbook (O’Reilly).
+
+### Acknowledgments
+
+We thank the package authors that enabled Spark with R: Javier Luraschi, Kevin Kuo,
+Kevin Ushey, and JJ Allaire (sparklyr); Romain François and Hadley Wickham
+Preface | xv(dbplyr); Hadley Wickham and Edgar Ruiz (dpblyr); Kirill Mülller (DBI); and the
+authors of the Apache Spark project itself, and its original author Matei Zaharia.
+We thank the package authors that released extensions to enrich the Spark and R eco‐
+system: Akhil Nair (crassy); Harry Zhu (geospark); Kevin Kuo (graphframes, mleap,
+sparktf, and sparkxgb); Jakub Hava, Navdeep Gill, Erin LeDell, and Michal Maloh‐
+lava (rsparkling); Jan Wijffels (spark.sas7bdat); Aki Ariga (sparkavro); Martin
+Studer (sparkbq); Matt Pollock (sparklyr.nested); Nathan Eastwood (sparkts); and
+Samuel Macêdo (variantspark).
+We thank our wonderful editor, Melissa Potter, for providing us with guidance,
+encouragement, and countless hours of detailed feedback to make this book the best
+we could have ever written.
+To Bradley Boehmke, Bryan Adams, Bryan Jonas, Dusty Turner, and Hossein Falaki,
+we thank you for your technical reviews, time, and candid feedback, and for sharing
+your expertise with us. Many readers will have a much more pleasant experience
+thanks to you.
+Thanks to RStudio, JJ Allaire, and Tareef Kawaf for supporting this work, and the R
+community itself for its continuous support and encouragement.
+Max Kuhn, thank you for your invaluable feedback on Chapter 4, in which, with his
+permission, we adapted examples from his wonderful book Feature Engineering and
+Selection: A Practical Approach for Predictive Models (CRC Press).
+We also thank everyone indirectly involved but not explicitly listed in this section; we
+are truly standing on the shoulders of giants.
+This book itself was written in R using bookdown by Yihui Xie, rmarkdown by JJ Allaire
+and Yihui Xie, and knitr by Yihui Xie; we drew the visualizations using ggplot2 by
+Hadley Wickham and Winston Chang; we created the diagrams using nomnoml by
+Daniel Kallin and Javier Luraschi; and we did the document conversions using pan
+doc by John MacFarlane.
+Conventions Used in This Book
+The following typographical conventions are used in this book:
+Italic
+Indicates new terms, URLs, email addresses, filenames, and file extensions.
+Constant width
+Used for program listings as well as within paragraphs to refer to program ele‐
+ments such as variable or function names, databases, data types, environment
+variables, statements, and keywords.
+xvi | PrefaceConstant width bold
+Shows commands or other text that should be typed literally by the user.
+Constant width italic
+Shows text that should be replaced with user-supplied values or by values deter‐
+mined by context.
+This element signifies a tip or suggestion.
+This element signifies a general note.
+
+### Using Code Examples
+
+Supplemental material (code examples, exercises, etc.) is available for download at
+https://github.com/r-spark/the-r-in-spark.
+This book is here to help you get your job done. In general, if example code is offered
+with this book, you may use it in your programs and documentation. You do not
+need to contact us for permission unless you’re reproducing a significant portion of
+the code. For example, writing a program that uses several chunks of code from this
+book does not require permission. Selling or distributing a CD-ROM of examples
+from O’Reilly books does require permission. Answering a question by citing this
+book and quoting example code does not require permission. Incorporating a signifi‐
+cant amount of example code from this book into your product’s documentation does
+require permission.
+We appreciate, but do not require, attribution. An attribution usually includes the
+title, author, publisher, and ISBN. For example: “Mastering Spark with R by Javier Lur‐
+aschi, Kevin Kuo, and Edgar Ruiz (O’Reilly). Copyright 2020 Javier Luraschi, Kevin
+Kuo, and Edgar Ruiz, 978-1-492-04637-0.”
+If you feel your use of code examples falls outside fair use or the permission given
+above, feel free to contact us at permissions@oreilly.com.
+Preface | xviiO’Reilly Online Learning
+For almost 40 years, O’Reilly Media has provided technology
+and business training, knowledge, and insight to help compa‐
+nies succeed.
+Our unique network of experts and innovators share their knowledge and expertise
+through books, articles, conferences, and our online learning platform. O’Reilly’s
+online learning platform gives you on-demand access to live training courses, indepth learning paths, interactive coding environments, and a vast collection of text
+and video from O’Reilly and 200+ other publishers. For more information, please
+visit http://oreilly.com.
+
+### How to Contact Us
+
+Please address comments and questions concerning this book to the publisher:
+O’Reilly Media, Inc.
+1005 Gravenstein Highway North
+Sebastopol, CA 95472
+800-998-9938 (in the United States or Canada)
+707-829-0515 (international or local)
+707-829-0104 (fax)
+We have a web page for this book, where we list errata, examples, and any additional
+information. You can access this page at https://oreil.ly/SparkwithR.
+To comment or ask technical questions about this book, send email to bookques‐
+tions@oreilly.com.
+For more information about our books, courses, conferences, and news, see our web‐
+site at http://www.oreilly.com.
+Find us on Facebook: http://facebook.com/oreilly
+Follow us on Twitter: http://twitter.com/oreillymedia
+Watch us on YouTube: http://www.youtube.com/oreillymedia
+
+## 第一章 引言
+
+Introduction
+You know nothing, Jon Snow.
+—Ygritte
+With information growing at exponential rates, it’s no surprise that historians are
+referring to this period of history as the Information Age. The increasing speed at
+which data is being collected has created new opportunities and is certainly poised to
+create even more. This chapter presents the tools that have been used to solve largescale data challenges. First, it introduces Apache Spark as a leading tool that is
+democratizing our ability to process large datasets. With this as a backdrop, we intro‐
+duce the R computing language, which was specifically designed to simplify data
+analysis. Finally, this leads us to introduce sparklyr, a project merging R and Spark
+into a powerful tool that is easily accessible to all.
+Chapter 2, Getting Started presents the prerequisites, tools, and steps you need to per‐
+form to get Spark and R working on your personal computer. You will learn how to
+install and initialize Spark, get introduced to common operations, and get your very
+first data processing and modeling task done. It is the goal of that chapter to help any‐
+one grasp the concepts and tools required to start tackling large-scale data challenges
+which, until recently, were accessible to just a few organizations.
+You then move into learning how to analyze large-scale data, followed by building
+models capable of predicting trends and discover information hidden in vast
+amounts of information. At which point, you will have the tools required to perform
+data analysis and modeling at scale. Subsequent chapters help you move away from
+your local computer into computing clusters required to solve many real world prob‐
+lems. The last chapters present additional topics, like real-time data processing and
+graph analysis, which you will need to truly master the art of analyzing data at any
+scale. The last chapter of this book provides you with tools and inspiration to con‐
+sider contributing back to the Spark and R communities.
+11 Laudon KC, Traver CG, Laudon JP (1996). “Information technology and systems.” Cambridge, MA: Course
+Technology.
+2 Ceruzzi PE (2012). Computing: a concise history. MIT Press.
+3 Group WB (2016). The Data Revolution. World Bank Publications.
+4 Ghemawat S, Gobioff H, Leung S (2003). “The Google File System.” In Proceedings of the Nineteenth ACM
+Symposium on Operating Systems Principles. ISBN 1-58113-757-5.
+We hope that this is a journey you will enjoy, that will help you to solve problems in
+your professional career, and to nudge the world into making better decisions that
+can benefit us all.
+Overview
+As humans, we have been storing, retrieving, manipulating, and communicating
+information since the Sumerians in Mesopotamia developed writing around 3000
+BC. Based on the storage and processing technologies employed, it is possible to dis‐
+tinguish four distinct phases of development: premechanical (3000 BC to 1450 AD),
+mechanical (1450–1840), electromechanical (1840–1940), and electronic (1940–
+present).1
+Mathematician George Stibitz used the word digital to describe fast electric pulses
+back in 1942,2 and to this day, we describe information stored electronically as digital
+information. In contrast, analog information represents everything we have stored by
+any nonelectronic means such as handwritten notes, books, newspapers, and so on.
+The World Bank report on digital development provides an estimate of digital and
+analog information stored over the past decades.3 This report noted that digital infor‐
+mation surpassed analog information around 2003. At that time, there were about 10
+million terabytes of digital information, which is roughly about 10 million storage
+drives today. However, a more relevant finding from this report was that our foot‐
+print of digital information is growing at exponential rates. Figure 1-1 shows the find‐
+ings of this report; notice that every other year, the world’s information has grown
+tenfold.
+With the ambition to provide tools capable of searching all of this new digital infor‐
+mation, many companies attempted to provide such functionality with what we know
+today as search engines, used when searching the web. Given the vast amount of digi‐
+tal information, managing information at this scale was a challenging problem.
+Search engines were unable to store all of the web page information required to sup‐
+port web searches in a single computer. This meant that they had to split information
+into several files and store them across many machines. This approach became
+known as the Google File System, and was presented in a research paper published in
+2003 by Google.4
+2 | Chapter 1: Introduction5 Dean J, Ghemawat S (2004). “MapReduce: Simplified data processing on large clusters.” In USENIX Sympo‐
+sium on Operating System Design and Implementation (OSDI).
+Figure 1-1. World’s capacity to store information
+Hadoop
+One year later, Google published a new paper describing how to perform operations
+across the Google File System, an approach that came to be known as MapReduce.5 As
+you would expect, there are two operations in MapReduce: map and reduce. The map
+operation provides an arbitrary way to transform each file into a new file, whereas the
+reduce operation combines two files. Both operations require custom computer code,
+but the MapReduce framework takes care of automatically executing them across
+many computers at once. These two operations are sufficient to process all the data
+available on the web, while also providing enough flexibility to extract meaningful
+information from it.
+For example, as illustrated in Figure 1-2, we can use MapReduce to count words in
+two different text files stored in different machines. The map operation splits each
+word in the original file and outputs a new word-counting file with a mapping of
+words and counts. The reduce operation can be defined to take two word-counting
+files and combine them by aggregating the totals for each word; this last file will con‐
+tain a list of word counts across all the original files.
+Counting words is often the most basic MapReduce example, but we can also use
+MapReduce for much more sophisticated and interesting applications. For instance,
+we can use it to rank web pages in Google’s PageRank algorithm, which assigns ranks
+Hadoop | 3to web pages based on the count of hyperlinks linking to a web page and the rank of
+the page linking to it.
+Figure 1-2. MapReduce example counting words across files
+After these papers were released by Google, a team at Yahoo worked on implement‐
+ing the Google File System and MapReduce as a single open source project. This
+project was released in 2006 as Hadoop, with the Google File System implemented as
+the Hadoop Distributed File System (HDFS). The Hadoop project made distributed
+file-based computing accessible to a wider range of users and organizations, making
+MapReduce useful beyond web data processing.
+Although Hadoop provided support to perform MapReduce operations over a dis‐
+tributed file system, it still required MapReduce operations to be written with code
+every time a data analysis was run. To improve upon this tedious process, the Hive
+project, released in 2008 by Facebook, brought Structured Query Language (SQL)
+support to Hadoop. This meant that data analysis could now be performed at large
+scale without the need to write code for each MapReduce operation; instead, one
+could write generic data analysis statements in SQL, which are much easier to under‐
+stand and write.
+Spark
+In 2009, Apache Spark began as a research project at UC Berkeley’s AMPLab to
+improve on MapReduce. Specifically, Spark provided a richer set of verbs beyond
+MapReduce to facilitate optimizing code running in multiple machines. Spark also
+loaded data in-memory, making operations much faster than Hadoop’s on-disk stor‐
+age. One of the earliest results showed that running logistic regression, a data
+4 | Chapter 1: Introduction6 Zaharia M, Chowdhury M, Franklin MJ, Shenker S, Stoica I (2010). “Spark: Cluster computing with working
+sets.” HotCloud, 10(10-10), 95.
+modeling technique that we will introduce in Chapter 4, allowed Spark to run 10
+times faster than Hadoop by making use of in-memory datasets.6 A chart similar to
+Figure 1-3 was presented in the original research publication.
+Figure 1-3. Logistic regression performance in Hadoop and Spark
+Even though Spark is well known for its in-memory performance, it was designed to
+be a general execution engine that works both in-memory and on-disk. For instance,
+Spark has set new records in large-scale sorting, for which data was not loaded inmemory; rather, Spark made improvements in network serialization, network shuf‐
+fling, and efficient use of the CPU’s cache to dramatically enhance performance. If
+you needed to sort large amounts of data, there was no other system in the world
+faster than Spark.
+To give you a sense of how much faster and efficient Spark is, it takes 72 minutes and
+2,100 computers to sort 100 terabytes of data using Hadoop, but only 23 minutes and
+206 computers using Spark. In addition, Spark holds the cloud sorting record, which
+makes it the most cost-effective solution for sorting large-datasets in the cloud.
+Hadoop record Spark record
+Data size 102.5 TB 100 TB
+Elapsed time 72 mins 23 mins
+Nodes 2,100 206
+Cores 50,400 6,592
+Spark | 5Hadoop record Spark record
+Disk 3,150 GB/s 618 GB/s
+Network 10 GB/s 10 GB/s
+Sort rate 1.42 TB/min 4.27 TB/min
+Sort rate/node 0.67 GB/min 20.7 GB/min
+Spark is also easier to use than Hadoop; for instance, the word-counting MapReduce
+example takes about 50 lines of code in Hadoop, but it takes only 2 lines of code in
+Spark. As you can see, Spark is much faster, more efficient, and easier to use than
+Hadoop.
+In 2010, Spark was released as an open source project and then donated to the
+Apache Software Foundation in 2013. Spark is licensed under Apache 2.0, which
+allows you to freely use, modify, and distribute it. Spark then reached more than
+1,000 contributors, making it one of the most active projects in the Apache Software
+Foundation.
+This gives an overview of how Spark came to be, which we can now use to formally
+introduce Apache Spark as defined on the project’s website:
+Apache Spark is a unified analytics engine for large-scale data processing.
+To help us understand this definition of Apache Spark, we break it down as follows:
+Unified
+Spark supports many libraries, cluster technologies, and storage systems.
+Analytics
+Analytics is the discovery and interpretation of data to produce and communi‐
+cate information.
+Engine
+Spark is expected to be efficient and generic.
+Large-scale
+You can interpret large-scale as cluster-scale, a set of connected computers work‐
+ing together.
+Spark is described as an engine because it’s generic and efficient. It’s generic because it
+optimizes and executes generic code; that is, there are no restrictions as to what type
+of code you can write in Spark. It is efficient, because, as we mentioned earlier, Spark
+much faster than other technologies by making efficient use of memory, network, and
+CPUs to speed data processing algorithms in computing clusters.
+This makes Spark ideal in many analytics projects like ranking movies at Netflix,
+aligning protein sequences, or analyzing high-energy physics at CERN.
+6 | Chapter 1: IntroductionAs a unified platform, Spark is expected to support many cluster technologies and
+multiple data sources, which you learn about in Chapter 6 and Chapter 8, respec‐
+tively. It is also expected to support many different libraries like Spark SQL, MLlib,
+GraphX, and Spark Streaming; libraries that you can use for analysis, modeling,
+graph processing, and real-time data processing, respectively. In summary, Spark is a
+platform providing access to clusters, data sources, and libraries for large-scale com‐
+puting, as illustrated in Figure 1-4.
+Figure 1-4. Spark as a unified analytics engine for large-scale data processing
+Describing Spark as large scale implies that a good use case for Spark is tackling prob‐
+lems that can be solved with multiple machines. For instance, when data does not fit
+on a single disk drive or into memory, Spark is a good candidate to consider. How‐
+ever, you can also consider it for problems that might not be large scale, but for which
+using multiple computers could speed up computation. For instance, CPU-intensive
+models and scientific simulations also benefit from running in Spark.
+Therefore, Spark is good at tackling large-scale data-processing problems, usually
+known as big data (datasets that are more voluminous and complex than traditional
+ones) but it is also good at tackling large-scale computation problems, known as big
+compute (tools and approaches using a large amount of CPU and memory resources
+in a coordinated way). Big data often requires big compute, but big compute does not
+necessarily require big data.
+Big data and big compute problems are usually easy to spot—if the data does not fit
+into a single machine, you might have a big data problem; if the data fits into a single
+machine but processing it takes days, weeks, or even months to compute, you might
+have a big compute problem.
+However, there is also a third problem space for which neither data nor compute is
+necessarily large scale and yet there are significant benefits to using cluster comput‐
+ing frameworks like Spark. For this third problem space, there are a few use cases:
+Spark | 7Velocity
+Suppose that you have a dataset of 10 GB and a process that takes 30 minutes to
+run over this data—this is neither big compute nor big data by any means. How‐
+ever, if you happen to be researching ways to improve the accuracy of your mod‐
+els, reducing the runtime down to three minutes is a significant improvement,
+which can lead to meaningful advances and productivity gains by increasing the
+velocity at which you can analyze data. Alternatively, you might need to process
+data faster—for stock trading, for instance. Whereas three minutes could seem
+fast enough, it can be far too slow for real-time data processing, for which you
+might need to process data in a few seconds—or even a few milliseconds.
+Variety
+You could also have an efficient process to collect data from many sources into a
+single location, usually a database; this process could be already running effi‐
+ciently and close to real time. Such processes are known as Extract, Transform,
+Load (ETL); data is extracted from multiple sources, transformed to the required
+format, and loaded into a single data store. Although this has worked for years,
+the trade-off from this approach is that adding a new data source is expensive.
+Because the system is centralized and tightly controlled, making changes could
+cause the entire process to halt; therefore, adding new data source usually takes
+too long to be implemented. Instead, you can store all data in its natural format
+and process it as needed using cluster computing, an architecture known as a
+data lake. In addition, storing data in its raw format allows you to process a vari‐
+ety of new file formats like images, audio, and video without having to figure out
+how to fit them into conventional structured storage systems.
+Veracity
+When using many data sources, you might find the data quality varies greatly
+between them, which requires special analysis methods to improve their accu‐
+racy. For instance, suppose that you have a table of cities with values like San
+Francisco, Seattle, and Boston. What happens when data contains a misspelled
+entry like “Bston”? In a relational database, this invalid entry might be dropped.
+However, dropping values is not necessarily the best approach in all cases; you
+might want to correct this field by making use of geocodes, cross-referencing
+data sources, or attempting a best-effort match. Therefore, understanding and
+improving the veracity of the original data source can lead to more accurate
+results.
+If we include “volume” as a synonym for big data, you get the mnemonic people refer
+to as the four Vs of big data; others have expanded this to five or even 10 Vs of big
+data. Mnemonics aside, cluster computing is being used today in more innovative
+ways, and is not uncommon to see organizations experimenting with new workflows
+and a variety of tasks that were traditionally uncommon for cluster computing. Much
+of the hype attributed to big data falls into this space where, strictly speaking, you’re
+8 | Chapter 1: Introductionnot handling big data, but there are still benefits from using tools designed for big
+data and big compute.
+Our hope is that this book will help you to understand the opportunities and limita‐
+tions of cluster computing and, specifically, the opportunities and limitations of using
+Apache Spark with R.
+R
+The R computing language has its origins in the S language, which was created at Bell
+Laboratories. Rick Becker explained in useR 2016 that at that time in Bell Labs, com‐
+puting was done by calling subroutines written in the Fortran language, which, appa‐
+rently, were not pleasant to deal with. The S computing language was designed as an
+interface language to solve particular problems without having to worry about other
+languages, such as Fortran. The creator of S, John Chambers, shows in Figure 1-5
+how S was designed to provide an interface that simplifies data processing; his cocreator presented this during useR! 2016 as the original diagram that inspired the cre‐
+ation of S.
+Figure 1-5. Interface language diagram by John Chambers (Rick Becker useR 2016)
+R is a modern and free implementation of S. Specifically, according to the R Project
+for Statistical Computing:
+R is a programming language and free software environment for statistical computing
+and graphics.
+While working with data, we believe there are two strong arguments for using R:
+R language
+R was designed by statisticians for statisticians, meaning that this is one of the
+few successful languages designed for nonprogrammers, so learning R will
+R | 9probably feel more natural. Additionally, because the R language was designed to
+be an interface to other tools and languages, R allows you to focus more on
+understanding data and less on the particulars of computer science and engineer‐
+ing.
+R community
+The R community provides a rich package archive provided by the Comprehen‐
+sive R Archive Network (CRAN), which allows you to install ready-to-use pack‐
+ages to perform many tasks—most notably high-quality data manipulation,
+visualization, and statistical models, many of which are available only in R. In
+addition, the R community is a welcoming and active group of talented individu‐
+als motivated to help you succeed. Many packages provided by the R community
+make R, by far, the best option for statistical computing. Some of the most down‐
+loaded R packages include: dplyr to manipulate data, cluster to analyze clus‐
+ters, and ggplot2 to visualize data. Figure 1-6 quantifies the growth of the R
+community by plotting daily downloads of R packages in CRAN.
+Figure 1-6. Daily downloads of CRAN packages
+Aside from statistics, R is also used in many other fields. The following areas are par‐
+ticularly relevant to this book:
+10 | Chapter 1: Introduction7 Wickham H, Grolemund G (2016). R for data science: import, tidy, transform, visualize, and model data.
+O’Reilly Media, Inc.
+8 Wu CJ (1997). “Statistics = Data Science?”
+9 Cleveland WS (2001). “Data Science: An Action Plan for Expanding the Technical Areas of the Field of Statis‐
+tics?”
+10 Samuel AL (1959). “Some studies in machine learning using the game of checkers.” IBM Journal of research
+and development, 3(3), 210–229.
+Data science
+Data science is based on knowledge and practices from statistics and computer
+science that turn raw data into understanding7 by using data analysis and model‐
+ing techniques. Statistical methods provide a solid foundation to understand the
+world and perform predictions, while the automation provided by computing
+methods allows us to simplify statistical analysis and make it much more accessi‐
+ble. Some have advocated that statistics should be renamed data science;8 how‐
+ever, data science goes beyond statistics by also incorporating advances in
+computing.9 This book presents analysis and modeling techniques common in
+statistics but applied to large datasets, which requires incorporating advances in
+distributed computing.
+Machine learning
+Machine learning uses practices from statistics and computer science; however, it
+is heavily focused on automation and prediction. For instance, Arthur Samuel
+coined the term machine learning while automating a computer program to play
+checkers.10 Although we could perform data science on particular games, writing
+a program to play checkers requires us to automate the entire process. Therefore,
+this falls in the realm of machine learning, not data science. Machine learning
+makes it possible for many users to take advantage of statistical methods without
+being aware of using them. One of the first important applications of machine
+learning was to filter spam emails. In this case, it’s just not feasible to perform
+data analysis and modeling over each email account; therefore, machine learning
+automates the entire process of finding spam and filtering it out without having
+to involve users at all. This book presents the methods to transition data science
+workflows into fully automated machine learning methods—for instance, by pro‐
+viding support to build and export Spark pipelines that can be easily reused in
+automated environments.
+Deep learning
+Deep learning builds on knowledge of statistics, data science, and machine learn‐
+ing to define models loosely inspired by biological nervous systems. Deep learn‐
+ing models evolved from neural network models after the vanishing-gradient
+R | 1111 Hinton GE, Osindero S, Teh Y (2006). “A fast learning algorithm for deep belief nets.” Neural computation,
+18(7), 1527–1554.
+12 Krizhevsky A, Sutskever I, Hinton GE (2012). “Imagenet classification with deep convolutional neural net‐
+works.” In Advances in neural information processing systems, 1097–1105.
+problem was resolved by training one layer at a time,11 and have proven useful in
+image and speech recognition tasks. For instance, in voice assistants like Siri,
+Alexa, Cortana, or Google Assistant, the model performing the audio-to-text
+conversion is most likely based on deep learning models. Although Graphic Pro‐
+cessing Units (GPUs) have been successfully used to train deep learning models,12
+some datasets cannot be processed in a single GPU. It is also the case that deep
+learning models require huge amounts of data, which needs to be preprocessed
+across many machines before it can be fed into a single GPU for training. This
+book doesn’t make any direct references to deep learning models; however, you
+can use the methods we present in this book to prepare data for deep learning
+and, in the years to come, using deep learning with large-scale computing will
+become a common practice. In fact, recent versions of Spark have already intro‐
+duced execution models optimized for training deep learning in Spark.
+When working in any of the previous fields, you will be faced with increasingly large
+datasets or increasingly complex computations that are slow to execute or at times
+even impossible to process in a single computer. However, it is important to under‐
+stand that Spark does not need to be the answer to all our computations problems;
+instead, when faced with computing challenges in R, using the following techniques
+can be as effective:
+Sampling
+A first approach to try is to reduce the amount of data being handled, through
+sampling. However, we must sample the data properly by applying sound statisti‐
+cal principles. For instance, selecting the top results is not sufficient in sorted
+datasets; with simple random sampling, there might be underrepresented groups,
+which we could overcome with stratified sampling, which in turn adds complex‐
+ity to properly select categories. It’s beyond the scope of this book to teach how to
+properly perform statistical sampling, but many resources are available on this
+topic.
+Profiling
+You can try to understand why a computation is slow and make the necessary
+improvements. A profiler is a tool capable of inspecting code execution to help
+identify bottlenecks. In R, the R profiler, the profvis R package, and RStudio
+profiler feature allow you to easily to retrieve and visualize a profile; however, it’s
+not always trivial to optimize.
+12 | Chapter 1: IntroductionScaling up
+Speeding up computation is usually possible by buying faster or more capable
+hardware (say, increasing your machine memory, upgrading your hard drive, or
+procuring a machine with many more CPUs); this approach is known as scaling
+up. However, there are usually hard limits as to how much a single computer can
+scale up, and even with significant CPUs, you need to find frameworks that paral‐
+lelize computation efficiently.
+Scaling out
+Finally, we can consider spreading computation and storage across multiple
+machines. This approach provides the highest degree of scalability because you
+can potentially use an arbitrary number of machines to perform a computation.
+This approach is commonly known as scaling out. However, spreading computa‐
+tion effectively across many machines is a complex endeavor, especially without
+using specialized tools and frameworks like Apache Spark.
+This last point brings us closer to the purpose of this book, which is to bring the
+power of distributed computing systems provided by Apache Spark to solve mean‐
+ingful computation problems in data science and related fields, using R.
+sparklyr
+When you think of the computation power that Spark provides and the ease of use of
+the R language, it is natural to want them to work together, seamlessly. This is also
+what the R community expected: an R package that would provide an interface to
+Spark that was easy to use, compatible with other R packages, and available in CRAN.
+With this goal, we started developing sparklyr. The first version, sparklyr 0.4, was
+released during the useR! 2016 conference. This first version included support for
+dplyr, DBI, modeling with MLlib, and an extensible API that enabled extensions like
+H2O’s rsparkling package. Since then, many new features and improvements have
+been made available through sparklyr 0.5, 0.6, 0.7, 0.8, 0.9 and 1.0.
+Officially, sparklyr is an R interface for Apache Spark. It’s available in CRAN and
+works like any other CRAN package, meaning that it’s agnostic to Spark versions, it’s
+easy to install, it serves the R community, it embraces other packages and practices
+from the R community, and so on. It’s hosted in GitHub and licensed under Apache
+2.0, which allows you to clone, modify, and contribute back to this project.
+When thinking of who should use sparklyr, the following roles come to mind:
+New users
+For new users, it is our belief that sparklyr provides the easiest way to get started
+with Spark. Our hope is that the early chapters of this book will get you up and
+running with ease and set you up for long-term success.
+sparklyr | 13Data scientists
+For data scientists who already use and love R, sparklyr integrates with many
+other R practices and packages like dplyr, magrittr, broom, DBI, tibble, rlang,
+and many others, which will make you feel at home while working with Spark.
+For those new to R and Spark, the combination of high-level workflows available
+in sparklyr and low-level extensibility mechanisms make it a productive envi‐
+ronment to match the needs and skills of every data scientist.
+Expert users
+For those users who are already immersed in Spark and can write code natively
+in Scala, consider making your Spark libraries available as an R package to the R
+community, a diverse and skilled community that can put your contributions to
+good use while moving open science forward.
+We wrote this book to describe and teach the exciting overlap between Apache Spark
+and R. sparklyr is the R package that brings together these communities, expecta‐
+tions, future directions, packages, and package extensions. We believe that there is an
+opportunity to use this book to bridge the R and Spark communities: to present to
+the R community why Spark is exciting, and to the Spark community what makes R
+great. Both communities are solving very similar problems with a set of different
+skills and backgrounds; therefore, it is our hope that sparklyr can be a fertile ground
+for innovation, a welcoming place for newcomers, a productive environment for
+experienced data scientists, and an open community where cluster computing, data
+science, and machine learning can come together.
+Recap
+This chapter presented Spark as a modern and powerful computing platform, R as an
+easy-to-use computing language with solid foundations in statistical methods, and
+sparklyr as a project bridging both technologies and communities. In a world in
+which the total amount of information is growing exponentially, learning how to ana‐
+lyze data at scale will help you to tackle the problems and opportunities humanity is
+facing today. However, before we start analyzing data, Chapter 2 will equip you with
+the tools you will need throughout the rest of this book. Be sure to follow each step
+carefully and take the time to install the recommended tools, which we hope will
+become familiar resources that you use and love.
+
+## 第二章 开始
+
+Getting Started
+I always wanted to be a wizard.
+—Samwell Tarly
+After reading Chapter 1, you should now be familiar with the kinds of problems that
+Spark can help you solve. And it should be clear that Spark solves problems by mak‐
+ing use of multiple computers when data does not fit in a single machine or when
+computation is too slow. If you are newer to R, it should also be clear that combining
+Spark with data science tools like ggplot2 for visualization and dplyr to perform data
+transformations brings a promising landscape for doing data science at scale. We also
+hope you are excited to become proficient in large-scale computing.
+In this chapter, we take a tour of the tools you’ll need to become proficient in Spark.
+We encourage you to walk through the code in this chapter because it will force you
+to go through the motions of analyzing, modeling, reading, and writing data. In other
+words, you will need to do some wax-on, wax-off, repeat before you get fully
+immersed in the world of Spark.
+In Chapter 3 we dive into analysis followed by modeling, which presents examples
+using a single-cluster machine: your personal computer. Subsequent chapters intro‐
+duce cluster computing and the concepts and techniques that you’ll need to success‐
+fully run code across multiple machines.
+Overview
+From R, getting started with Spark using sparklyr and a local cluster is as easy as
+installing and loading the sparklyr package followed by installing Spark using
+sparklyr; however, we assume you are starting with a brand new computer running
+Windows, macOS, or Linux, so we’ll walk you through the prerequisites before con‐
+necting to a local Spark cluster.
+15Although this chapter is designed to help you get ready to use Spark on your personal
+computer, it’s also likely that some readers will already have a Spark cluster available
+or might prefer to get started with an online Spark cluster. For instance, Databricks
+hosts a free community edition of Spark that you can easily access from your web
+browser. If you end up choosing this path, skip to “Prerequisites” on page 16, but
+make sure you consult the proper resources for your existing or online Spark cluster.
+Either way, after you are done with the prerequisites, you will first learn how to con‐
+nect to Spark. We then present the most important tools and operations that you’ll
+use throughout the rest of this book. Less emphasis is placed on teaching concepts or
+how to use them—we can’t possibly explain modeling or streaming in a single chap‐
+ter. However, going through this chapter should give you a brief glimpse of what to
+expect and give you the confidence that you have the tools correctly configured to
+tackle more challenging problems later on.
+The tools you’ll use are mostly divided into R code and the Spark web interface. All
+Spark operations are run from R; however, monitoring execution of distributed oper‐
+ations is performed from Spark’s web interface, which you can load from any web
+browser. We then disconnect from this local cluster, which is easy to forget to do but
+highly recommended while working with local clusters—and in shared Spark clusters
+as well!
+We close this chapter by walking you through some of the features that make using
+Spark with RStudio easier; more specifically, we present the RStudio extensions that
+sparklyr implements. However, if you are inclined to use Jupyter Notebooks or if
+your cluster is already equipped with a different R user interface, rest assured that you
+can use Spark with R through plain R code. Let’s move along and get your prerequi‐
+sites properly configured.
+Prerequisites
+R can run in many platforms and environments; therefore, whether you use Win‐
+dows, Mac, or Linux, the first step is to install R from r-project.org; detailed instruc‐
+tions are provided in “Installing R” on page 251.
+Most people use programming languages with tools to make them more productive;
+for R, RStudio is such a tool. Strictly speaking, RStudio is an integrated development
+environment (IDE), which also happens to support many platforms and environ‐
+ments. We strongly recommend you install RStudio if you haven’t done so already;
+see details in “Installing RStudio” on page 253.
+16 | Chapter 2: Getting StartedWhen using Windows, we recommend avoiding directories with
+spaces in their path. If running getwd() from R returns a path with
+spaces, consider switching to a path with no spaces using
+setwd("path") or by creating an RStudio project in a path with no
+spaces.
+Additionally, because Spark is built in the Scala programming language, which is run
+by the Java Virtual Machine (JVM), you also need to install Java 8 on your system. It
+is likely that your system already has Java installed, but you should still check the ver‐
+sion and update or downgrade as described in “Installing Java” on page 252. You can
+use the following R command to check which version is installed on your system:
+system("java -version")
+java version "1.8.0_201"
+Java(TM) SE Runtime Environment (build 1.8.0_201-b09)
+Java HotSpot(TM) 64-Bit Server VM (build 25.201-b09, mixed mode)
+You can also use the JAVA_HOME environment variable to point to a specific Java ver‐
+sion by running Sys.setenv(JAVA_HOME = "path-to-java-8"); either way, before
+moving on to installing sparklyr, make sure that Java 8 is the version available for R.
+Installing sparklyr
+As with many other R packages, you can install sparklyr from CRAN as follows:
+install.packages("sparklyr")
+The examples in this book assume you are using the latest version of sparklyr. You
+can verify your version is as new as the one we are using by running the following:
+packageVersion("sparklyr")
+[1] '1.0.2'
+Installing Spark
+Start by loading sparklyr:
+library(sparklyr)
+This makes all sparklyr functions available in R, which is really helpful; otherwise,
+you would need to run each sparklyr command prefixed with sparklyr::.
+You can easily install Spark by running spark_install(). This downloads, installs,
+and configures the latest version of Spark locally on your computer; however, because
+we’ve written this book with Spark 2.3, you should also install this version to make
+sure that you can follow all the examples provided without any surprises:
+spark_install("2.3")
+Prerequisites | 17You can display all of the versions of Spark that are available for installation by run‐
+ning the following:
+spark_available_versions()
+## spark
+## 1 1.6
+## 2 2.0
+## 3 2.1
+## 4 2.2
+## 5 2.3
+## 6 2.4
+You can install a specific version by using the Spark version and, optionally, by also
+specifying the Hadoop version. For instance, to install Spark 1.6.3, you would run:
+spark_install(version = "1.6.3")
+You can also check which versions are installed by running this command:
+spark_installed_versions()
+spark hadoop dir
+7 2.3.1 2.7 /spark/spark-2.3.1-bin-hadoop2.7
+The path where Spark is installed is known as Spark’s home, which is defined in R
+code and system configuration settings with the SPARK_HOME identifier. When you are
+using a local Spark cluster installed with sparklyr, this path is already known and no
+additional configuration needs to take place.
+Finally, to uninstall a specific version of Spark you can run spark_uninstall() by
+specifying the Spark and Hadoop versions, like so:
+spark_uninstall(version = "1.6.3", hadoop = "2.6")
+The default installation paths are ~/spark for macOS and Linux,
+and %LOCALAPPDATA%/spark for Windows. To customize the
+installation path, you can run options(spark.install.dir =
+"installation-path") before spark_install() and spark_con
+nect().
+Connecting
+It’s important to mention that, so far, we’ve installed only a local Spark cluster. A local
+cluster is really helpful to get started, test code, and troubleshoot with ease. Later
+chapters explain where to find, install, and connect to real Spark clusters with many
+machines, but for the first few chapters, we focus on using local clusters.
+To connect to this local cluster, simply run the following:
+18 | Chapter 2: Getting Startedlibrary(sparklyr)
+sc <- spark_connect(master = "local", version = "2.3")
+If you are using your own or online Spark cluster, make sure that
+you connect as specified by your cluster administrator or the
+online documentation. If you need some pointers, you can take a
+quick look at Chapter 7, which explains in detail how to connect to
+any Spark cluster.
+The master parameter identifies which is the “main” machine from the Spark cluster;
+this machine is often called the driver node. While working with real clusters using
+many machines, you’ll find that most machines will be worker machines and one will
+be the master. Since we have only a local cluster with just one machine, we will
+default to using "local" for now.
+After a connection is established, spark_connect() retrieves an active Spark connec‐
+tion, which most code usually names sc; you will then make use of sc to execute
+Spark commands.
+If the connection fails, Chapter 7 contains a troubleshooting section that can help you
+to resolve your connection issue.
+Using Spark
+Now that you are connected, we can run a few simple commands. For instance, let’s
+start by copying the mtcars dataset into Apache Spark by using copy_to():
+cars <- copy_to(sc, mtcars)
+The data was copied into Spark, but we can access it from R using the cars reference.
+To print its contents, we can simply type *cars*:
+cars
+# Source: spark<mtcars> [?? x 11]
+mpg cyl disp hp drat wt qsec vs am gear carb
+<dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+1 21 6 160 110 3.9 2.62 16.5 0 1 4 4
+2 21 6 160 110 3.9 2.88 17.0 0 1 4 4
+3 22.8 4 108 93 3.85 2.32 18.6 1 1 4 1
+4 21.4 6 258 110 3.08 3.22 19.4 1 0 3 1
+5 18.7 8 360 175 3.15 3.44 17.0 0 0 3 2
+6 18.1 6 225 105 2.76 3.46 20.2 1 0 3 1
+7 14.3 8 360 245 3.21 3.57 15.8 0 0 3 4
+8 24.4 4 147. 62 3.69 3.19 20 1 0 4 2
+9 22.8 4 141. 95 3.92 3.15 22.9 1 0 4 2
+10 19.2 6 168. 123 3.92 3.44 18.3 1 0 4 4
+# … with more rows
+Using Spark | 19Congrats! You have successfully connected and loaded your first dataset into Spark.
+Let’s explain what’s going on in copy_to(). The first parameter, sc, gives the function
+a reference to the active Spark connection that was created earlier with spark_con
+nect(). The second parameter specifies a dataset to load into Spark. Now, copy_to()
+returns a reference to the dataset in Spark, which R automatically prints. Whenever a
+Spark dataset is printed, Spark collects some of the records and displays them for you.
+In this particular case, that dataset contains only a few rows describing automobile
+models and some of their specifications like horsepower and expected miles per
+gallon.
+Web Interface
+Most of the Spark commands are executed from the R console; however, monitoring
+and analyzing execution is done through Spark’s web interface, shown in Figure 2-1.
+This interface is a web application provided by Spark that you can access by running:
+spark_web(sc)
+Figure 2-1. The Apache Spark web interface
+Printing the cars dataset collected a few records to be displayed in the R console. You
+can see in the Spark web interface that a job was started to collect this information
+back from Spark. You can also select the Storage tab to see the mtcars dataset cached
+in memory in Spark, as shown in Figure 2-2.
+Notice that this dataset is fully loaded into memory, as indicated by the Fraction
+Cached column, which shows 100%; thus, you can see exactly how much memory
+this dataset is using through the Size in Memory column.
+20 | Chapter 2: Getting StartedFigure 2-2. The Storage tab on the Apache Spark web interface
+The Executors tab, shown in Figure 2-3, provides a view of your cluster resources. For
+local connections, you will find only one executor active with only 2 GB of memory
+allocated to Spark, and 384 MB available for computation. In Chapter 9 you will learn
+how to request more compute instances and resources, and how memory is allocated.
+Figure 2-3. The Executors tab on the Apache Spark web interface
+The last tab to explore is the Environment tab, shown in Figure 2-4; this tab lists all of
+the settings for this Spark application, which we look at in Chapter 9. As you will
+learn, most settings don’t need to be configured explicitly, but to properly run them at
+scale, you need to become familiar with some of them, eventually.
+Using Spark | 21Figure 2-4. The Environment tab on the Apache Spark web interface
+Next, you will make use of a small subset of the practices that we cover in depth in
+Chapter 3.
+Analysis
+When using Spark from R to analyze data, you can use SQL (Structured Query Lan‐
+guage) or dplyr (a grammar of data manipulation). You can use SQL through the DBI
+package; for instance, to count how many records are available in our cars dataset,
+we can run the following:
+library(DBI)
+dbGetQuery(sc, "SELECT count(*) FROM mtcars")
+count(1)
+1 32
+When using dplyr, you write less code, and it’s often much easier to write than SQL.
+This is precisely why we won’t make use of SQL in this book; however, if you are pro‐
+ficient in SQL, this is a viable option for you. For instance, counting records in dplyr
+is more compact and easier to understand:
+22 | Chapter 2: Getting Startedlibrary(dplyr)
+count(cars)
+# Source: spark<?> [?? x 1]
+n
+<dbl>
+1 32
+In general, we usually start by analyzing data in Spark with dplyr, followed by sam‐
+pling rows and selecting a subset of the available columns. The last step is to collect
+data from Spark to perform further data processing in R, like data visualization. Let’s
+perform a very simple data analysis example by selecting, sampling, and plotting the
+cars dataset in Spark:
+select(cars, hp, mpg) %>%
+sample_n(100) %>%
+collect() %>%
+plot()
+The plot in Figure 2-5 shows that as we increase the horsepower in a vehicle, its fuel
+efficiency measured in miles per gallon decreases. Although this is insightful, it’s diffi‐
+cult to predict numerically how increased horsepower would affect fuel efficiency.
+Modeling can help us overcome this.
+Figure 2-5. Horsepower versus miles per gallon
+Modeling
+Although data analysis can take you quite far toward understanding data, building a
+mathematical model that describes and generalizes the dataset is quite powerful. In
+Chapter 1 you learned that the fields of machine learning and data science make use
+of mathematical models to perform predictions and find additional insights.
+Using Spark | 23For instance, we can use a linear model to approximate the relationship between fuel
+efficiency and horsepower:
+model <- ml_linear_regression(cars, mpg ~ hp)
+model
+Formula: mpg ~ hp
+Coefficients:
+(Intercept) hp
+30.09886054 -0.06822828
+Now we can use this model to predict values that are not in the original dataset. For
+instance, we can add entries for cars with horsepower beyond 250 and also visualize
+the predicted values, as shown in Figure 2-6.
+model %>%
+ml_predict(copy_to(sc, data.frame(hp = 250 + 10 * 1:10))) %>%
+transmute(hp = hp, mpg = prediction) %>%
+full_join(select(cars, hp, mpg)) %>%
+collect() %>%
+plot()
+Figure 2-6. Horsepower versus miles per gallon with predictions
+Even though the previous example lacks many of the appropriate techniques that you
+should use while modeling, it’s also a simple example to briefly introduce the model‐
+ing capabilities of Spark. We introduce all of the Spark models, techniques, and best
+practices in Chapter 4.
+24 | Chapter 2: Getting StartedData
+For simplicity, we copied the mtcars dataset into Spark; however, data is usually not
+copied into Spark. Instead, data is read from existing data sources in a variety of for‐
+mats, like plain text, CSV, JSON, Java Database Connectivity (JDBC), and many
+more, which we examine in detail in Chapter 8. For instance, we can export our cars
+dataset as a CSV file:
+spark_write_csv(cars, "cars.csv")
+In practice, we would read an existing dataset from a distributed storage system like
+HDFS, but we can also read back from the local file system:
+cars <- spark_read_csv(sc, "cars.csv")
+Extensions
+In the same way that R is known for its vibrant community of package authors, at a
+smaller scale, many extensions for Spark and R have been written and are available to
+you. Chapter 10 introduces many interesting ones to perform advanced modeling,
+graph analysis, preprocessing of datasets for deep learning, and more.
+For instance, the sparkly.nested extension is an R package that extends sparklyr to
+help you manage values that contain nested information. A common use case
+involves JSON files that contain nested lists that require preprocessing before you can
+do meaningful data analysis. To use this extension, we first need to install it as
+follows:
+install.packages("sparklyr.nested")
+Then, we can use the sparklyr.nested extension to group all of the horsepower data
+points over the number of cylinders:
+sparklyr.nested::sdf_nest(cars, hp) %>%
+group_by(cyl) %>%
+summarise(data = collect_list(data))
+# Source: spark<?> [?? x 2]
+cyl data
+<int> <list>
+1 6 <list [7]>
+2 4 <list [11]>
+3 8 <list [14]>
+Even though nesting data makes it more difficult to read, it is a requirement when
+you are dealing with nested data formats like JSON using the spark_read_json()
+and spark_write_json() functions.
+Using Spark | 25Distributed R
+For those few cases when a particular functionality is not available in Spark and no
+extension has been developed, you can consider distributing your own R code across
+the Spark cluster. This is a powerful tool, but it comes with additional complexity, so
+you should only use it as a last resort.
+Suppose that we need to round all of the values across all the columns in our dataset.
+One approach would be running custom R code, making use of R’s round() function:
+cars %>% spark_apply(~round(.x))
+# Source: spark<?> [?? x 11]
+mpg cyl disp hp drat wt qsec vs am gear carb
+<dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+1 21 6 160 110 4 3 16 0 1 4 4
+2 21 6 160 110 4 3 17 0 1 4 4
+3 23 4 108 93 4 2 19 1 1 4 1
+4 21 6 258 110 3 3 19 1 0 3 1
+5 19 8 360 175 3 3 17 0 0 3 2
+6 18 6 225 105 3 3 20 1 0 3 1
+7 14 8 360 245 3 4 16 0 0 3 4
+8 24 4 147 62 4 3 20 1 0 4 2
+9 23 4 141 95 4 3 23 1 0 4 2
+10 19 6 168 123 4 3 18 1 0 4 4
+# … with more rows
+If you are a proficient R user, it can be quite tempting to use spark_apply() for
+everything, but please, don’t! spark_apply() was designed for advanced use cases
+where Spark falls short. You will learn how to do proper data analysis and modeling
+without having to distribute custom R code across your cluster.
+Streaming
+While processing large static datasets is the most typical use case for Spark, process‐
+ing dynamic datasets in real time is also possible and, for some applications, a
+requirement. You can think of a streaming dataset as a static data source with new
+data arriving continuously, like stock market quotes. Streaming data is usually read
+from Kafka (an open source stream-processing software platform) or from dis‐
+tributed storage that receives new data continuously.
+To try out streaming, let’s first create an input/ folder with some data that we will use
+as the input for this stream:
+dir.create("input")
+write.csv(mtcars, "input/cars_1.csv", row.names = F)
+Then, we define a stream that processes incoming data from the input/ folder, per‐
+forms a custom transformation in R, and pushes the output into an output/ folder:
+26 | Chapter 2: Getting Startedstream <- stream_read_csv(sc, "input/") %>%
+select(mpg, cyl, disp) %>%
+stream_write_csv("output/")
+As soon as the stream of real-time data starts, the input/ folder is processed and
+turned into a set of new files under the output/ folder containing the new transformed
+files. Since the input contained only one file, the output folder will also contain a sin‐
+gle file resulting from applying the custom spark_apply() transformation.
+dir("output", pattern = ".csv")
+[1] "part-00000-eece04d8-7cfa-4231-b61e-f1aef8edeb97-c000.csv"
+Up to this point, this resembles static data processing; however, we can keep adding
+files to the input/ location, and Spark will parallelize and process data automatically.
+Let’s add one more file and validate that it’s automatically processed:
+# Write more data into the stream source
+write.csv(mtcars, "input/cars_2.csv", row.names = F)
+Wait a few seconds and validate that the data is processed by the Spark stream:
+# Check the contents of the stream destination
+dir("output", pattern = ".csv")
+[1] "part-00000-2d8e5c07-a2eb-449d-a535-8a19c671477d-c000.csv"
+[2] "part-00000-eece04d8-7cfa-4231-b61e-f1aef8edeb97-c000.csv"
+You should then stop the stream:
+stream_stop(stream)
+You can use dplyr, SQL, Spark models, or distributed R to analyze streams in real
+time. In Chapter 12 we properly introduce you to all the interesting transformations
+you can perform to analyze real-time data.
+Logs
+Logging is definitely less interesting than real-time data processing; however, it’s a
+tool you should be or become familiar with. A log is just a text file to which Spark
+appends information relevant to the execution of tasks in the cluster. For local clus‐
+ters, we can retrieve all the recent logs by running the following:
+spark_log(sc)
+18/10/09 19:41:46 INFO Executor: Finished task 0.0 in stage 5.0 (TID 5)...
+18/10/09 19:41:46 INFO TaskSetManager: Finished task 0.0 in stage 5.0...
+18/10/09 19:41:46 INFO TaskSchedulerImpl: Removed TaskSet 5.0, whose...
+18/10/09 19:41:46 INFO DAGScheduler: ResultStage 5 (collect at utils...
+18/10/09 19:41:46 INFO DAGScheduler: Job 3 finished: collect at utils...
+Or, we can retrieve specific log entries containing, say, sparklyr, by using the filter
+parameter, as follows:
+Using Spark | 27spark_log(sc, filter = "sparklyr")
+## 18/10/09 18:53:23 INFO SparkContext: Submitted application: sparklyr
+## 18/10/09 18:53:23 INFO SparkContext: Added JAR...
+## 18/10/09 18:53:27 INFO Executor: Fetching spark://localhost:52930/...
+## 18/10/09 18:53:27 INFO Utils: Fetching spark://localhost:52930/...
+## 18/10/09 18:53:27 INFO Executor: Adding file:/private/var/folders/...
+Most of the time, you won’t need to worry about Spark logs, except in cases for which
+you need to troubleshoot a failed computation; in those cases, logs are an invaluable
+resource to be aware of. Now you know.
+Disconnecting
+For local clusters (really, any cluster), after you are done processing data, you should
+disconnect by running the following:
+spark_disconnect(sc)
+This terminates the connection to the cluster as well as the cluster tasks. If multiple
+Spark connections are active, or if the connection instance sc is no longer available,
+you can also disconnect all your Spark connections by running this command:
+spark_disconnect_all()
+Notice that exiting R, or RStudio, or restarting your R session, also causes the Spark
+connection to terminate, which in turn terminates the Spark cluster and cached data
+that is not explicitly saved.
+Using RStudio
+Since it’s very common to use RStudio with R, sparklyr provides RStudio extensions
+to help simplify your workflows and increase your productivity while using Spark in
+RStudio. If you are not familiar with RStudio, take a quick look at “Using RStudio” on
+page 254. Otherwise, there are a couple extensions worth highlighting.
+First, instead of starting a new connection using spark_connect() from RStudio’s R
+console, you can use the New Connection action from the Connections tab and then
+select the Spark connection, which opens the dialog shown in Figure 2-7. You can
+then customize the versions and connect to Spark, which will simply generate the
+right spark_connect() command and execute this in the R console for you.
+28 | Chapter 2: Getting StartedFigure 2-7. RStudio New Spark Connection dialog
+After you’re connected to Spark, RStudio displays your available datasets in the Con‐
+nections tab, as shown in Figure 2-8. This is a useful way to track your existing data‐
+sets and provides an easy way to explore each of them.
+Figure 2-8. The RStudio Connections tab
+Additionally, an active connection provides the following custom actions:
+Spark UI
+Opens the Spark web interface; a shortcut to spark_web(sc).
+Using RStudio | 29Log
+Opens the Spark web logs; a shortcut to spark_log(sc).
+SQL
+Opens a new SQL query. For more information about DBI and SQL support, see
+Chapter 3.
+Help
+Opens the reference documentation in a new web browser window.
+Disconnect
+Disconnects from Spark; a shortcut to spark_disconnect(sc).
+The rest of this book will use plain R code. It is up to you whether to execute this code
+in the R console, RStudio, Jupyter Notebooks, or any other tool that supports execut‐
+ing R code, since the examples provided in this book execute in any R environment.
+Resources
+While we’ve put significant effort into simplifying the onboarding process, there are
+many additional resources that can help you to troubleshoot particular issues while
+getting started and, in general, introduce you to the broader Spark and R communi‐
+ties to help you get specific answers, discuss topics, and connect with many users
+actively using Spark with R:
+Documentation
+The documentation site hosted in RStudio’s Spark website should be your first
+stop to learn more about Spark when using R. The documentation is kept up to
+date with examples, reference functions, and many more relevant resources.
+Blog
+To keep up to date with major sparklyr announcements, you can follow the
+RStudio blog.
+Community
+For general sparklyr questions, you can post in the RStudio Community tagged
+as sparklyr.
+Stack Overflow
+For general Spark questions, Stack Overflow is a great resource; there are also
+many topics specifically about sparklyr.
+GitHub
+If you believe something needs to be fixed, open a GitHub issue or send us a pull
+request.
+30 | Chapter 2: Getting StartedGitter
+For urgent issues or to keep in touch, you can chat with us in Gitter.
+
+### Recap
+In this chapter you learned about the prerequisites required to work with Spark. You
+saw how to connect to Spark using spark_connect(); install a local cluster using
+spark_install(); load a simple dataset, launch the web interface, and display logs
+using spark_web(sc) and spark_log(sc), respectively; and disconnect from RStudio
+using spark_disconnect(). We close by presenting the RStudio extensions that spar
+klyr provides.
+At this point, we hope that you feel ready to tackle actual data analysis and modeling
+problems in Spark and R, which will be introduced over the next two chapters. Chap‐
+ter 3 will present data analysis as the process of inspecting, cleaning, and transform‐
+ing data with the goal of discovering useful information. Modeling, the subject of
+Chapter 4, can be considered part of data analysis; however, it deserves its own chap‐
+ter to truly describe and take advantage of the modeling functionality available in
+Spark.
