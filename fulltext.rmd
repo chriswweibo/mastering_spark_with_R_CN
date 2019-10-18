@@ -140,7 +140,7 @@ tune large-scale computations.
 
 Tables generated from code are formatted as follows:
 
-```{r eval=F}
+```{r}
 # A tibble: 3 x 2
 numbers text
 <dbl> <chr>
@@ -348,7 +348,9 @@ MapReduce for much more sophisticated and interesting applications. For instance
 we can use it to rank web pages in Google’s PageRank algorithm, which assigns ranks
 Hadoop | 3to web pages based on the count of hyperlinks linking to a web page and the rank of
 the page linking to it.
-Figure 1-2. MapReduce example counting words across files
+
+![Figure 1-2. MapReduce example counting words across files](figures/1_2.png)
+
 After these papers were released by Google, a team at Yahoo worked on implement‐
 ing the Google File System and MapReduce as a single open source project. This
 project was released in 2006 as Hadoop, with the Google File System implemented as
@@ -376,7 +378,9 @@ sets.” HotCloud, 10(10-10), 95.
 modeling technique that we will introduce in Chapter 4, allowed Spark to run 10
 times faster than Hadoop by making use of in-memory datasets.6 A chart similar to
 Figure 1-3 was presented in the original research publication.
-Figure 1-3. Logistic regression performance in Hadoop and Spark
+
+![Figure 1-3. Logistic regression performance in Hadoop and Spark](figures/1_3.png)
+
 Even though Spark is well known for its in-memory performance, it was designed to
 be a general execution engine that works both in-memory and on-disk. For instance,
 Spark has set new records in large-scale sorting, for which data was not loaded inmemory; rather, Spark made improvements in network serialization, network shuf‐
@@ -388,7 +392,7 @@ To give you a sense of how much faster and efficient Spark is, it takes 72 minut
 206 computers using Spark. In addition, Spark holds the cloud sorting record, which
 makes it the most cost-effective solution for sorting large-datasets in the cloud.
 
- |Hadoop record |Spark record
+. |Hadoop record |Spark record
 -----|-----|------
 Data size| 102.5 TB |100 TB
 Elapsed time| 72 mins |23 mins
@@ -437,7 +441,9 @@ GraphX, and Spark Streaming; libraries that you can use for analysis, modeling,
 graph processing, and real-time data processing, respectively. In summary, Spark is a
 platform providing access to clusters, data sources, and libraries for large-scale com‐
 puting, as illustrated in Figure 1-4.
-Figure 1-4. Spark as a unified analytics engine for large-scale data processing
+
+![Figure 1-4. Spark as a unified analytics engine for large-scale data processing](figures/1_4.png)
+
 Describing Spark as large scale implies that a good use case for Spark is tackling prob‐
 lems that can be solved with multiple machines. For instance, when data does not fit
 on a single disk drive or into memory, Spark is a good candidate to consider. How‐
@@ -781,13 +787,13 @@ moving on to installing sparklyr, make sure that Java 8 is the version available
 
 As with many other R packages, you can install sparklyr from CRAN as follows:
 
-```{r eval=F}
+```{r}
 install.packages("sparklyr")
 ```
 The examples in this book assume you are using the latest version of sparklyr. You
 can verify your version is as new as the one we are using by running the following:
 
-```{r eval=F}
+```{r}
 packageVersion("sparklyr")
 [1] '1.0.2'
 ```
@@ -921,7 +927,8 @@ This interface is a web application provided by Spark that you can access by run
 spark_web(sc)
 ```
 
-Figure 2-1. The Apache Spark web interface
+![Figure 2-1. The Apache Spark web interface](figures/2_1.png)
+
 Printing the cars dataset collected a few records to be displayed in the R console. You
 can see in the Spark web interface that a job was started to collect this information
 back from Spark. You can also select the Storage tab to see the mtcars dataset cached
@@ -929,18 +936,23 @@ in memory in Spark, as shown in Figure 2-2.
 Notice that this dataset is fully loaded into memory, as indicated by the Fraction
 Cached column, which shows 100%; thus, you can see exactly how much memory
 this dataset is using through the Size in Memory column.
-20 | Chapter 2: Getting StartedFigure 2-2. The Storage tab on the Apache Spark web interface
+
+![Figure 2-2. The Storage tab on the Apache Spark web interface](figures/2_2.png)
+
 The Executors tab, shown in Figure 2-3, provides a view of your cluster resources. For
 local connections, you will find only one executor active with only 2 GB of memory
 allocated to Spark, and 384 MB available for computation. In Chapter 9 you will learn
 how to request more compute instances and resources, and how memory is allocated.
-Figure 2-3. The Executors tab on the Apache Spark web interface
+
+![Figure 2-3. The Executors tab on the Apache Spark web interface](figures/2_3.png)
+
 The last tab to explore is the Environment tab, shown in Figure 2-4; this tab lists all of
 the settings for this Spark application, which we look at in Chapter 9. As you will
 learn, most settings don’t need to be configured explicitly, but to properly run them at
 scale, you need to become familiar with some of them, eventually.
 
-Figure 2-4. The Environment tab on the Apache Spark web interface
+![Figure 2-4. The Environment tab on the Apache Spark web interface](figures/2_4.png)
+
 Next, you will make use of a small subset of the practices that we cover in depth in
 Chapter 3.
 
@@ -987,7 +999,8 @@ The plot in Figure 2-5 shows that as we increase the horsepower in a vehicle, it
 efficiency measured in miles per gallon decreases. Although this is insightful, it’s diffi‐
 cult to predict numerically how increased horsepower would affect fuel efficiency.
 Modeling can help us overcome this.
-Figure 2-5. Horsepower versus miles per gallon
+
+![Figure 2-5. Horsepower versus miles per gallon](figures/2_5.png)
 
 ### Modeling
 
@@ -1011,7 +1024,7 @@ instance, we can add entries for cars with horsepower beyond 250 and also visual
 the predicted values, as shown in Figure 2-6.
 
 ```{r}
-model %>%
+model %>% 
 ml_predict(copy_to(sc, data.frame(hp = 250 + 10 * 1:10))) %>%
 transmute(hp = hp, mpg = prediction) %>%
 full_join(select(cars, hp, mpg)) %>%
@@ -1019,7 +1032,8 @@ collect() %>%
 plot()
 ```
 
-Figure 2-6. Horsepower versus miles per gallon with predictions
+![Figure 2-6. Horsepower versus miles per gallon with predictions](figures/2_6.png)
+
 Even though the previous example lacks many of the appropriate techniques that you
 should use while modeling, it’s also a simple example to briefly introduce the model‐
 ing capabilities of Spark. We introduce all of the Spark models, techniques, and best
@@ -1207,11 +1221,15 @@ console, you can use the New Connection action from the Connections tab and then
 select the Spark connection, which opens the dialog shown in Figure 2-7. You can
 then customize the versions and connect to Spark, which will simply generate the
 right spark_connect() command and execute this in the R console for you.
-28 | Chapter 2: Getting StartedFigure 2-7. RStudio New Spark Connection dialog
+
+![Figure 2-7. RStudio New Spark Connection dialog](figures/2_7.png)
+
 After you’re connected to Spark, RStudio displays your available datasets in the Con‐
 nections tab, as shown in Figure 2-8. This is a useful way to track your existing data‐
 sets and provides an easy way to explore each of them.
-Figure 2-8. The RStudio Connections tab
+
+![Figure 2-8. The RStudio Connections tab](figures/2_8.png)
+
 Additionally, an active connection provides the following custom actions:
 Spark UI
 Opens the Spark web interface; a shortcut to spark_web(sc).
