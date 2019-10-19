@@ -281,117 +281,84 @@ Watch us on YouTube: http://www.youtube.com/oreillymedia
 [^4]: Ghemawat S, Gobioff H, Leung S (2003). “The Google File System.” In Proceedings of the Nineteenth ACM Symposium on Operating Systems Principles. ISBN 1-58113-757-5.
 
 
-![图1-1. 世界存储信息能力](figures/1_1.png)
+![图1-1. 全球存储信息能力](figures/1_1.png)
 
 ## Hadoop
 
-One year later, Google published a new paper describing how to perform operations
-across the Google File System, an approach that came to be known as MapReduce.5 As
-you would expect, there are two operations in MapReduce: map and reduce. The map
-operation provides an arbitrary way to transform each file into a new file, whereas the
-reduce operation combines two files. Both operations require custom computer code,
-but the MapReduce framework takes care of automatically executing them across
-many computers at once. These two operations are sufficient to process all the data
-available on the web, while also providing enough flexibility to extract meaningful
-information from it.
-For example, as illustrated in Figure 1-2, we can use MapReduce to count words in
-two different text files stored in different machines. The map operation splits each
-word in the original file and outputs a new word-counting file with a mapping of
-words and counts. The reduce operation can be defined to take two word-counting
-files and combine them by aggregating the totals for each word; this last file will con‐
-tain a list of word counts across all the original files.
-Counting words is often the most basic MapReduce example, but we can also use
-MapReduce for much more sophisticated and interesting applications. For instance,
-we can use it to rank web pages in Google’s PageRank algorithm, which assigns ranks
-Hadoop | 3to web pages based on the count of hyperlinks linking to a web page and the rank of
-the page linking to it.
+一年以后，谷歌发表了新的的文章，描述了如何在谷歌文件系统上执行操作，也就是后来的*MapReduce*技术。[^5]。正如你可以预见到的，MapReduce中有两种操作：map和reduce。*map*操作提供任意一种方法把每个文件转化为一个新的文件，而*reduce*操作可以合并两个文件。两种操作都需要定制计算机代码，而MapReduce框架关注一次性在多个电脑上的自动执行。这两个操作足够支持网络上所有数据的处理，同时也提供足够的灵活性从数据中得到有意义的信息。
 
-![Figure 1-2. MapReduce example counting words across files](figures/1_2.png)
+[^5]: Dean J, Ghemawat S (2004). “MapReduce: Simplified data processing on large clusters.” In USENIX Symposium on Operating System Design and Implementation (OSDI).
 
-After these papers were released by Google, a team at Yahoo worked on implement‐
-ing the Google File System and MapReduce as a single open source project. This
-project was released in 2006 as Hadoop, with the Google File System implemented as
-the Hadoop Distributed File System (HDFS). The Hadoop project made distributed
-file-based computing accessible to a wider range of users and organizations, making
-MapReduce useful beyond web data processing.
-Although Hadoop provided support to perform MapReduce operations over a dis‐
-tributed file system, it still required MapReduce operations to be written with code
-every time a data analysis was run. To improve upon this tedious process, the Hive
-project, released in 2008 by Facebook, brought Structured Query Language (SQL)
-support to Hadoop. This meant that data analysis could now be performed at large
-scale without the need to write code for each MapReduce operation; instead, one
-could write generic data analysis statements in SQL, which are much easier to under‐
-stand and write.
+例如在图1-2中，我们可以使用MapReduce计算存放在不同机器上的两个不同文本文件的词语数量。map操作切分原始文件中的每个词语，并输出一个新的词语计数文件，其包含词语到计数的映射。reduce操作可以定义成对两个词语计数文件的合并，其通过整合每个词语的计数总数来实现。最终的文件会包含来自所有原始文件的词语计数。
+
+词语计数通常是最基础的MapReduce示例，但是我们也可以使用MapReduce完成更加复杂和有趣的应用。例如，我们可以在谷歌的PageRank算法中对网页排序，该算法可以基于链接到一个网页的超链接数对所有网页排序，以及给出该网页的排位。
+
+![图1-2. 跨多个文件的词语计数MapReduce作业示例](figures/1_2.png)
+
+在谷歌发表了这些文献之后，雅虎的一个团队致力于实现谷歌文件系统和MapReduce作为一个单一的开源项目。这个项目就是2006发布的*Hadoop*，其中谷歌文件系统通过*Hadoop分布式文件系统（Hadoop Distributed File System，HDFS）*。Hadoop项目使得基于分布式文件的计算可以被更多的用户和组织获取，这也使得MapReduce的能力突破了网络数据处理。
+
+尽管Hadoop提供了在分布式文件系统上执行MapReduce操作的支持，但是它依然需要在每次数据分析的时候写好MapReduce操作代码。为了改进这一繁琐的过程，Facebook于2008年发布了Hive项目。它给Hadoop引入了*结构化查询语句（Structured Query Language，SQL）*。这意味着大规模数据分析不再需要为每个MapReduce操作编写代码。相反，用户可以用SQL编写原生的，更加容易理解和编写的数据分析语句。
 
 ## Spark
 
-In 2009, Apache Spark began as a research project at UC Berkeley’s AMPLab to
-improve on MapReduce. Specifically, Spark provided a richer set of verbs beyond
-MapReduce to facilitate optimizing code running in multiple machines. Spark also
-loaded data in-memory, making operations much faster than Hadoop’s on-disk stor‐
-age. One of the earliest results showed that running logistic regression, a data
-4 | Chapter 1: Introduction6 Zaharia M, Chowdhury M, Franklin MJ, Shenker S, Stoica I (2010). “Spark: Cluster computing with working
-sets.” HotCloud, 10(10-10), 95.
-modeling technique that we will introduce in Chapter 4, allowed Spark to run 10
-times faster than Hadoop by making use of in-memory datasets.6 A chart similar to
-Figure 1-3 was presented in the original research publication.
+2009年，Apache Spark开始作为加州大学伯克利分校AMP实验室的科研项目，以期改进MapReduce。Spark针对性的提供了更加丰富的MapReduce以外的运算符集合，便于优化多个机器上代码运行。Spark同时将数据加载到内存中，使得各种操作要比Hadoop的磁盘存储快很多。最新的一项结果显示，运行逻辑斯蒂回归，一种在第四章中介绍的数据建模技术，利用内存中数据集的Spark要比Hadoop快10倍[^6]。类似于图1-3的结果在原始研究文献中也有展示。
 
-![Figure 1-3. Logistic regression performance in Hadoop and Spark](figures/1_3.png)
+[^6]: Zaharia M, Chowdhury M, Franklin MJ, Shenker S, Stoica I (2010). “Spark: Cluster computing with working sets.” HotCloud, 10(10-10), 95.
 
-Even though Spark is well known for its in-memory performance, it was designed to
-be a general execution engine that works both in-memory and on-disk. For instance,
-Spark has set new records in large-scale sorting, for which data was not loaded inmemory; rather, Spark made improvements in network serialization, network shuf‐
-fling, and efficient use of the CPU’s cache to dramatically enhance performance. If
-you needed to sort large amounts of data, there was no other system in the world
-faster than Spark.
-To give you a sense of how much faster and efficient Spark is, it takes 72 minutes and
-2,100 computers to sort 100 terabytes of data using Hadoop, but only 23 minutes and
-206 computers using Spark. In addition, Spark holds the cloud sorting record, which
-makes it the most cost-effective solution for sorting large-datasets in the cloud.
+![图1-3. 逻辑斯蒂回归在Hadoop和Spark上的性能](figures/1_3.png)
 
-. |Hadoop record |Spark record
------|-----|------
-Data size| 102.5 TB |100 TB
-Elapsed time| 72 mins |23 mins
-Nodes| 2,100 |206
-Cores| 50,400 |6,592
-Disk| 3,150 GB/s| 618 GB/s
-Network| 10 GB/s| 10 GB/s
-Sort rate| 1.42 TB/min |4.27 TB/min
-Sort rate/node| 0.67 GB/min| 20.7 GB/min
+尽管Spark以内存操作性能而闻名，而当初设计时是作为支持内存和磁盘操作的一种通用执行引擎。例如，Spark创造了新的大规模排序记录，而这些数据并没有存在内存中。相反，Spark改进了网络序列化，网络改组，CPU缓存的高效利用，进而极大的提高了性能。如果你需要对大规模数据进行排序，世界上没有比Spark更快的系统了。
+
+为了让你了解Spark有多快多高效，Hadoop使用了72分钟，2,100台计算机完成对100太字节数据的排序，但是Spark只用了23分钟和206台计算机。另外，Spark拥有云端排序记录，使得其成为云端对大规模数据进行排序的最剧性价比的解决方案。
+
+| |Hadoop记录 |Spark记录|
+|-----|-----|------|
+|数据规模| 102.5 TB |100 TB|
+|使用时间| 72分钟|23分钟|
+|节点数量| 2,100 |206|
+|核心数量| 50,400 |6,592|
+|磁盘| 3,150 GB/秒| 618 GB/秒|
+|网络| 10 GB/秒| 10 GB/秒|
+|排序速度| 1.42 TB/分钟 |4.27 TB/分钟|
+|排序速度/节点| 0.67 GB/分钟| 20.7 GB/分钟|
 
 
-Spark is also easier to use than Hadoop; for instance, the word-counting MapReduce
-example takes about 50 lines of code in Hadoop, but it takes only 2 lines of code in
-Spark. As you can see, Spark is much faster, more efficient, and easier to use than
-Hadoop.
-In 2010, Spark was released as an open source project and then donated to the
-Apache Software Foundation in 2013. Spark is licensed under Apache 2.0, which
-allows you to freely use, modify, and distribute it. Spark then reached more than
-1,000 contributors, making it one of the most active projects in the Apache Software
-Foundation.
-This gives an overview of how Spark came to be, which we can now use to formally
-introduce Apache Spark as defined on the project’s website:
-Apache Spark is a unified analytics engine for large-scale data processing.
-To help us understand this definition of Apache Spark, we break it down as follows:
-Unified
-Spark supports many libraries, cluster technologies, and storage systems.
-Analytics
-Analytics is the discovery and interpretation of data to produce and communi‐
-cate information.
-Engine
-Spark is expected to be efficient and generic.
-Large-scale
-You can interpret large-scale as cluster-scale, a set of connected computers work‐
-ing together.
+Spark也比Hadoop易用。例如，词语计数的MapReduce示例在Hadoop中需要50行代码，而在Spark中只需要2行代码。正如所见，和Hadoop相比，Spark更快，更高效，更易用。
+
+2010年，Spark作为开源项目发布出来，并于2013年捐赠给了Apache软件基金会。Spark执行Apache 2.0协议，运行用户免费使用，修改和分发。Spark有超过1,000名贡献者，是Apache软件基金会中最活跃的项目。
+
+下面的表述介绍了Spark的定位。我们可以按照项目网站那样正式介绍Apache Spark：
+
+> Apache Spark是一个面向大规模数据处理的统一分析引擎。
+
+为了帮助我们理解Apache Spark的概念，我们把它分成如下几个方面：
+
+* 统一
+
+Spark支持许多库，集群技术和存储系统。
+
+* 分析
+
+分析是发现和理解数据，以期产出和沟通信息的行为。
+
+* 引擎
+
+Spark是高效的和原生的。
+
+* 大规模
+
+你可以把大规模理解成集群规模，一些连接一起的，共同工作的计算机。
+
 Spark is described as an engine because it’s generic and efficient. It’s generic because it
 optimizes and executes generic code; that is, there are no restrictions as to what type
 of code you can write in Spark. It is efficient, because, as we mentioned earlier, Spark
 much faster than other technologies by making efficient use of memory, network, and
 CPUs to speed data processing algorithms in computing clusters.
+
 This makes Spark ideal in many analytics projects like ranking movies at Netflix,
 aligning protein sequences, or analyzing high-energy physics at CERN.
-6 | Chapter 1: IntroductionAs a unified platform, Spark is expected to support many cluster technologies and
+
+As a unified platform, Spark is expected to support many cluster technologies and
 multiple data sources, which you learn about in Chapter 6 and Chapter 8, respec‐
 tively. It is also expected to support many different libraries like Spark SQL, MLlib,
 GraphX, and Spark Streaming; libraries that you can use for analysis, modeling,
@@ -399,7 +366,7 @@ graph processing, and real-time data processing, respectively. In summary, Spark
 platform providing access to clusters, data sources, and libraries for large-scale com‐
 puting, as illustrated in Figure 1-4.
 
-![Figure 1-4. Spark as a unified analytics engine for large-scale data processing](figures/1_4.png)
+![图1-4. Spark，面向大规模数据处理的统一分析引擎](figures/1_4.png)
 
 Describing Spark as large scale implies that a good use case for Spark is tackling prob‐
 lems that can be solved with multiple machines. For instance, when data does not fit
@@ -407,20 +374,25 @@ on a single disk drive or into memory, Spark is a good candidate to consider. Ho
 ever, you can also consider it for problems that might not be large scale, but for which
 using multiple computers could speed up computation. For instance, CPU-intensive
 models and scientific simulations also benefit from running in Spark.
+
 Therefore, Spark is good at tackling large-scale data-processing problems, usually
 known as big data (datasets that are more voluminous and complex than traditional
 ones) but it is also good at tackling large-scale computation problems, known as big
 compute (tools and approaches using a large amount of CPU and memory resources
 in a coordinated way). Big data often requires big compute, but big compute does not
 necessarily require big data.
+
 Big data and big compute problems are usually easy to spot—if the data does not fit
 into a single machine, you might have a big data problem; if the data fits into a single
 machine but processing it takes days, weeks, or even months to compute, you might
 have a big compute problem.
+
 However, there is also a third problem space for which neither data nor compute is
 necessarily large scale and yet there are significant benefits to using cluster comput‐
 ing frameworks like Spark. For this third problem space, there are a few use cases:
-Spark | 7Velocity
+
+* Velocity
+
 Suppose that you have a dataset of 10 GB and a process that takes 30 minutes to
 run over this data—this is neither big compute nor big data by any means. How‐
 ever, if you happen to be researching ways to improve the accuracy of your mod‐
@@ -430,7 +402,9 @@ velocity at which you can analyze data. Alternatively, you might need to process
 data faster—for stock trading, for instance. Whereas three minutes could seem
 fast enough, it can be far too slow for real-time data processing, for which you
 might need to process data in a few seconds—or even a few milliseconds.
-Variety
+
+* Variety
+
 You could also have an efficient process to collect data from many sources into a
 single location, usually a database; this process could be already running effi‐
 ciently and close to real time. Such processes are known as Extract, Transform,
@@ -444,7 +418,9 @@ and process it as needed using cluster computing, an architecture known as a
 data lake. In addition, storing data in its raw format allows you to process a vari‐
 ety of new file formats like images, audio, and video without having to figure out
 how to fit them into conventional structured storage systems.
-Veracity
+
+* Veracity
+
 When using many data sources, you might find the data quality varies greatly
 between them, which requires special analysis methods to improve their accu‐
 racy. For instance, suppose that you have a table of cities with values like San
@@ -455,14 +431,16 @@ might want to correct this field by making use of geocodes, cross-referencing
 data sources, or attempting a best-effort match. Therefore, understanding and
 improving the veracity of the original data source can lead to more accurate
 results.
+
 If we include “volume” as a synonym for big data, you get the mnemonic people refer
 to as the four Vs of big data; others have expanded this to five or even 10 Vs of big
 data. Mnemonics aside, cluster computing is being used today in more innovative
 ways, and is not uncommon to see organizations experimenting with new workflows
 and a variety of tasks that were traditionally uncommon for cluster computing. Much
 of the hype attributed to big data falls into this space where, strictly speaking, you’re
-8 | Chapter 1: Introductionnot handling big data, but there are still benefits from using tools designed for big
+not handling big data, but there are still benefits from using tools designed for big
 data and big compute.
+
 Our hope is that this book will help you to understand the opportunities and limita‐
 tions of cluster computing and, specifically, the opportunities and limitations of using
 Apache Spark with R.
@@ -477,20 +455,28 @@ interface language to solve particular problems without having to worry about ot
 languages, such as Fortran. The creator of S, John Chambers, shows in Figure 1-5
 how S was designed to provide an interface that simplifies data processing; his cocreator presented this during useR! 2016 as the original diagram that inspired the cre‐
 ation of S.
-Figure 1-5. Interface language diagram by John Chambers (Rick Becker useR 2016)
+
+![Figure 1-5. Interface language diagram by John Chambers (Rick Becker useR 2016)](figures/1_5.png)
+
 R is a modern and free implementation of S. Specifically, according to the R Project
 for Statistical Computing:
-R is a programming language and free software environment for statistical computing
+
+> R is a programming language and free software environment for statistical computing
 and graphics.
+
 While working with data, we believe there are two strong arguments for using R:
-R language
+
+* R language
+
 R was designed by statisticians for statisticians, meaning that this is one of the
 few successful languages designed for nonprogrammers, so learning R will
 R | 9probably feel more natural. Additionally, because the R language was designed to
 be an interface to other tools and languages, R allows you to focus more on
 understanding data and less on the particulars of computer science and engineer‐
 ing.
-R community
+
+* R community
+
 The R community provides a rich package archive provided by the Comprehen‐
 sive R Archive Network (CRAN), which allows you to install ready-to-use pack‐
 ages to perform many tasks—most notably high-quality data manipulation,
@@ -498,20 +484,17 @@ visualization, and statistical models, many of which are available only in R. In
 addition, the R community is a welcoming and active group of talented individu‐
 als motivated to help you succeed. Many packages provided by the R community
 make R, by far, the best option for statistical computing. Some of the most down‐
-loaded R packages include: dplyr to manipulate data, cluster to analyze clus‐
-ters, and ggplot2 to visualize data. Figure 1-6 quantifies the growth of the R
+loaded R packages include: `dplyr` to manipulate data, `cluster` to analyze clus‐
+ters, and `ggplot2` to visualize data. Figure 1-6 quantifies the growth of the R
 community by plotting daily downloads of R packages in CRAN.
-Figure 1-6. Daily downloads of CRAN packages
+
+![Figure 1-6. Daily downloads of CRAN packages](figures/1_6.png)
+
 Aside from statistics, R is also used in many other fields. The following areas are par‐
 ticularly relevant to this book:
-10 | Chapter 1: Introduction7 Wickham H, Grolemund G (2016). R for data science: import, tidy, transform, visualize, and model data.
-O’Reilly Media, Inc.
-8 Wu CJ (1997). “Statistics = Data Science?”
-9 Cleveland WS (2001). “Data Science: An Action Plan for Expanding the Technical Areas of the Field of Statis‐
-tics?”
-10 Samuel AL (1959). “Some studies in machine learning using the game of checkers.” IBM Journal of research
-and development, 3(3), 210–229.
-Data science
+
+* Data science
+
 Data science is based on knowledge and practices from statistics and computer
 science that turn raw data into understanding7 by using data analysis and model‐
 ing techniques. Statistical methods provide a solid foundation to understand the
@@ -522,7 +505,9 @@ ever, data science goes beyond statistics by also incorporating advances in
 computing.9 This book presents analysis and modeling techniques common in
 statistics but applied to large datasets, which requires incorporating advances in
 distributed computing.
-Machine learning
+
+* Machine learning
+
 Machine learning uses practices from statistics and computer science; however, it
 is heavily focused on automation and prediction. For instance, Arthur Samuel
 coined the term machine learning while automating a computer program to play
@@ -538,14 +523,12 @@ to involve users at all. This book presents the methods to transition data scien
 workflows into fully automated machine learning methods—for instance, by pro‐
 viding support to build and export Spark pipelines that can be easily reused in
 automated environments.
-Deep learning
+
+* Deep learning
+
 Deep learning builds on knowledge of statistics, data science, and machine learn‐
 ing to define models loosely inspired by biological nervous systems. Deep learn‐
 ing models evolved from neural network models after the vanishing-gradient
-R | 1111 Hinton GE, Osindero S, Teh Y (2006). “A fast learning algorithm for deep belief nets.” Neural computation,
-18(7), 1527–1554.
-12 Krizhevsky A, Sutskever I, Hinton GE (2012). “Imagenet classification with deep convolutional neural net‐
-works.” In Advances in neural information processing systems, 1097–1105.
 problem was resolved by training one layer at a time,11 and have proven useful in
 image and speech recognition tasks. For instance, in voice assistants like Siri,
 Alexa, Cortana, or Google Assistant, the model performing the audio-to-text
@@ -559,13 +542,16 @@ can use the methods we present in this book to prepare data for deep learning
 and, in the years to come, using deep learning with large-scale computing will
 become a common practice. In fact, recent versions of Spark have already intro‐
 duced execution models optimized for training deep learning in Spark.
+
 When working in any of the previous fields, you will be faced with increasingly large
 datasets or increasingly complex computations that are slow to execute or at times
 even impossible to process in a single computer. However, it is important to under‐
 stand that Spark does not need to be the answer to all our computations problems;
 instead, when faced with computing challenges in R, using the following techniques
 can be as effective:
-Sampling
+
+* Sampling
+
 A first approach to try is to reduce the amount of data being handled, through
 sampling. However, we must sample the data properly by applying sound statisti‐
 cal principles. For instance, selecting the top results is not sufficient in sorted
@@ -574,26 +560,33 @@ which we could overcome with stratified sampling, which in turn adds complex‐
 ity to properly select categories. It’s beyond the scope of this book to teach how to
 properly perform statistical sampling, but many resources are available on this
 topic.
-Profiling
+
+* Profiling
+
 You can try to understand why a computation is slow and make the necessary
 improvements. A profiler is a tool capable of inspecting code execution to help
 identify bottlenecks. In R, the R profiler, the profvis R package, and RStudio
 profiler feature allow you to easily to retrieve and visualize a profile; however, it’s
 not always trivial to optimize.
-12 | Chapter 1: IntroductionScaling up
+
+* Scaling up
+
 Speeding up computation is usually possible by buying faster or more capable
 hardware (say, increasing your machine memory, upgrading your hard drive, or
 procuring a machine with many more CPUs); this approach is known as scaling
 up. However, there are usually hard limits as to how much a single computer can
 scale up, and even with significant CPUs, you need to find frameworks that paral‐
 lelize computation efficiently.
-Scaling out
+
+* Scaling out
+
 Finally, we can consider spreading computation and storage across multiple
 machines. This approach provides the highest degree of scalability because you
 can potentially use an arbitrary number of machines to perform a computation.
 This approach is commonly known as scaling out. However, spreading computa‐
 tion effectively across many machines is a complex endeavor, especially without
 using specialized tools and frameworks like Apache Spark.
+
 This last point brings us closer to the purpose of this book, which is to bring the
 power of distributed computing systems provided by Apache Spark to solve mean‐
 ingful computation problems in data science and related fields, using R.
@@ -604,40 +597,48 @@ When you think of the computation power that Spark provides and the ease of use 
 the R language, it is natural to want them to work together, seamlessly. This is also
 what the R community expected: an R package that would provide an interface to
 Spark that was easy to use, compatible with other R packages, and available in CRAN.
-With this goal, we started developing sparklyr. The first version, sparklyr 0.4, was
+With this goal, we started developing `sparklyr`. The first version, `sparklyr 0.4`, was
 released during the useR! 2016 conference. This first version included support for
-dplyr, DBI, modeling with MLlib, and an extensible API that enabled extensions like
-H2O’s rsparkling package. Since then, many new features and improvements have
-been made available through sparklyr 0.5, 0.6, 0.7, 0.8, 0.9 and 1.0.
-Officially, sparklyr is an R interface for Apache Spark. It’s available in CRAN and
+`dplyr`, `DBI`, modeling with `MLlib`, and an extensible API that enabled extensions like
+H2O’s `rsparkling` package. Since then, many new features and improvements have
+been made available through `sparklyr 0.5, 0.6, 0.7, 0.8, 0.9` and `1.0`.
+
+Officially, `sparklyr` is an R interface for Apache Spark. It’s available in CRAN and
 works like any other CRAN package, meaning that it’s agnostic to Spark versions, it’s
 easy to install, it serves the R community, it embraces other packages and practices
 from the R community, and so on. It’s hosted in GitHub and licensed under Apache
 2.0, which allows you to clone, modify, and contribute back to this project.
 When thinking of who should use sparklyr, the following roles come to mind:
-New users
-For new users, it is our belief that sparklyr provides the easiest way to get started
+
+* New users
+
+For new users, it is our belief that `sparklyr` provides the easiest way to get started
 with Spark. Our hope is that the early chapters of this book will get you up and
 running with ease and set you up for long-term success.
-sparklyr | 13Data scientists
-For data scientists who already use and love R, sparklyr integrates with many
-other R practices and packages like dplyr, magrittr, broom, DBI, tibble, rlang,
+
+* Data scientists
+
+For data scientists who already use and love R, `sparklyr` integrates with many
+other R practices and packages like `dplyr`, `magrittr`, `broom`, `DBI`, `tibble`, `rlang`,
 and many others, which will make you feel at home while working with Spark.
 For those new to R and Spark, the combination of high-level workflows available
 in sparklyr and low-level extensibility mechanisms make it a productive envi‐
 ronment to match the needs and skills of every data scientist.
-Expert users
+
+* Expert users
+
 For those users who are already immersed in Spark and can write code natively
 in Scala, consider making your Spark libraries available as an R package to the R
 community, a diverse and skilled community that can put your contributions to
 good use while moving open science forward.
+
 We wrote this book to describe and teach the exciting overlap between Apache Spark
-and R. sparklyr is the R package that brings together these communities, expecta‐
+and R. `sparklyr` is the R package that brings together these communities, expecta‐
 tions, future directions, packages, and package extensions. We believe that there is an
 opportunity to use this book to bridge the R and Spark communities: to present to
 the R community why Spark is exciting, and to the Spark community what makes R
 great. Both communities are solving very similar problems with a set of different
-skills and backgrounds; therefore, it is our hope that sparklyr can be a fertile ground
+skills and backgrounds; therefore, it is our hope that `sparklyr` can be a fertile ground
 for innovation, a welcoming place for newcomers, a productive environment for
 experienced data scientists, and an open community where cluster computing, data
 science, and machine learning can come together.
@@ -646,7 +647,7 @@ science, and machine learning can come together.
 
 This chapter presented Spark as a modern and powerful computing platform, R as an
 easy-to-use computing language with solid foundations in statistical methods, and
-sparklyr as a project bridging both technologies and communities. In a world in
+`sparklyr` as a project bridging both technologies and communities. In a world in
 which the total amount of information is growing exponentially, learning how to ana‐
 lyze data at scale will help you to tackle the problems and opportunities humanity is
 facing today. However, before we start analyzing data, Chapter 2 will equip you with
@@ -654,10 +655,13 @@ the tools you will need throughout the rest of this book. Be sure to follow each
 carefully and take the time to install the recommended tools, which we hope will
 become familiar resources that you use and love.
 
+----------
+
 # 第二章 开始
 
 > I always wanted to be a wizard.
-—Samwell Tarly
+
+> — Samwell Tarly
 
 After reading Chapter 1, you should now be familiar with the kinds of problems that
 Spark can help you solve. And it should be clear that Spark solves problems by mak‐
