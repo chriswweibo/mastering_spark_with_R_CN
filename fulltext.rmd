@@ -1,27 +1,21 @@
 ---
-title: "Spark_R"
+title: "Mastering Spark with R The Complete Guide to Large-Scale Analysis and Modeling "
 author: "Bo"
 date: "2019/10/18"
-output: word_document
+output: 
+  word_document:
+    toc: yes
+    toc_depth: 2
 ---
 
 ```{r, echo=F}
 library(knitr)
 library(formatR)
-opts_chunk$set(tidy=T, message=FALSE, fig.align='center',eval=F)
+opts_chunk$set(tidy=T, message=FALSE, fig.align='center', eval=F)
 ```
 
 
-# Mastering Spark with R
-  The Complete Guide to Large-Scale Analysis 
-and Modeling
-Javier Luraschi, 
-Kevin Kuo & Edgar Ruiz 
-Foreword by Matei Zaharia
-
--------
-
-## Foreword
+# Foreword
 
 Apache Spark is a distributed computing platform built on extensibility: Spark’s APIs
 make it easy to combine input from many data sources and process it using diverse
@@ -50,7 +44,7 @@ Assistant Professor at Stanford University,
 Chief Technologist at Databricks,
 and original creator of Apache Spark
 
-## Preface
+# Preface
 
 In a world where information is growing exponentially, leading tools like Apache
 Spark provide support to solve many of the relevant problems we face today. From
@@ -136,7 +130,7 @@ be executed on your personal computer, but you are also encouraged to use proper
 Spark clusters given that you’ll have the tools required to troubleshoot issues and
 tune large-scale computations.
 
-### Formatting
+## Formatting
 
 Tables generated from code are formatted as follows:
 
@@ -159,7 +153,7 @@ only provide code to render a basic plot that won’t match the formatting we ap
 If you are interested in learning more about visualization in R, consider specialized
 books like R Graphics Cookbook (O’Reilly).
 
-### Acknowledgments
+## Acknowledgments
 
 We thank the package authors that enabled Spark with R: Javier Luraschi, Kevin Kuo,
 Kevin Ushey, and JJ Allaire (sparklyr); Romain François and Hadley Wickham
@@ -206,7 +200,7 @@ mined by context.
 This element signifies a tip or suggestion.
 This element signifies a general note.
 
-### Using Code Examples
+## Using Code Examples
 
 Supplemental material (code examples, exercises, etc.) is available for download at
 https://github.com/r-spark/the-r-in-spark.
@@ -235,7 +229,7 @@ online learning platform gives you on-demand access to live training courses, in
 and video from O’Reilly and 200+ other publishers. For more information, please
 visit http://oreilly.com.
 
-### How to Contact Us
+## How to Contact Us
 
 Please address comments and questions concerning this book to the publisher:
 O’Reilly Media, Inc.
@@ -254,45 +248,21 @@ Find us on Facebook: http://facebook.com/oreilly
 Follow us on Twitter: http://twitter.com/oreillymedia
 Watch us on YouTube: http://www.youtube.com/oreillymedia
 
-## 第一章 引言
+# 第一章 引言
 
->You know nothing, Jon Snow.
-—Ygritte
+> 你什么都不知道，Jon Snow。
 
-With information growing at exponential rates, it’s no surprise that historians are
-referring to this period of history as the Information Age. The increasing speed at
-which data is being collected has created new opportunities and is certainly poised to
-create even more. This chapter presents the tools that have been used to solve largescale data challenges. First, it introduces Apache Spark as a leading tool that is
-democratizing our ability to process large datasets. With this as a backdrop, we intro‐
-duce the R computing language, which was specifically designed to simplify data
-analysis. Finally, this leads us to introduce sparklyr, a project merging R and Spark
-into a powerful tool that is easily accessible to all.
-Chapter 2, Getting Started presents the prerequisites, tools, and steps you need to per‐
-form to get Spark and R working on your personal computer. You will learn how to
-install and initialize Spark, get introduced to common operations, and get your very
-first data processing and modeling task done. It is the goal of that chapter to help any‐
-one grasp the concepts and tools required to start tackling large-scale data challenges
-which, until recently, were accessible to just a few organizations.
-You then move into learning how to analyze large-scale data, followed by building
-models capable of predicting trends and discover information hidden in vast
-amounts of information. At which point, you will have the tools required to perform
-data analysis and modeling at scale. Subsequent chapters help you move away from
-your local computer into computing clusters required to solve many real world prob‐
-lems. The last chapters present additional topics, like real-time data processing and
-graph analysis, which you will need to truly master the art of analyzing data at any
-scale. The last chapter of this book provides you with tools and inspiration to con‐
-sider contributing back to the Spark and R communities.
-11 Laudon KC, Traver CG, Laudon JP (1996). “Information technology and systems.” Cambridge, MA: Course
-Technology.
-2 Ceruzzi PE (2012). Computing: a concise history. MIT Press.
-3 Group WB (2016). The Data Revolution. World Bank Publications.
-4 Ghemawat S, Gobioff H, Leung S (2003). “The Google File System.” In Proceedings of the Nineteenth ACM
-Symposium on Operating Systems Principles. ISBN 1-58113-757-5.
-We hope that this is a journey you will enjoy, that will help you to solve problems in
-your professional career, and to nudge the world into making better decisions that
-can benefit us all.
+> — Ygritte
 
-### Overview
+随着信息以指数的速率增长，历史学家把这段历史时期称作信息时代也就不意外了。逐步加速的数据收集速度也创造了很多新的机会，并且必然会创造更多的机会。本章介绍一些用于解决大规模数据挑战的工具。首先，作为处理大规模数据集的流行工具，本章会介绍Apache Spark。有了这一基础，我们会介绍R编程语言，它是专门设计用于简化数据分析的。最后，我们会介绍`sparklyr`，该项目将R和Spark结合成为大家都可使用的强大工具。
+
+*第二章，这就开始*会介绍用于在个人电脑上执行Spark和R运算所需的预备知识，工具和步骤。你会学到如何安装和初始化Spark，了解常见操作，处理第一份数据和完成建模任务。本章的目的就是要帮助读者掌握处理大规模数据问题所需的概念和工具，而这些问题目前只有少数组织可以接触到。
+
+然后，你可以继续学习如何分析大规模数据，以及构建模型支持预测趋势和发现隐藏在海量信息中的知识。接着，你可以掌握一些用于执行数据分析和大规模建模的工具。后续章节会帮助你从本地计算机中跳出来，转向计算集群，以便解决许多真实世界的问题。最后几章会介绍一些其他的话题，例如实时数据处理和图分析，可以帮助你真正的掌握任何规模数据分析的最先进的技能。本书的最后一章会介绍一些工具和想法，读者可以考虑在Spark和R社区中做些贡献。
+
+我们希望，阅读本书能成为一种愉悦的经历，可以帮助你解决职业生涯的数据问题，并推动世界作出有利于所有人的更好决策。
+
+## 概述
 
 As humans, we have been storing, retrieving, manipulating, and communicating
 information since the Sumerians in Mesopotamia developed writing around 3000
@@ -326,7 +296,7 @@ sium on Operating System Design and Implementation (OSDI).
 
 ![Figure 1-1. World’s capacity to store information](figures/1_1.png)
 
-### Hadoop
+## Hadoop
 
 One year later, Google published a new paper describing how to perform operations
 across the Google File System, an approach that came to be known as MapReduce.5 As
@@ -366,7 +336,7 @@ scale without the need to write code for each MapReduce operation; instead, one
 could write generic data analysis statements in SQL, which are much easier to under‐
 stand and write.
 
-### Spark
+## Spark
 
 In 2009, Apache Spark began as a research project at UC Berkeley’s AMPLab to
 improve on MapReduce. Specifically, Spark provided a richer set of verbs beyond
@@ -510,7 +480,7 @@ Our hope is that this book will help you to understand the opportunities and lim
 tions of cluster computing and, specifically, the opportunities and limitations of using
 Apache Spark with R.
 
-### R
+## R
 
 The R computing language has its origins in the S language, which was created at Bell
 Laboratories. Rick Becker explained in useR 2016 that at that time in Bell Labs, com‐
@@ -641,7 +611,7 @@ This last point brings us closer to the purpose of this book, which is to bring 
 power of distributed computing systems provided by Apache Spark to solve mean‐
 ingful computation problems in data science and related fields, using R.
 
-### sparklyr
+## `sparklyr`
 
 When you think of the computation power that Spark provides and the ease of use of
 the R language, it is natural to want them to work together, seamlessly. This is also
@@ -685,7 +655,7 @@ for innovation, a welcoming place for newcomers, a productive environment for
 experienced data scientists, and an open community where cluster computing, data
 science, and machine learning can come together.
 
-### Recap
+## Recap
 
 This chapter presented Spark as a modern and powerful computing platform, R as an
 easy-to-use computing language with solid foundations in statistical methods, and
@@ -697,7 +667,7 @@ the tools you will need throughout the rest of this book. Be sure to follow each
 carefully and take the time to install the recommended tools, which we hope will
 become familiar resources that you use and love.
 
-## 第二章 开始
+# 第二章 开始
 
 > I always wanted to be a wizard.
 —Samwell Tarly
@@ -719,7 +689,7 @@ using a single-cluster machine: your personal computer. Subsequent chapters intr
 duce cluster computing and the concepts and techniques that you’ll need to success‐
 fully run code across multiple machines.
 
-### Overview
+## Overview
 
 From R, getting started with Spark using sparklyr and a local cluster is as easy as
 installing and loading the sparklyr package followed by installing Spark using
@@ -752,7 +722,7 @@ your cluster is already equipped with a different R user interface, rest assured
 can use Spark with R through plain R code. Let’s move along and get your prerequi‐
 sites properly configured.
 
-### Prerequisites
+## Prerequisites
 
 R can run in many platforms and environments; therefore, whether you use Win‐
 dows, Mac, or Linux, the first step is to install R from r-project.org; detailed instruc‐
@@ -783,7 +753,7 @@ You can also use the JAVA_HOME environment variable to point to a specific Java 
 sion by running Sys.setenv(JAVA_HOME = "path-to-java-8"); either way, before
 moving on to installing sparklyr, make sure that Java 8 is the version available for R.
 
-#### Installing sparklyr
+### Installing sparklyr
 
 As with many other R packages, you can install sparklyr from CRAN as follows:
 
@@ -798,7 +768,7 @@ packageVersion("sparklyr")
 [1] '1.0.2'
 ```
 
-#### Installing Spark
+### Installing Spark
 
 Start by loading sparklyr:
 
@@ -853,7 +823,7 @@ installation path, you can run options(spark.install.dir =
 "installation-path") before spark_install() and spark_con
 nect().
 
-### Connecting
+## Connecting
 
 It’s important to mention that, so far, we’ve installed only a local Spark cluster. A local
 cluster is really helpful to get started, test code, and troubleshoot with ease. Later
@@ -881,7 +851,7 @@ Spark commands.
 If the connection fails, Chapter 7 contains a troubleshooting section that can help you
 to resolve your connection issue.
 
-### Using Spark
+## Using Spark
 
 Now that you are connected, we can run a few simple commands. For instance, let’s
 start by copying the mtcars dataset into Apache Spark by using copy_to():
@@ -918,7 +888,7 @@ In this particular case, that dataset contains only a few rows describing automo
 models and some of their specifications like horsepower and expected miles per
 gallon.
 
-### Web Interface
+## Web Interface
 
 Most of the Spark commands are executed from the R console; however, monitoring
 and analyzing execution is done through Spark’s web interface, shown in Figure 2-1.
@@ -956,7 +926,7 @@ scale, you need to become familiar with some of them, eventually.
 Next, you will make use of a small subset of the practices that we cover in depth in
 Chapter 3.
 
-### Analysis
+## Analysis
 
 When using Spark from R to analyze data, you can use SQL (Structured Query Lan‐
 guage) or dplyr (a grammar of data manipulation). You can use SQL through the DBI
@@ -1002,7 +972,7 @@ Modeling can help us overcome this.
 
 ![Figure 2-5. Horsepower versus miles per gallon](figures/2_5.png)
 
-### Modeling
+## Modeling
 
 Although data analysis can take you quite far toward understanding data, building a
 mathematical model that describes and generalizes the dataset is quite powerful. In
@@ -1039,7 +1009,7 @@ should use while modeling, it’s also a simple example to briefly introduce the
 ing capabilities of Spark. We introduce all of the Spark models, techniques, and best
 practices in Chapter 4.
 
-### Data
+## Data
 For simplicity, we copied the mtcars dataset into Spark; however, data is usually not
 copied into Spark. Instead, data is read from existing data sources in a variety of for‐
 mats, like plain text, CSV, JSON, Java Database Connectivity (JDBC), and many
@@ -1054,7 +1024,7 @@ HDFS, but we can also read back from the local file system:
 cars <- spark_read_csv(sc, "cars.csv")
 ```
 
-### Extensions
+## Extensions
 In the same way that R is known for its vibrant community of package authors, at a
 smaller scale, many extensions for Spark and R have been written and are available to
 you. Chapter 10 introduces many interesting ones to perform advanced modeling,
@@ -1084,7 +1054,7 @@ Even though nesting data makes it more difficult to read, it is a requirement wh
 you are dealing with nested data formats like JSON using the spark_read_json()
 and spark_write_json() functions.
 
-### Distributed R
+## Distributed R
 For those few cases when a particular functionality is not available in Spark and no
 extension has been developed, you can consider distributing your own R code across
 the Spark cluster. This is a powerful tool, but it comes with additional complexity, so
@@ -1114,7 +1084,7 @@ everything, but please, don’t! spark_apply() was designed for advanced use cas
 where Spark falls short. You will learn how to do proper data analysis and modeling
 without having to distribute custom R code across your cluster.
 
-### Streaming
+## Streaming
 
 While processing large static datasets is the most typical use case for Spark, process‐
 ing dynamic datasets in real time is also possible and, for some applications, a
@@ -1167,7 +1137,7 @@ You can use dplyr, SQL, Spark models, or distributed R to analyze streams in rea
 time. In Chapter 12 we properly introduce you to all the interesting transformations
 you can perform to analyze real-time data.
 
-### Logs
+## Logs
 
 Logging is definitely less interesting than real-time data processing; however, it’s a
 tool you should be or become familiar with. A log is just a text file to which Spark
@@ -1246,7 +1216,7 @@ The rest of this book will use plain R code. It is up to you whether to execute 
 in the R console, RStudio, Jupyter Notebooks, or any other tool that supports execut‐
 ing R code, since the examples provided in this book execute in any R environment.
 
-### Resources
+## Resources
 
 While we’ve put significant effort into simplifying the onboarding process, there are
 many additional resources that can help you to troubleshoot particular issues while
@@ -1272,7 +1242,7 @@ request.
 30 | Chapter 2: Getting StartedGitter
 For urgent issues or to keep in touch, you can chat with us in Gitter.
 
-### Recap
+## Recap
 In this chapter you learned about the prerequisites required to work with Spark. You
 saw how to connect to Spark using spark_connect(); install a local cluster using
 spark_install(); load a simple dataset, launch the web interface, and display logs
