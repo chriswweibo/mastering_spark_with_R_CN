@@ -264,37 +264,24 @@ Watch us on YouTube: http://www.youtube.com/oreillymedia
 
 ## 概述
 
-As humans, we have been storing, retrieving, manipulating, and communicating
-information since the Sumerians in Mesopotamia developed writing around 3000
-BC. Based on the storage and processing technologies employed, it is possible to dis‐
-tinguish four distinct phases of development: premechanical (3000 BC to 1450 AD),
-mechanical (1450–1840), electromechanical (1840–1940), and electronic (1940–
-present).1
-Mathematician George Stibitz used the word digital to describe fast electric pulses
-back in 1942,2 and to this day, we describe information stored electronically as digital
-information. In contrast, analog information represents everything we have stored by
-any nonelectronic means such as handwritten notes, books, newspapers, and so on.
-The World Bank report on digital development provides an estimate of digital and
-analog information stored over the past decades.3 This report noted that digital infor‐
-mation surpassed analog information around 2003. At that time, there were about 10
-million terabytes of digital information, which is roughly about 10 million storage
-drives today. However, a more relevant finding from this report was that our foot‐
-print of digital information is growing at exponential rates. Figure 1-1 shows the find‐
-ings of this report; notice that every other year, the world’s information has grown
-tenfold.
-With the ambition to provide tools capable of searching all of this new digital infor‐
-mation, many companies attempted to provide such functionality with what we know
-today as search engines, used when searching the web. Given the vast amount of digi‐
-tal information, managing information at this scale was a challenging problem.
-Search engines were unable to store all of the web page information required to sup‐
-port web searches in a single computer. This meant that they had to split information
-into several files and store them across many machines. This approach became
-known as the Google File System, and was presented in a research paper published in
-2003 by Google.4
-2 | Chapter 1: Introduction5 Dean J, Ghemawat S (2004). “MapReduce: Simplified data processing on large clusters.” In USENIX Sympo‐
-sium on Operating System Design and Implementation (OSDI).
+人类大约从公元前3000年苏美尔人时期就开始用美索不达米亚成熟的书写体系保存，获取，操作和沟通信息了 。根据使用的保存和处理技术，人类的信息处理可能分成四个不同的发展时期：前机械工具时期（公元前3000至公元后1450年），机械工具时期（1450–1840），电子机械时期（1840–1940），和电子时期（1940至今）[^1]。
 
-![Figure 1-1. World’s capacity to store information](figures/1_1.png)
+[^1]:Laudon KC, Traver CG, Laudon JP (1996). “Information technology and systems.” Cambridge, MA: Course Technology。
+
+数学家George Stibitz在1942年使用词语digital来描述快速的电子脉冲[^2]。直到今天，我们把用电子格式存储的信息还叫做数字信息。相反，模拟信息表示用非电子格式存储的各种信息，例如手写笔记，书籍，报纸等。
+
+[^2]: Ceruzzi PE (2012). Computing: a concise history. MIT Press.
+
+世界银行发布的关于数字发展的报告给出了过去三十年保存下来的数字信息和模拟信息总量估计[^3]。这份报告指出数字信息大概在2003年超过了模拟信息，其总量有大约一千万太字节，大约相当于今天的一千万存储驱动。然而，这份报告中更相关的发现是，我们的数字信息正在以指数的速度增长。图1-1展示了这份报告的结论。注意到，每隔一年，世界上的信息都会增长10倍。
+
+[^3]: Group WB (2016). The Data Revolution. World Bank Publications.
+
+为了提供工具找出所有新的数字信息，许多公司都试图提供相关的功能，例如我们今天熟知的用于搜索网络的搜索引擎。给定海量的数字信息，管理如此规模的信息绝对是一项挑战。搜索引擎并不能存储所有的网页信息，支持在单一电脑上搜索网页。这就意味着它必须把信息分成几个文件，并存储在多个机器上。这项技术就是*谷歌文件系统（Google File System）*，它在谷歌2003年发表的学术文献中有介绍[^4]。
+
+[^4]: Ghemawat S, Gobioff H, Leung S (2003). “The Google File System.” In Proceedings of the Nineteenth ACM Symposium on Operating Systems Principles. ISBN 1-58113-757-5.
+
+
+![图1-1. 世界存储信息能力](figures/1_1.png)
 
 ## Hadoop
 
