@@ -335,115 +335,52 @@ Spark也比Hadoop易用。例如，词语计数的MapReduce示例在Hadoop中需
 
 * 统一
 
-Spark支持许多库，集群技术和存储系统。
+    Spark支持许多库，集群技术和存储系统。
 
 * 分析
 
-分析是发现和理解数据，以期产出和沟通信息的行为。
+    分析是发现和理解数据，以期产出和沟通信息的行为。
 
 * 引擎
 
-Spark是高效的和原生的。
+    Spark是高效的和原生的。
 
 * 大规模
 
-你可以把大规模理解成集群规模，一些连接一起的，共同工作的计算机。
+    你可以把大规模理解成集群规模，一些连接一起的，共同工作的计算机。
 
-Spark is described as an engine because it’s generic and efficient. It’s generic because it
-optimizes and executes generic code; that is, there are no restrictions as to what type
-of code you can write in Spark. It is efficient, because, as we mentioned earlier, Spark
-much faster than other technologies by making efficient use of memory, network, and
-CPUs to speed data processing algorithms in computing clusters.
+Spark可以看做是一种*引擎*，因为它是原生和高效的。它的原生性是因为Spark可以优化和执行原生代码，也就是说，对于Spark中的程序代码并没有什么类型限制。它的高效性是因为Spark可以有效利用内存，网络和CPU加速计算集群中的数据处理算法，正如之前提到的，比其它技术都要快速。
 
-This makes Spark ideal in many analytics projects like ranking movies at Netflix,
-aligning protein sequences, or analyzing high-energy physics at CERN.
+这些特点使得Spark在许多分析任务中，例如Netflix的电影排序，蛋白质序列对齐，和CERN的高能物理分析，成为理想的工具。
 
-As a unified platform, Spark is expected to support many cluster technologies and
-multiple data sources, which you learn about in Chapter 6 and Chapter 8, respec‐
-tively. It is also expected to support many different libraries like Spark SQL, MLlib,
-GraphX, and Spark Streaming; libraries that you can use for analysis, modeling,
-graph processing, and real-time data processing, respectively. In summary, Spark is a
-platform providing access to clusters, data sources, and libraries for large-scale com‐
-puting, as illustrated in Figure 1-4.
+作为一种*统一*的平台，Spark可以支持许多集群技术和多种数据源。你可以分别在第六章和第八章中了解到。它也可以支持许多不同的库，例如Spark SQL，MLlib，GraphX和Spark Streaming，分别支持分析，建模，图处理和实时数据处理。总之，Spark是一种支持请求集群，数据源和各种库的平台，进而实现大规模计算，如图1-4所示。
 
 ![图1-4. Spark，面向大规模数据处理的统一分析引擎](figures/1_4.png)
 
-Describing Spark as large scale implies that a good use case for Spark is tackling prob‐
-lems that can be solved with multiple machines. For instance, when data does not fit
-on a single disk drive or into memory, Spark is a good candidate to consider. How‐
-ever, you can also consider it for problems that might not be large scale, but for which
-using multiple computers could speed up computation. For instance, CPU-intensive
-models and scientific simulations also benefit from running in Spark.
+Spark支持大规模运算，意味着Spark的良好用例应该是使用多台机器解决问题。例如，当数据无法在单个磁盘或内存中存放，Spark会是一种良好的备选方案。然而，你也可以在面对非大规模问题的时候考虑使用Spark。此时，多台计算机可以加速计算。例如，CPU密集型的模型和科学模拟也可以从Spark中受益。
 
-Therefore, Spark is good at tackling large-scale data-processing problems, usually
-known as big data (datasets that are more voluminous and complex than traditional
-ones) but it is also good at tackling large-scale computation problems, known as big
-compute (tools and approaches using a large amount of CPU and memory resources
-in a coordinated way). Big data often requires big compute, but big compute does not
-necessarily require big data.
+因此，Spark不但擅长解决大规模数据处理问题，即通常所说的*大数据*（数据集比传统的要更加庞大和复杂），而且擅长解决大规模计算问题，即通常所说的*大计算*（协调使用大量CPU和内存资源的工具和技术）。大数据经常需要大计算，但是*大计算不一定需要大数据*。
 
-Big data and big compute problems are usually easy to spot—if the data does not fit
-into a single machine, you might have a big data problem; if the data fits into a single
-machine but processing it takes days, weeks, or even months to compute, you might
-have a big compute problem.
+大数据和大计算问题通常很容易识别。如果数据不能存放在单个机器，你就遇到了大数据问题；如果数据可以存放在单个机器，但是数据处理却需要数天，数周甚至更长的时间来完成，你就遇到了大计算问题。
 
-However, there is also a third problem space for which neither data nor compute is
-necessarily large scale and yet there are significant benefits to using cluster comput‐
-ing frameworks like Spark. For this third problem space, there are a few use cases:
+但是，还有第三类问题，既不是大数据问题，也不是大计算问题，它们也可以从类似Spark的集群计算框架中受益良多。这类问题，有以下几种场景：
 
-* Velocity
+* 高速性
 
-Suppose that you have a dataset of 10 GB and a process that takes 30 minutes to
-run over this data—this is neither big compute nor big data by any means. How‐
-ever, if you happen to be researching ways to improve the accuracy of your mod‐
-els, reducing the runtime down to three minutes is a significant improvement,
-which can lead to meaningful advances and productivity gains by increasing the
-velocity at which you can analyze data. Alternatively, you might need to process
-data faster—for stock trading, for instance. Whereas three minutes could seem
-fast enough, it can be far too slow for real-time data processing, for which you
-might need to process data in a few seconds—or even a few milliseconds.
+    假设你有一个10GB的数据集，它的数据处理过程需要30分钟。这既不是一个大数据问题也不是一个大计算问题。但是，如果你突然要想着改进模型的准确率，减少运行时间到3分钟以内，这就是一个显著的改进。这种数据分析速度的改进可以带来有意义的推进和生产力的提高。另外，你也可能需要更快的处理数据速度，比如支持股票交易。尽管三分钟已经足够快，但是这对于实时数据处理依然很慢。这种场景下，你可能需要在几秒内甚至几毫秒内完成数据处理。
 
-* Variety
+* 多样性
+  
+    你可能有了一个高效的数据收集流程，从多个数据源收集数据放在一个位置，通常是一个数据库。这个过程可能已经非常高效并且接近实时。这样的过程就是通常所说的*抽取，转换和加载*（Extract, Transform,
+Load，ETL）；数据从多个数据源抽取，转换成所需的格式，加载到单个数据存储结构中。尽管这一方法已经流行了多年，但是其中的权衡是添加新的数据源代价很高。因为系统是集中控制的，并且是严密操作的，任何改变都可能使整个过程暂停；因此，添加新的数据源通常要花费很长的时间才能实现。相反，你可以把全部数据按照自然格式存放，并且按照需要使用集群处理，即数据湖的架构。另外，按照原始格式存放数据支持处理图片，声音，和视频格式的新文件，而不需要明确如何把它们放进传统的结构化存储系统。
 
-You could also have an efficient process to collect data from many sources into a
-single location, usually a database; this process could be already running effi‐
-ciently and close to real time. Such processes are known as Extract, Transform,
-Load (ETL); data is extracted from multiple sources, transformed to the required
-format, and loaded into a single data store. Although this has worked for years,
-the trade-off from this approach is that adding a new data source is expensive.
-Because the system is centralized and tightly controlled, making changes could
-cause the entire process to halt; therefore, adding new data source usually takes
-too long to be implemented. Instead, you can store all data in its natural format
-and process it as needed using cluster computing, an architecture known as a
-data lake. In addition, storing data in its raw format allows you to process a vari‐
-ety of new file formats like images, audio, and video without having to figure out
-how to fit them into conventional structured storage systems.
+* 真实性
 
-* Veracity
+    当使用多个数据源的时候，你可能发现它们之间的数据质量参差不齐，需要专门的分析方法来改进准确性。例如，假设你有一个城市列表，取值包括旧金山，西雅图，和波士顿。当数据包含拼错的单词，例如“Bston”，会发生什么呢？在传统的关系型数据库中，这类非法输入可能会被舍弃。但是，舍弃取值并不一定所以情形下是最好的方法；你会希望利用地理编码，交叉验证数据源，或者尽最大努力匹配来纠正这些字段。所以，理解和改进原始数据源的真实性可以带来更准确的结果。
 
-When using many data sources, you might find the data quality varies greatly
-between them, which requires special analysis methods to improve their accu‐
-racy. For instance, suppose that you have a table of cities with values like San
-Francisco, Seattle, and Boston. What happens when data contains a misspelled
-entry like “Bston”? In a relational database, this invalid entry might be dropped.
-However, dropping values is not necessarily the best approach in all cases; you
-might want to correct this field by making use of geocodes, cross-referencing
-data sources, or attempting a best-effort match. Therefore, understanding and
-improving the veracity of the original data source can lead to more accurate
-results.
+如果我们把“海量性”当做是大数据的同义词，你就得到了方便记忆的大数据的4个V。一些人也把它扩展成5个V甚至10个V。除了几个便于记忆的符号，今天集群计算也正在以更加创新的方式使用。看到各个组织实验新的工作流，以及传统意义上并不适用集群计算的各种任务，已经不再稀奇。更多的源于大数据的热潮都是这类问题。严格意义上讲，你不是在解决大数据，但是依然可以从大数据和大计算工具的使用中获益。
 
-If we include “volume” as a synonym for big data, you get the mnemonic people refer
-to as the four Vs of big data; others have expanded this to five or even 10 Vs of big
-data. Mnemonics aside, cluster computing is being used today in more innovative
-ways, and is not uncommon to see organizations experimenting with new workflows
-and a variety of tasks that were traditionally uncommon for cluster computing. Much
-of the hype attributed to big data falls into this space where, strictly speaking, you’re
-not handling big data, but there are still benefits from using tools designed for big
-data and big compute.
-
-Our hope is that this book will help you to understand the opportunities and limita‐
-tions of cluster computing and, specifically, the opportunities and limitations of using
-Apache Spark with R.
+我们希望本书可以帮助你理解集群计算的机遇和局限，特别是使用Apache Spark和R的机遇和局限。
 
 ## R
 
