@@ -384,37 +384,28 @@ Load，ETL）；数据从多个数据源抽取，转换成所需的格式，加�
 
 ## R
 
-The R computing language has its origins in the S language, which was created at Bell
-Laboratories. Rick Becker explained in useR 2016 that at that time in Bell Labs, com‐
-puting was done by calling subroutines written in the Fortran language, which, appa‐
-rently, were not pleasant to deal with. The S computing language was designed as an
-interface language to solve particular problems without having to worry about other
-languages, such as Fortran. The creator of S, John Chambers, shows in Figure 1-5
-how S was designed to provide an interface that simplifies data processing; his cocreator presented this during useR! 2016 as the original diagram that inspired the cre‐
-ation of S.
+R编程语言源于诞生在贝尔实验室的S语言。Rick Becker在2016年的useR会议上解释，在那时的贝尔实验室里，计算是通过调用Fortran语句写成的子程序而实现的，而这种程序显然不好处理。而S计算语言当时是作为一种接口语言而设计的，它可以解决特殊的问题，而不需要使用其他语言，例如Fortran。S语言的发明者，John Chambers在图1-5中给出了S是如何设计出来了，进而提供简化数据处理的一种接口，他的共同发明者也在2016年的useR!上展示了这一原图，启发了S的设计。
 
-![Figure 1-5. Interface language diagram by John Chambers (Rick Becker useR 2016)](figures/1_5.png)
+![图1-5. John Chambers的接口语言图 (Rick Becker useR 2016)](figures/1_5.png)
 
-R is a modern and free implementation of S. Specifically, according to the R Project
-for Statistical Computing:
+R语言是S语言一种现代而自由的实现。特别的，根据《面向统计计算的R项目》：
 
-> R is a programming language and free software environment for statistical computing
-and graphics.
+> R是一种面向统计计算和图形学的编程语言和免费软件。
 
-While working with data, we believe there are two strong arguments for using R:
+处理数据的时候，我们相信R语言有两大特点：
 
-* R language
+* R语言
 
-R was designed by statisticians for statisticians, meaning that this is one of the
+    R was designed by statisticians for statisticians, meaning that this is one of the
 few successful languages designed for nonprogrammers, so learning R will
 R | 9probably feel more natural. Additionally, because the R language was designed to
 be an interface to other tools and languages, R allows you to focus more on
 understanding data and less on the particulars of computer science and engineer‐
 ing.
 
-* R community
+* R社区
 
-The R community provides a rich package archive provided by the Comprehen‐
+    The R community provides a rich package archive provided by the Comprehen‐
 sive R Archive Network (CRAN), which allows you to install ready-to-use pack‐
 ages to perform many tasks—most notably high-quality data manipulation,
 visualization, and statistical models, many of which are available only in R. In
@@ -430,9 +421,9 @@ community by plotting daily downloads of R packages in CRAN.
 Aside from statistics, R is also used in many other fields. The following areas are par‐
 ticularly relevant to this book:
 
-* Data science
+* 数据科学
 
-Data science is based on knowledge and practices from statistics and computer
+    Data science is based on knowledge and practices from statistics and computer
 science that turn raw data into understanding7 by using data analysis and model‐
 ing techniques. Statistical methods provide a solid foundation to understand the
 world and perform predictions, while the automation provided by computing
@@ -443,9 +434,9 @@ computing.9 This book presents analysis and modeling techniques common in
 statistics but applied to large datasets, which requires incorporating advances in
 distributed computing.
 
-* Machine learning
+* 机器学习
 
-Machine learning uses practices from statistics and computer science; however, it
+    Machine learning uses practices from statistics and computer science; however, it
 is heavily focused on automation and prediction. For instance, Arthur Samuel
 coined the term machine learning while automating a computer program to play
 checkers.10 Although we could perform data science on particular games, writing
@@ -461,9 +452,9 @@ workflows into fully automated machine learning methods—for instance, by pro�
 viding support to build and export Spark pipelines that can be easily reused in
 automated environments.
 
-* Deep learning
+* 深度学习
 
-Deep learning builds on knowledge of statistics, data science, and machine learn‐
+    Deep learning builds on knowledge of statistics, data science, and machine learn‐
 ing to define models loosely inspired by biological nervous systems. Deep learn‐
 ing models evolved from neural network models after the vanishing-gradient
 problem was resolved by training one layer at a time,11 and have proven useful in
@@ -487,9 +478,9 @@ stand that Spark does not need to be the answer to all our computations problems
 instead, when faced with computing challenges in R, using the following techniques
 can be as effective:
 
-* Sampling
+* 采样
 
-A first approach to try is to reduce the amount of data being handled, through
+    A first approach to try is to reduce the amount of data being handled, through
 sampling. However, we must sample the data properly by applying sound statisti‐
 cal principles. For instance, selecting the top results is not sufficient in sorted
 datasets; with simple random sampling, there might be underrepresented groups,
@@ -498,26 +489,26 @@ ity to properly select categories. It’s beyond the scope of this book to teach
 properly perform statistical sampling, but many resources are available on this
 topic.
 
-* Profiling
+* 画像
 
-You can try to understand why a computation is slow and make the necessary
+    You can try to understand why a computation is slow and make the necessary
 improvements. A profiler is a tool capable of inspecting code execution to help
 identify bottlenecks. In R, the R profiler, the profvis R package, and RStudio
 profiler feature allow you to easily to retrieve and visualize a profile; however, it’s
 not always trivial to optimize.
 
-* Scaling up
+* 扩展
 
-Speeding up computation is usually possible by buying faster or more capable
+    Speeding up computation is usually possible by buying faster or more capable
 hardware (say, increasing your machine memory, upgrading your hard drive, or
 procuring a machine with many more CPUs); this approach is known as scaling
 up. However, there are usually hard limits as to how much a single computer can
 scale up, and even with significant CPUs, you need to find frameworks that paral‐
 lelize computation efficiently.
 
-* Scaling out
+* 推广
 
-Finally, we can consider spreading computation and storage across multiple
+    Finally, we can consider spreading computation and storage across multiple
 machines. This approach provides the highest degree of scalability because you
 can potentially use an arbitrary number of machines to perform a computation.
 This approach is commonly known as scaling out. However, spreading computa‐
@@ -547,24 +538,24 @@ from the R community, and so on. It’s hosted in GitHub and licensed under Apac
 2.0, which allows you to clone, modify, and contribute back to this project.
 When thinking of who should use sparklyr, the following roles come to mind:
 
-* New users
+* 新用户
 
-For new users, it is our belief that `sparklyr` provides the easiest way to get started
+    For new users, it is our belief that `sparklyr` provides the easiest way to get started
 with Spark. Our hope is that the early chapters of this book will get you up and
 running with ease and set you up for long-term success.
 
-* Data scientists
+* 数据科学家
 
-For data scientists who already use and love R, `sparklyr` integrates with many
+    For data scientists who already use and love R, `sparklyr` integrates with many
 other R practices and packages like `dplyr`, `magrittr`, `broom`, `DBI`, `tibble`, `rlang`,
 and many others, which will make you feel at home while working with Spark.
 For those new to R and Spark, the combination of high-level workflows available
 in sparklyr and low-level extensibility mechanisms make it a productive envi‐
 ronment to match the needs and skills of every data scientist.
 
-* Expert users
+* 专家用户
 
-For those users who are already immersed in Spark and can write code natively
+    For those users who are already immersed in Spark and can write code natively
 in Scala, consider making your Spark libraries available as an R package to the R
 community, a diverse and skilled community that can put your contributions to
 good use while moving open science forward.
