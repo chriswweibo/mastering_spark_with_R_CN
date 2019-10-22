@@ -396,61 +396,29 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 
 * R语言
 
-    R was designed by statisticians for statisticians, meaning that this is one of the
-few successful languages designed for nonprogrammers, so learning R will
-R | 9probably feel more natural. Additionally, because the R language was designed to
-be an interface to other tools and languages, R allows you to focus more on
-understanding data and less on the particulars of computer science and engineer‐
-ing.
+    R是由统计学家设计的，也是面向统计学家使用的。这意味着R是少有的，成功的面向非编程人员的编程语言之一。所以学习R会更加自然。另外，因为R语言是其他语言和工具的接口，所以R可以让你更多的关注理解问题，而更少的花在计算机科学和工程上。
 
 * R社区
 
-    The R community provides a rich package archive provided by the Comprehen‐
-sive R Archive Network (CRAN), which allows you to install ready-to-use pack‐
-ages to perform many tasks—most notably high-quality data manipulation,
-visualization, and statistical models, many of which are available only in R. In
-addition, the R community is a welcoming and active group of talented individu‐
-als motivated to help you succeed. Many packages provided by the R community
-make R, by far, the best option for statistical computing. Some of the most down‐
-loaded R packages include: `dplyr` to manipulate data, `cluster` to analyze clus‐
-ters, and `ggplot2` to visualize data. Figure 1-6 quantifies the growth of the R
-community by plotting daily downloads of R packages in CRAN.
+    R社区通过*R语言综合文档网络（Comprehensive R Archive Network，CRAN）*提供了丰富的库，支持安装即时可用的库，来执行各种任务——最享有盛名的高质量数据操作，可视化，和统计模型。许多操作只能在R中进行。另外，R社区是一个热情的，活跃的组织，这些优秀的朋友都愿意帮助你成功。R社区提供的许多库，到目前为止，都是统计计算的最优选择。一些下载最多的库包括：操作数据的`dplyr`，分析聚类的`cluster`，可视化数据的`ggplot2`。通过画出每天CRAN里R库的下载量，图1-6定量刻画了R社区的增长。
 
-![Figure 1-6. Daily downloads of CRAN packages](figures/1_6.png)
+![图1-6. CRAN库每日下载量](figures/1_6.png)
 
-Aside from statistics, R is also used in many other fields. The following areas are par‐
-ticularly relevant to this book:
+除了统计分析，R也用在其他领域。以下领域和本书高度相关：
 
 * 数据科学
 
-    Data science is based on knowledge and practices from statistics and computer
-science that turn raw data into understanding7 by using data analysis and model‐
-ing techniques. Statistical methods provide a solid foundation to understand the
-world and perform predictions, while the automation provided by computing
-methods allows us to simplify statistical analysis and make it much more accessi‐
-ble. Some have advocated that statistics should be renamed data science;8 how‐
-ever, data science goes beyond statistics by also incorporating advances in
-computing.9 This book presents analysis and modeling techniques common in
-statistics but applied to large datasets, which requires incorporating advances in
-distributed computing.
+    数据科学基于来自统计学和计算机科学的知识和实践，通过数据分析和建模技术把原始数据变成深刻理解[^7]。统计学的方法提供了理解世界和进行预测的坚实基础，而计算机模型中的自动化技术可以让我们简化统计分析并易于实现。一些人认为，统计学应该重新命名为数据科学[^8]，然而数据科学结合了计算机的进展，并超出了统计学的范畴[^9]。本书给出了统计学中常见的分析和建模技术，但是会应用到大数据集上，而这又需要分布式计算的成果。
+
+[^7]: Wickham H, Grolemund G (2016). R for data science: import, tidy, transform, visualize, and model data. O’Reilly Media, Inc
+[^8]: Wu CJ (1997). “Statistics = Data Science?”
+[^9]: Cleveland WS (2001). “Data Science: An Action Plan for Expanding the Technical Areas of the Field of Statistics?”
 
 * 机器学习
 
-    Machine learning uses practices from statistics and computer science; however, it
-is heavily focused on automation and prediction. For instance, Arthur Samuel
-coined the term machine learning while automating a computer program to play
-checkers.10 Although we could perform data science on particular games, writing
-a program to play checkers requires us to automate the entire process. Therefore,
-this falls in the realm of machine learning, not data science. Machine learning
-makes it possible for many users to take advantage of statistical methods without
-being aware of using them. One of the first important applications of machine
-learning was to filter spam emails. In this case, it’s just not feasible to perform
-data analysis and modeling over each email account; therefore, machine learning
-automates the entire process of finding spam and filtering it out without having
-to involve users at all. This book presents the methods to transition data science
-workflows into fully automated machine learning methods—for instance, by pro‐
-viding support to build and export Spark pipelines that can be easily reused in
-automated environments.
+    机器学习利用来自于统计学和计算机科学的实践。但是，它更多的关注自动化和预测。例如，Arthur Samuel在实现跳棋的计算机自动化程序的时候发明了词语machine learning[^10]。尽管我们可以在专门的游戏上实践数据科学，但是编写一个跳棋的程序需要我们自动化整个过程。因此，这个问题就是机器学习的范畴，而不是数据科学的范畴。机器学习使得许多用户在无意识中利用统计学的方法成为可能。机器学习中最重要的一个应用是过滤垃圾邮件。在这个例子中，只做数据分析和对每个邮箱账户建模是不可行的，因此机器学习可以自动化发现垃圾邮件的整个过程，并在用户没有参与的情况下过滤出去。本书给出了把数据科学工作流转换为完全自动化的机器学习的方法，例如，支持构建和导出Spark流程，以便容易的在自动化环境中复用此流程。
+    
+[^10]: Samuel AL (1959). “Some studies in machine learning using the game of checkers.” IBM Journal of research and development, 3(3), 210–229.
 
 * 深度学习
 
