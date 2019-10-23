@@ -422,70 +422,30 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 
 * 深度学习
 
-    Deep learning builds on knowledge of statistics, data science, and machine learn‐
-ing to define models loosely inspired by biological nervous systems. Deep learn‐
-ing models evolved from neural network models after the vanishing-gradient
-problem was resolved by training one layer at a time,11 and have proven useful in
-image and speech recognition tasks. For instance, in voice assistants like Siri,
-Alexa, Cortana, or Google Assistant, the model performing the audio-to-text
-conversion is most likely based on deep learning models. Although Graphic Pro‐
-cessing Units (GPUs) have been successfully used to train deep learning models,12
-some datasets cannot be processed in a single GPU. It is also the case that deep
-learning models require huge amounts of data, which needs to be preprocessed
-across many machines before it can be fed into a single GPU for training. This
-book doesn’t make any direct references to deep learning models; however, you
-can use the methods we present in this book to prepare data for deep learning
-and, in the years to come, using deep learning with large-scale computing will
-become a common practice. In fact, recent versions of Spark have already intro‐
-duced execution models optimized for training deep learning in Spark.
+    深度学习建立在统计学，数据科学和机器学习知识的基础上，并受到生物神经系统的些许启发而定义模型。当梯度散失问题通过一次一层的训练解决后，深度学习就从神经网络模型逐步进化了[^11]，并被证明在图像识别和语音识别任务中非常强大。例如，在语音助手应用中，诸如Siri，Alexa，Cortana，或谷歌助手，实现语音到文本转换的模型大部分都是基于深度学习模型。尽管*图形处理器（Graphic Processing Units，GPUs）*已经成功的用在了训练深度学习过程中[^12]，一些数据集并不能在单个GPU上处理。另一个事实是，深度学习模型需要大量的数据。这也需要在多个机器上预处理一下，然后才交给单个GPU训练。本书并不会直接给出深度学习模型的任何参考文献。但是你可以使用我们在本书中给出的方法，准备深度学习数据。在未来几年里，使用深度学习大规模计算技术会变得非常普遍。事实上，Spark的最新版本已经加入了为执行深度学习训练而优化过的模型。
+    
+[^11]:Hinton GE, Osindero S, Teh Y (2006). “A fast learning algorithm for deep belief nets.” Neural computation, 18(7), 1527–1554.
+[^12]:Krizhevsky A, Sutskever I, Hinton GE (2012). “Imagenet classification with deep convolutional neural networks.” In Advances in neural information processing systems, 1097–1105.
 
-When working in any of the previous fields, you will be faced with increasingly large
-datasets or increasingly complex computations that are slow to execute or at times
-even impossible to process in a single computer. However, it is important to under‐
-stand that Spark does not need to be the answer to all our computations problems;
-instead, when faced with computing challenges in R, using the following techniques
-can be as effective:
+处理上述几个领域时，你要么会面对逐渐增大的数据集，要么会面对逐渐复杂的计算过程。这些流程执行起来都很慢，或者某些时候在单台计算机上变得不可能。但是，要知道，Spark并不一定是所有计算问题的答案。相反，面对R中的计算问题时，使用以下技术会很有效：
 
 * 采样
 
-    A first approach to try is to reduce the amount of data being handled, through
-sampling. However, we must sample the data properly by applying sound statisti‐
-cal principles. For instance, selecting the top results is not sufficient in sorted
-datasets; with simple random sampling, there might be underrepresented groups,
-which we could overcome with stratified sampling, which in turn adds complex‐
-ity to properly select categories. It’s beyond the scope of this book to teach how to
-properly perform statistical sampling, but many resources are available on this
-topic.
+    第一个要尝试的技术是通过采样，减少需要处理的数据量。然而，我们必须使用可靠的统计学原理，合适地采样数据。例如，选取有序数据集的头部数据是不够的。使用随机采样，会得到占比较少的数据集。这些都可以通过分层采样克服，但是选取合适的类别增加了算法复杂度。讲解如何进行合适的统计采样超出了本书的范畴，但是有很多有用的资源都是关于这个话题的。
 
-* 画像
+* 分析器
 
-    You can try to understand why a computation is slow and make the necessary
-improvements. A profiler is a tool capable of inspecting code execution to help
-identify bottlenecks. In R, the R profiler, the profvis R package, and RStudio
-profiler feature allow you to easily to retrieve and visualize a profile; however, it’s
-not always trivial to optimize.
+    你可以试着理解为什么计算很慢，进而需要改进。分析器是检查代码执行情况，帮助识别瓶颈的工具。在R中，R的分析器，`profvis`库和RStudio的分析器功能可以让你轻松的重试和可视化一个分析器。然而，优化代码通常并不容易。
 
-* 扩展
+* 纵向扩展
 
-    Speeding up computation is usually possible by buying faster or more capable
-hardware (say, increasing your machine memory, upgrading your hard drive, or
-procuring a machine with many more CPUs); this approach is known as scaling
-up. However, there are usually hard limits as to how much a single computer can
-scale up, and even with significant CPUs, you need to find frameworks that paral‐
-lelize computation efficiently.
+    加速计算通过可以通过购买更快或者更强劲的硬件（即提高机器内存，更新硬盘，或者使用CPU更多的计算器）来实现。这些手段叫做纵向扩展。但是，对于单个计算机的纵向扩展通常存在硬极限，即使使用大量的CPU，你还需要新的框架来有效地并行化计算。
 
-* 推广
+* 横向扩展
 
-    Finally, we can consider spreading computation and storage across multiple
-machines. This approach provides the highest degree of scalability because you
-can potentially use an arbitrary number of machines to perform a computation.
-This approach is commonly known as scaling out. However, spreading computa‐
-tion effectively across many machines is a complex endeavor, especially without
-using specialized tools and frameworks like Apache Spark.
+    最后，我们可以考虑把计算和存储扩大到对台机器上。这种手段提供了最高纬度的扩展性能。因为你可以使用任意数量的机器来执行计算。这个技术通常叫做横向扩展。但是，有效的扩展计算是一项复杂的实践，特别是没有使用专门的工具和框架，例如Apache Spark的时候。
 
-This last point brings us closer to the purpose of this book, which is to bring the
-power of distributed computing systems provided by Apache Spark to solve mean‐
-ingful computation problems in data science and related fields, using R.
+最后一点更加具体的介绍了本书的目的，即Apache Spark提供的分布式计算系统的能力，借助R解决数据科学和相关领域中有意义的计算问题。
 
 ## `sparklyr`
 
