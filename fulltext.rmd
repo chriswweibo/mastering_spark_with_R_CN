@@ -574,11 +574,9 @@ spark_uninstall(version = "1.6.3", hadoop = "2.6")
 
 ## 连接
 
-It’s important to mention that, so far, we’ve installed only a local Spark cluster. A local
-cluster is really helpful to get started, test code, and troubleshoot with ease. Later
-chapters explain where to find, install, and connect to real Spark clusters with many
-machines, but for the first few chapters, we focus on using local clusters.
-To connect to this local cluster, simply run the following:
+到目前为止，我们只安装了本地集群。本地集群对于初始学习，测试代码，轻松的排查故障非常有好处。后面的章节会介绍在哪里发现，安装和连接真正的有多台机器的Spark集群。但是对于开始的几章，我们只会使用本地集群。
+
+要连接本地集群，只需运行如下代码：
 ```{r}
 library(sparklyr)
 sc <- spark_connect(master = "local", version = "2.3")
