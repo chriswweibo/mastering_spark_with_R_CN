@@ -335,7 +335,7 @@ Spark也比Hadoop易用。例如，词语计数的MapReduce示例在Hadoop中需
 
 * 统一
 
-    Spark支持许多库，集群技术和存储系统。
+    Spark支持许多程序包，集群技术和存储系统。
 
 * 分析
 
@@ -353,7 +353,7 @@ Spark可以看做是一种*引擎*，因为它是原生和高效的。它的原�
 
 这些特点使得Spark在许多分析任务中，例如Netflix的电影排序，蛋白质序列对齐，和CERN的高能物理分析，成为理想的工具。
 
-作为一种*统一*的平台，Spark可以支持许多集群技术和多种数据源。你可以分别在第六章和第八章中了解到。它也可以支持许多不同的库，例如Spark SQL，MLlib，GraphX和Spark Streaming，分别支持分析，建模，图处理和实时数据处理。总之，Spark是一种支持请求集群，数据源和各种库的平台，进而实现大规模计算，如图1-4所示。
+作为一种*统一*的平台，Spark可以支持许多集群技术和多种数据源。你可以分别在第六章和第八章中了解到。它也可以支持许多不同的程序包，例如Spark SQL，MLlib，GraphX和Spark Streaming，分别支持分析，建模，图处理和实时数据处理。总之，Spark是一种支持请求集群，数据源和各种程序包的平台，进而实现大规模计算，如图1-4所示。
 
 ![图1-4. Spark，面向大规模数据处理的统一分析引擎](figures/1_4.png)
 
@@ -400,9 +400,9 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 
 * R社区
 
-    R社区通过*R语言综合文档网络（Comprehensive R Archive Network，CRAN）*提供了丰富的库，支持安装即时可用的库，来执行各种任务——最享有盛名的高质量数据操作，可视化，和统计模型。许多操作只能在R中进行。另外，R社区是一个热情的，活跃的组织，这些优秀的朋友都愿意帮助你成功。R社区提供的许多库，到目前为止，都是统计计算的最优选择。一些下载最多的库包括：操作数据的`dplyr`，分析聚类的`cluster`，可视化数据的`ggplot2`。通过画出每天CRAN里R库的下载量，图1-6定量刻画了R社区的增长。
+    R社区通过*R语言综合文档网络（Comprehensive R Archive Network，CRAN）*提供了丰富的程序包，支持安装即时可用的程序包，来执行各种任务——最享有盛名的高质量数据操作，可视化，和统计模型。许多操作只能在R中进行。另外，R社区是一个热情的，活跃的组织，这些优秀的朋友都愿意帮助你成功。R社区提供的许多程序包，到目前为止，都是统计计算的最优选择。一些下载最多的程序包包括：操作数据的`dplyr`，分析聚类的`cluster`，可视化数据的`ggplot2`。通过画出每天CRAN里R程序包的下载量，图1-6定量刻画了R社区的增长。
 
-![图1-6. CRAN库每日下载量](figures/1_6.png)
+![图1-6. CRAN程序包每日下载量](figures/1_6.png)
 
 除了统计分析，R也用在其他领域。以下领域和本书高度相关：
 
@@ -427,7 +427,7 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 [^11]:Hinton GE, Osindero S, Teh Y (2006). “A fast learning algorithm for deep belief nets.” Neural computation, 18(7), 1527–1554.
 [^12]:Krizhevsky A, Sutskever I, Hinton GE (2012). “Imagenet classification with deep convolutional neural networks.” In Advances in neural information processing systems, 1097–1105.
 
-处理上述几个领域时，你要么会面对逐渐增大的数据集，要么会面对逐渐复杂的计算过程。这些流程执行起来都很慢，或者某些时候在单台计算机上变得不可能。但是，要知道，Spark并不一定是所有计算问题的答案。相反，面对R中的计算问题时，使用以下技术会很有效：
+处理上述几个领域时，你要么会面对逐渐增大的数据集，要么会面对逐渐复杂的计算过程。这些流程执行起来都很慢，或者某些时候在单台计算机上变得不可能。但是，要知道，Spark并不一定是所有计算问题的答案。而面对R中的计算问题时，使用以下技术会很有效：
 
 * 采样
 
@@ -435,7 +435,7 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 
 * 分析器
 
-    你可以试着理解为什么计算很慢，进而需要改进。分析器是检查代码执行情况，帮助识别瓶颈的工具。在R中，R的分析器，`profvis`库和RStudio的分析器功能可以让你轻松的重试和可视化一个分析器。然而，优化代码通常并不容易。
+    你可以试着理解为什么计算很慢，进而需要改进。分析器是检查代码执行情况，帮助识别瓶颈的工具。在R中，R的分析器，`profvis`程序包和RStudio的分析器功能可以让你轻松的重试和可视化一个分析器。然而，优化代码通常并不容易。
 
 * 纵向扩展
 
@@ -449,8 +449,7 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 
 ## `sparklyr`
 
-When you think of the computation power that Spark provides and the ease of use of
-the R language, it is natural to want them to work together, seamlessly. This is also
+考虑到Spark提供的计算能力和R语言的易用性，我们很自然的想让二者无缝的结合起来。这也是R社区期望的：提供Spark接口的R程序包用起来很简单，并与其它R程序包兼容，而且可以在CRAN上找到。This is also
 what the R community expected: an R package that would provide an interface to
 Spark that was easy to use, compatible with other R packages, and available in CRAN.
 With this goal, we started developing `sparklyr`. The first version, `sparklyr 0.4`, was
