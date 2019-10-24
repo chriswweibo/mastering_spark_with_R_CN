@@ -449,66 +449,27 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 
 ## `sparklyr`
 
-考虑到Spark提供的计算能力和R语言的易用性，我们很自然的想让二者无缝的结合起来。这也是R社区期望的：提供Spark接口的R程序包用起来很简单，并与其它R程序包兼容，而且可以在CRAN上找到。This is also
-what the R community expected: an R package that would provide an interface to
-Spark that was easy to use, compatible with other R packages, and available in CRAN.
-With this goal, we started developing `sparklyr`. The first version, `sparklyr 0.4`, was
-released during the useR! 2016 conference. This first version included support for
-`dplyr`, `DBI`, modeling with `MLlib`, and an extensible API that enabled extensions like
-H2O’s `rsparkling` package. Since then, many new features and improvements have
-been made available through `sparklyr 0.5, 0.6, 0.7, 0.8, 0.9` and `1.0`.
+考虑到Spark提供的计算能力和R语言的易用性，我们很自然的想让二者无缝的结合起来。这也是R社区期望的：提供Spark接口的R程序包用起来很简单，并与其它R程序包兼容，而且可以在CRAN上找到。为此，我们开始开发`sparklyr`。第一版，`sparklyr 0.4`，在2016年的useR!大会上发布。第一版包括对`dplyr`，`DBI`，建模工具`MLlib`的支持，以及支持类似H2O的`rsparkling`程序包的可扩展API。 从此，许多新的功能和改进在`sparklyr 0.5, 0.6, 0.7, 0.8, 0.9`和`1.0`做了实现。
 
-Officially, `sparklyr` is an R interface for Apache Spark. It’s available in CRAN and
-works like any other CRAN package, meaning that it’s agnostic to Spark versions, it’s
-easy to install, it serves the R community, it embraces other packages and practices
-from the R community, and so on. It’s hosted in GitHub and licensed under Apache
-2.0, which allows you to clone, modify, and contribute back to this project.
-When thinking of who should use sparklyr, the following roles come to mind:
+根据官方定义，`sparklyr`是Apache Spark的R语言接口。它可以通过CRAN获取，像其他CRAN程序包一样工作。这意味着人们无需知道Spark的版本，易于安装，同时服务于R社区，兼容其他R程序包，并接受来自R社区的使用反馈，等等。它托管在GitHub，遵循Apache 2.0协议，允许克隆，修改，并参与项目开发。使用`sparklyr`的用户应该包含以下角色：
 
 * 新用户
 
-    For new users, it is our belief that `sparklyr` provides the easiest way to get started
-with Spark. Our hope is that the early chapters of this book will get you up and
-running with ease and set you up for long-term success.
+    对于新用户，我们坚信`sparklyr`提供了使用Spark的最简单的方式。我们希望本书的前面几章可以帮助你逐渐熟悉并毫无压力的使用Spark，进而为长期任务做准备。
 
 * 数据科学家
 
-    For data scientists who already use and love R, `sparklyr` integrates with many
-other R practices and packages like `dplyr`, `magrittr`, `broom`, `DBI`, `tibble`, `rlang`,
-and many others, which will make you feel at home while working with Spark.
-For those new to R and Spark, the combination of high-level workflows available
-in sparklyr and low-level extensibility mechanisms make it a productive envi‐
-ronment to match the needs and skills of every data scientist.
+    对于已经使用和钟爱R的数据科学家，`sparklyr`整合了许多其他的R实践和程序包，例如`dplyr`，`magrittr`，`broom`，`DBI`，`tibble`，`rlang`，以及其它框架，让你使用Spark从容自如。而对于R和Spark的新手，`sparklyr`的高级别工作流整合和低级别扩展机制保证Spark是一个高产的环境，可以满足每个数据科学家的需求和技能。
 
 * 专家用户
 
-    For those users who are already immersed in Spark and can write code natively
-in Scala, consider making your Spark libraries available as an R package to the R
-community, a diverse and skilled community that can put your contributions to
-good use while moving open science forward.
+    对于已经深度使用Spark，并可以编写Scala原生代码的用户，可以考虑让你的Spark程序包作为一个R程序包贡献给R社区。一个多样的，强大的社区可以让你的工作贡献出最好的价值，促进开源社会的发展。
 
-We wrote this book to describe and teach the exciting overlap between Apache Spark
-and R. `sparklyr` is the R package that brings together these communities, expecta‐
-tions, future directions, packages, and package extensions. We believe that there is an
-opportunity to use this book to bridge the R and Spark communities: to present to
-the R community why Spark is exciting, and to the Spark community what makes R
-great. Both communities are solving very similar problems with a set of different
-skills and backgrounds; therefore, it is our hope that `sparklyr` can be a fertile ground
-for innovation, a welcoming place for newcomers, a productive environment for
-experienced data scientists, and an open community where cluster computing, data
-science, and machine learning can come together.
+我们编写这本书是为了介绍和传授Apache Spark和R融合的部分。`sparklyr`就是把这些社区，期望和未来方向，程序包及其扩展整合在一起的R程序包。我们相信，有机会使用这本书来搭起R和Spark社区的桥梁：给R社区介绍为什么Spark让人兴奋，给Spark社区介绍为什么R如此伟大。两个社区都在使用不同的技术和背景来解决相似的问题。因此，我们希望`sparklyr`可以是创新的肥沃土壤，是新手的好客之地，是数据科学达人的高产环境，也是集群计算，数据科学，机器学习一起交流的开放社区。
 
-## Recap
+## 总结
 
-This chapter presented Spark as a modern and powerful computing platform, R as an
-easy-to-use computing language with solid foundations in statistical methods, and
-`sparklyr` as a project bridging both technologies and communities. In a world in
-which the total amount of information is growing exponentially, learning how to ana‐
-lyze data at scale will help you to tackle the problems and opportunities humanity is
-facing today. However, before we start analyzing data, Chapter 2 will equip you with
-the tools you will need throughout the rest of this book. Be sure to follow each step
-carefully and take the time to install the recommended tools, which we hope will
-become familiar resources that you use and love.
+本章介绍了Spark这一现代而强大的计算平台，R这一易用的，基于扎实的统计建模理论的计算语言，以及`sparklyr`这一连接两个技术和社区的项目。w我们处在一个信息指数级增长的世界，学习如何分析大规模数据可以帮助你解决当今人类面临的问题和机遇。但是，在分析数据之前，第二章会介绍本书后面内容所需的工具。确保你可以明白每一步操作，并花点时间安装推荐的工具，它们会成为你经常使用和喜爱的资源。
 
 ----------
 
@@ -518,76 +479,31 @@ become familiar resources that you use and love.
 
 > — Samwell Tarly
 
-After reading Chapter 1, you should now be familiar with the kinds of problems that
-Spark can help you solve. And it should be clear that Spark solves problems by mak‐
-ing use of multiple computers when data does not fit in a single machine or when
-computation is too slow. If you are newer to R, it should also be clear that combining
-Spark with data science tools like ggplot2 for visualization and dplyr to perform data
-transformations brings a promising landscape for doing data science at scale. We also
-hope you are excited to become proficient in large-scale computing.
-In this chapter, we take a tour of the tools you’ll need to become proficient in Spark.
-We encourage you to walk through the code in this chapter because it will force you
-to go through the motions of analyzing, modeling, reading, and writing data. In other
-words, you will need to do some wax-on, wax-off, repeat before you get fully
-immersed in the world of Spark.
-In Chapter 3 we dive into analysis followed by modeling, which presents examples
-using a single-cluster machine: your personal computer. Subsequent chapters intro‐
-duce cluster computing and the concepts and techniques that you’ll need to success‐
-fully run code across multiple machines.
+完成第一章的学习，你应该熟悉了Spark可以解决的各类问题。显而易见，Spark利用多台计算机来解决数据无法在单个机器上运行或者计算太慢的问题。如果你是R的新手，也可以看到，把Spark和数据科学工具，例如可视化工具`ggplot2`，数据变换的`dplyr`，结合起来可以给大规模数据科学项目带来美好的愿景。我们也希望你为自己成为大规模数据计算高手而感到兴奋。
 
-## Overview
+在本章中，我们会浏览一下成为Spark高手所需要的工具。我们鼓励你能够实现本章的代码，因为这样会让你理解分析，建模，读取和写入数据的各种动作。换句话说，你需要坚持不懈，在使用Spark前反复实践。
 
-From R, getting started with Spark using sparklyr and a local cluster is as easy as
-installing and loading the sparklyr package followed by installing Spark using
-sparklyr; however, we assume you are starting with a brand new computer running
-Windows, macOS, or Linux, so we’ll walk you through the prerequisites before con‐
-necting to a local Spark cluster.
-15Although this chapter is designed to help you get ready to use Spark on your personal
-computer, it’s also likely that some readers will already have a Spark cluster available
-or might prefer to get started with an online Spark cluster. For instance, Databricks
-hosts a free community edition of Spark that you can easily access from your web
-browser. If you end up choosing this path, skip to “Prerequisites” on page 16, but
-make sure you consult the proper resources for your existing or online Spark cluster.
-Either way, after you are done with the prerequisites, you will first learn how to con‐
-nect to Spark. We then present the most important tools and operations that you’ll
-use throughout the rest of this book. Less emphasis is placed on teaching concepts or
-how to use them—we can’t possibly explain modeling or streaming in a single chap‐
-ter. However, going through this chapter should give you a brief glimpse of what to
-expect and give you the confidence that you have the tools correctly configured to
-tackle more challenging problems later on.
-The tools you’ll use are mostly divided into R code and the Spark web interface. All
-Spark operations are run from R; however, monitoring execution of distributed oper‐
-ations is performed from Spark’s web interface, which you can load from any web
-browser. We then disconnect from this local cluster, which is easy to forget to do but
-highly recommended while working with local clusters—and in shared Spark clusters
-as well!
-We close this chapter by walking you through some of the features that make using
-Spark with RStudio easier; more specifically, we present the RStudio extensions that
-sparklyr implements. However, if you are inclined to use Jupyter Notebooks or if
-your cluster is already equipped with a different R user interface, rest assured that you
-can use Spark with R through plain R code. Let’s move along and get your prerequi‐
-sites properly configured.
+在第三章中，我们会深入介绍分析，建模，并给出在单个集群上，也就是你的个人电脑上运行的例子。后续章节介绍集群计算，以及成功在多台机器上运行代码所需的概念和技术。
 
-## Prerequisites
+## 概述
 
-R can run in many platforms and environments; therefore, whether you use Win‐
-dows, Mac, or Linux, the first step is to install R from r-project.org; detailed instruc‐
-tions are provided in “Installing R” on page 251.
-Most people use programming languages with tools to make them more productive;
-for R, RStudio is such a tool. Strictly speaking, RStudio is an integrated development
-environment (IDE), which also happens to support many platforms and environ‐
-ments. We strongly recommend you install RStudio if you haven’t done so already;
-see details in “Installing RStudio” on page 253.
-16 | Chapter 2: Getting StartedWhen using Windows, we recommend avoiding directories with
-spaces in their path. If running getwd() from R returns a path with
-spaces, consider switching to a path with no spaces using
-setwd("path") or by creating an RStudio project in a path with no
-spaces.
-Additionally, because Spark is built in the Scala programming language, which is run
-by the Java Virtual Machine (JVM), you also need to install Java 8 on your system. It
-is likely that your system already has Java installed, but you should still check the ver‐
-sion and update or downgrade as described in “Installing Java” on page 252. You can
-use the following R command to check which version is installed on your system:
+R使用`sparklyr`来打通Spark和本地集群，整个过程和安装加载`sparklyr`程序包一样简单，后面安装Spark也通过`sparklyr`完成。但是，我们假设你在使用一个全新的电脑运行Windows，macOS或者Linux，因此我们会在连接本地Spark集群前，完成预备操作。
+
+尽管本章是为了在个人电脑上使用Spark做准备，一些读者可能已经有了Spark集群，或者喜欢使用在线Spark集群。例如，Databricks托管了一个免费的社区版的Spark，你可以很容易的从浏览器访问。如果你最终选择了这条路，可以跳过“预备操作”。但是要确保你查阅了合适的资源，支持已有的或在线的Spark集群。或者，完成预备操作后，你首先要学习如何连接Spark。我们会介绍本书后续章节中用到的最重要的工具和操作。我们不会过多关注教授概念或者如何使用概念。我们不可能在一章中解释完建模或流式计算。但是，完成本章的学习让你窥见到Spark的能力，以及确信工具已经完成正确的部署，可以应付未来更多棘手的问题了。
+
+所用的工具大部分都分成R代码和Spark网络接口。所有Spark操作都在R中运行。但是，分布式操作的监控动作在Spark的网络接口操作，你可以从任何一个网络浏览器加载看到。然后我们断开本地集群的连接。虽然容易忘记，我们还是强烈建议在使用本地集群和共享集群的时候能够记得这一操作.
+
+本章末尾会介绍一些功能，使得在Rstudio中操作Spark更容易。更具体的，我们会介绍由`sparklyr`实现的RStudio扩展。但是，如果你喜欢使用Jupyter Notebooks或者你的集群已经装好了别的R用户界面，确保你可以通过纯R代码使用Spark。现在，让我们开始学习预备操作。
+
+## 预备操作
+
+R可以在许多平台和环境中运行。所以，不管你用Windows，Mac，还是Linux，第一步都需要从r-project.org安装R。具体信息在“安装R”中有说明。
+
+大部分人在使用编程语言时会使用工具，以便让编程更加高效。对于R，RStudio就是这样一个工具。严格地说，RStudio是一个*集成开发环境（integrated development environment，IDE）*，现在它也支持许多平台和环境。如果还没有安装Rstudio，我们强烈推荐你安装，具体操作见“安装RStudio”。
+
+> 使用Windows的时候，我们建议不要使用路径上有空格的目录。如果运行`getwd()`返回了带有空格的路径，可以使用`setwd("path")`换成不带空格的路径，或者把RStudio项目创建到没有空格的路径中。
+
+另外，因为Spark是用Scala实现的，运行在Java虚拟机（Java Virtual Machine，JVM）上，所有你还需要给系统安装Java 8。你的系统可能装了Java，但是还需要检查版本，按照“安装Java”的内容升级或降级。你可以使用如下R命令检查安装在系统的版本：
 
 ```
 system("java -version")
@@ -595,42 +511,36 @@ java version "1.8.0_201"
 Java(TM) SE Runtime Environment (build 1.8.0_201-b09)
 Java HotSpot(TM) 64-Bit Server VM (build 25.201-b09, mixed mode)
 ```
-You can also use the JAVA_HOME environment variable to point to a specific Java ver‐
-sion by running Sys.setenv(JAVA_HOME = "path-to-java-8"); either way, before
-moving on to installing sparklyr, make sure that Java 8 is the version available for R.
+你也可以运行`Sys.setenv(JAVA_HOME = "path-to-java-8")`，使用`JAVA_HOME`环境变量来指定具体的Java版本，或者，在安装`sparklyr`之前，确保R环境可以使用Java 8版本。
 
-### Installing sparklyr
+### 安装`sparklyr`
 
-As with many other R packages, you can install sparklyr from CRAN as follows:
+和许多其他的R程序包一样，你可以使用如下命令安装CRAN上的`sparklyr`：
 
 ```{r}
 install.packages("sparklyr")
 ```
-The examples in this book assume you are using the latest version of sparklyr. You
-can verify your version is as new as the one we are using by running the following:
+本书的示例假设你使用最新版本的`sparklyr`。你可以运行如下代码，验证你的版本是不是我们的一样新：
 
 ```{r}
 packageVersion("sparklyr")
 [1] '1.0.2'
 ```
 
-### Installing Spark
+### 安装Spark
 
-Start by loading sparklyr:
+使用`sparklyr`安装:
 
 ```{r}
 library(sparklyr)
 ```
-This makes all sparklyr functions available in R, which is really helpful; otherwise,
-you would need to run each sparklyr command prefixed with sparklyr::.
-You can easily install Spark by running spark_install(). This downloads, installs,
-and configures the latest version of Spark locally on your computer; however, because
-we’ve written this book with Spark 2.3, you should also install this version to make
-sure that you can follow all the examples provided without any surprises:
+这个代码可以实现R中所有的`sparklyr`函数，非常有用。否则，你需要带着前缀`sparklyr::`运行每一个`sparklyr`命令。
+
+你可以简单的通过运行`spark_install()`安装Spark。这个命令可以在本地电脑上下载，安装和配置最新版本的Spark。但是，因为我们这本书是根据Spark 2.3编写的，所以你也可以安装这个版本，并顺畅的运行所有示例：
 ```{r}
 spark_install("2.3")
 ```
-Prerequisites | 17You can display all of the versions of Spark that are available for installation by running the following:
+你可以运行如下命令，输出所有可以安装的Spark版本：
 
 ```{r}
 spark_available_versions()
@@ -642,34 +552,27 @@ spark_available_versions()
 ## 5 2.3
 ## 6 2.4
 ```
-You can install a specific version by using the Spark version and, optionally, by also
-specifying the Hadoop version. For instance, to install Spark 1.6.3, you would run:
+你可以使用Spark版本信息安装特定的版本，或者也可以明确Hadoop版本。例如，要安装Spark 1.6.3，你可以运行：
 ```{r}
 spark_install(version = "1.6.3")
 ```
-You can also check which versions are installed by running this command:
+你也可以使用如下命令，检查已经安装的版本：
+
 ```{r}
 spark_installed_versions()
 spark hadoop dir
 7 2.3.1 2.7 /spark/spark-2.3.1-bin-hadoop2.7
 ```
-The path where Spark is installed is known as Spark’s home, which is defined in R
-code and system configuration settings with the SPARK_HOME identifier. When you are
-using a local Spark cluster installed with sparklyr, this path is already known and no
-additional configuration needs to take place.
-Finally, to uninstall a specific version of Spark you can run spark_uninstall() by
-specifying the Spark and Hadoop versions, like so:
+Spark的安装路径通常是Spark的主目录，可以通过R代码和系统配置的`SPARK_HOME`标识符来定义。当你使用安装有`sparklyr`的本地Spark集群时，这个路径是已知的，不需要额外的配置。
+
+最后，要卸载具体版本的Spark，你可以指定Spark和Hadoop的版本信息，运行`spark_uninstall()`，如下：
 ```{r}
 spark_uninstall(version = "1.6.3", hadoop = "2.6")
 ```
 
-> The default installation paths are ~/spark for macOS and Linux,
-and %LOCALAPPDATA%/spark for Windows. To customize the
-installation path, you can run options(spark.install.dir =
-"installation-path") before spark_install() and spark_con
-nect().
+> 默认的安装路径是：macOS和Linux的~/spark，Windows的%LOCALAPPDATA%/spark。要定制化安装路径，可以在`spark_install()`和`spark_connect()`之前运行`options(spark.install.dir = "installation-path")`。 
 
-## Connecting
+## 连接
 
 It’s important to mention that, so far, we’ve installed only a local Spark cluster. A local
 cluster is really helpful to get started, test code, and troubleshoot with ease. Later
