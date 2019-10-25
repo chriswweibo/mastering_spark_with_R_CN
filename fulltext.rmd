@@ -847,77 +847,71 @@ spark_disconnect_all()
 注意，退出R或者RStudio，或者重启R进程，也会引起Spark连接终止，进而终止Spark集群并把没有明确保存的数据放在缓存。
 
 ### 使用RStudio
-Since it’s very common to use RStudio with R, sparklyr provides RStudio extensions
-to help simplify your workflows and increase your productivity while using Spark in
-RStudio. If you are not familiar with RStudio, take a quick look at “Using RStudio” on
-page 254. Otherwise, there are a couple extensions worth highlighting.
-First, instead of starting a new connection using spark_connect() from RStudio’s R
-console, you can use the New Connection action from the Connections tab and then
-select the Spark connection, which opens the dialog shown in 图2-7. You can
-then customize the versions and connect to Spark, which will simply generate the
-right spark_connect() command and execute this in the R console for you.
+
+既然使用RStudio运行R非常普遍，`sparklyr`也提供了RStudio扩展来帮助简化工作流，提高Rstudio中使用Spark的生产效率。如果你不熟悉RStudio，可以快速浏览依一下“使用Rstudio”部分。一些扩展非常值得关注。
+
+首先，不用Rstudio控制台的`spark_connect()`建立连接，你可以用Connections标签下的New Connection操作，然后选取Spark connection，打开图2-7的对话窗口。你可定制版本号和连接配置，生成正确的`spark_connect()`命令，并在R控制台中执行。
 
 ![图2-7. RStudio中新建Spark连接对话窗口](figures/2_7.png)
 
-After you’re connected to Spark, RStudio displays your available datasets in the Con‐
-nections tab, as shown in 图2-8. This is a useful way to track your existing data‐
-sets and provides an easy way to explore each of them.
+连接到Spark后，RStudio在Connections标签中展示了可用的数据集，如图2-8所示。这是跟踪可用数据集很有用的方法，也提供了探查它们的简便方式。
 
 ![图2-8. RStudio的Connections标签](figures/2_8.png)
 
-Additionally, an active connection provides the following custom actions:
-Spark UI
-Opens the Spark web interface; a shortcut to spark_web(sc).
+另外，活跃的连接提供了如下定制的操作：
 
-Opens the Spark web logs; a shortcut to spark_log(sc).
-SQL
-Opens a new SQL query. For more information about DBI and SQL support, see
-Chapter 3.
-Help
-Opens the reference documentation in a new web browser window.
-Disconnect
-Disconnects from Spark; a shortcut to spark_disconnect(sc).
-The rest of this book will use plain R code. It is up to you whether to execute this code
-in the R console, RStudio, Jupyter Notebooks, or any other tool that supports execut‐
-ing R code, since the examples provided in this book execute in any R environment.
+* Spark UI
+
+    打开Spark网络接口，`spark_web(sc)`快捷操作。
+
+* 日志
+
+    打开Spark网络日志，`spark_log(sc)`快捷操作。
+    
+* SQL
+
+    打开新的SQL查询。更多关于`DBI`和SQL支持额信息，可以查看第三章。
+
+* 帮助
+
+    在新的浏览器窗口中打开参考文档。
+    
+* 断开
+
+    断开Spark连接，`spark_disconnect(sc)`快捷操作。
+    
+本书的后边章节会使用纯R代码。本书中的代码都在R环境中运行。是在R控制台，Rstudio，Jupyter Notebooks，还是其它支持R代码的工具中运行R代码，取决于你个人的需要。
 
 ## 资源
 
-While we’ve put significant effort into simplifying the onboarding process, there are
-many additional resources that can help you to troubleshoot particular issues while
-getting started and, in general, introduce you to the broader Spark and R communi‐
-ties to help you get specific answers, discuss topics, and connect with many users
-actively using Spark with R:
-Documentation
-The documentation site hosted in RStudio’s Spark website should be your first
-stop to learn more about Spark when using R. The documentation is kept up to
-date with examples, reference functions, and many more relevant resources.
-Blog
-To keep up to date with major sparklyr announcements, you can follow the
-RStudio blog.
-Community
-For general sparklyr questions, you can post in the RStudio Community tagged
-as sparklyr.
-Stack Overflow
-For general Spark questions, Stack Overflow is a great resource; there are also
-many topics specifically about sparklyr.
-GitHub
-If you believe something needs to be fixed, open a GitHub issue or send us a pull
-request.
-30 | Chapter 2: Getting StartedGitter
-For urgent issues or to keep in touch, you can chat with us in Gitter.
+我们已经花了很大的精力简化上手过程，不过还有许多其它资源可以帮助你解决具体的上手问题。通常，这些资源会介绍更广泛的Spark和R社区，帮助你找到具体的答案，讨论某个话题，与经常使用Spark和R的用户沟通：
 
-## Recap
-In this chapter you learned about the prerequisites required to work with Spark. You
-saw how to connect to Spark using spark_connect(); install a local cluster using
-spark_install(); load a simple dataset, launch the web interface, and display logs
-using spark_web(sc) and spark_log(sc), respectively; and disconnect from RStudio
-using spark_disconnect(). We close by presenting the RStudio extensions that spar
-klyr provides.
-At this point, we hope that you feel ready to tackle actual data analysis and modeling
-problems in Spark and R, which will be introduced over the next two chapters. Chap‐
-ter 3 will present data analysis as the process of inspecting, cleaning, and transform‐
-ing data with the goal of discovering useful information. Modeling, the subject of
-Chapter 4, can be considered part of data analysis; however, it deserves its own chap‐
-ter to truly describe and take advantage of the modeling functionality available in
-Spark.
+* 文档
+
+    托管在RStudio的Spark网站的文档站点应该是了解更多在R中用Spark知识的首要选择。文档会对示例，引用函数和其他更多相关资源保存持续更新。
+
+* 博客
+
+    要获取最新的重大`sparklyr`通知，你可以关注Rstudio博客。 blog.
+
+* 社区
+
+    对于常见的`sparklyr`问题，你可以在RStudio社区发布帖子，并带上标签`sparklyr`。
+
+* Stack Overflow
+
+    对于常见的Spark问题，Stack Overflow是一个很棒的资源，它也包含很多关于`sparklyr`的话题。
+
+* GitHub
+
+    如果确定一些代码需要修改，你可以新建一个GitHub issue，或者给我们发送一个pull请求。
+
+* Gitter
+
+    对于紧急的问题，或者需要时常保持联系，你可以通过Gitter和我们沟通。
+
+## 小结
+
+在本章中，你学到了使用Spark的预备操作。你已经看到如何使用`spark_connect()`连接Spark，使用`spark_install()`安装本地集群，使用`spark_web(sc)`和`spark_log(sc)`加载简单的数据集，启动网络接口和展示日志，使用RStudio的`spark_disconnect()`断开连接。最后，我们介绍了`sparklyr`提供的Rstudio扩展。
+
+现在，我们希望你准备好使用Spark和R分析真实数据和建模问题。这些内容会在接下来两章介绍。第三章会介绍数据分析，一个探查，清洗和转换数据的过程，达到发现有用的信息的目的。第四章，建模，可以看做是数据分析的一部分。但是适合独立成章，以便真正阐述和利用Spark的建模功能。
