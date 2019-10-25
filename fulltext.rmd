@@ -581,32 +581,21 @@ spark_uninstall(version = "1.6.3", hadoop = "2.6")
 library(sparklyr)
 sc <- spark_connect(master = "local", version = "2.3")
 ```
-> If you are using your own or online Spark cluster, make sure that
-you connect as specified by your cluster administrator or the
-online documentation. If you need some pointers, you can take a
-quick look at Chapter 7, which explains in detail how to connect to
-any Spark cluster.
+> 如果你使用的是自己的或者在线的Spark集群，确保你是按照集群管理员的配置或者在线文档进行连接。如果你需要指针，可以参考第七章，它会详细介绍如何连接Spark集群。
 
-The master parameter identifies which is the “main” machine from the Spark cluster;
-this machine is often called the driver node. While working with real clusters using
-many machines, you’ll find that most machines will be worker machines and one will
-be the master. Since we have only a local cluster with just one machine, we will
-default to using "local" for now.
-After a connection is established, spark_connect() retrieves an active Spark connec‐
-tion, which most code usually names sc; you will then make use of sc to execute
-Spark commands.
-If the connection fails, Chapter 7 contains a troubleshooting section that can help you
-to resolve your connection issue.
+`master`参数明确了Spark集群中哪一个是主机器。这个机器通常叫做*驱动节点（driver node）*。使用多台机器的真实集群时，你会发现大部分机器是工作机器，一个是主机器。因为我们只有一个单台机器的本地集群，从现在开始我们会默认使用“`local`”。
 
-## Using Spark
+建立好连接后，`spark_connect()`会获取一个工作的Spark连接，通常在大部分代码中命名为`sc`，你可以使用`sc`执行Spark命令。
 
-Now that you are connected, we can run a few simple commands. For instance, let’s
-start by copying the mtcars dataset into Apache Spark by using copy_to():
+如果连接失败了，第七章包含有故障排查的章节，可以帮助你解决连接问题。
+
+## 使用Spark
+
+建立连接后，我们可以运行几个简单的命令。例如，首先使用`copy_to()`把`mtcars`数据集复制给Apache Spark:
 ```{r}
 cars <- copy_to(sc, mtcars)
 ```
-The data was copied into Spark, but we can access it from R using the cars reference.
-To print its contents, we can simply type *cars*:
+现在数据复制给了Spark，我们可以使用`cars`从R中请求数据。要打印具体内容，我们可以键入`*cars*`:
 
 ```{r}
 cars
@@ -625,50 +614,39 @@ mpg cyl disp hp drat wt qsec vs am gear carb
 10 19.2 6 168. 123 3.92 3.44 18.3 1 0 4 4
 # … with more rows
 ```
-Congrats! You have successfully connected and loaded your first dataset into Spark.
-Let’s explain what’s going on in copy_to(). The first parameter, sc, gives the function
-a reference to the active Spark connection that was created earlier with spark_con
-nect(). The second parameter specifies a dataset to load into Spark. Now, copy_to()
-returns a reference to the dataset in Spark, which R automatically prints. Whenever a
-Spark dataset is printed, Spark collects some of the records and displays them for you.
-In this particular case, that dataset contains only a few rows describing automobile
-models and some of their specifications like horsepower and expected miles per
-gallon.
 
-## Web Interface
+很棒！你成功的连接了Spark并加载了第一个数据集。
 
-Most of the Spark commands are executed from the R console; however, monitoring
-and analyzing execution is done through Spark’s web interface, shown in Figure 2-1.
-This interface is a web application provided by Spark that you can access by running:
+让我们看看`copy_to()`做了什么操作。第一个参数`sc`，给函数提供了一个工作的Spark连接指向，这个连接是之前通过`spark_connect()`创建的。第二个参数给出了要加载到Spark的数据集。现在，`copy_to()`返回Spark中数据集，并由R环境自动打印。只要Spark打印数据集，它都会收集几条数据记录并在前台展示。在这个例子中，数据集只包含几行描述机动车型号的信息以及诸如马力，和每加仑可行驶英里数的说明。
+
+## 网络接口
+
+大部分Spark命令都在R控制台执行。但是，监控和分析动作是在Spark的网络界面完成，如图2-1所示。这个接口是Spark提供的网络应用，你可以运行如下代码进行请求：
 ```{r}
 spark_web(sc)
 ```
 
-![Figure 2-1. The Apache Spark web interface](figures/2_1.png)
+![图2-1. Apache Spark网络接口](figures/2_1.png)
 
-Printing the cars dataset collected a few records to be displayed in the R console. You
-can see in the Spark web interface that a job was started to collect this information
-back from Spark. You can also select the Storage tab to see the mtcars dataset cached
-in memory in Spark, as shown in Figure 2-2.
-Notice that this dataset is fully loaded into memory, as indicated by the Fraction
-Cached column, which shows 100%; thus, you can see exactly how much memory
-this dataset is using through the Size in Memory column.
+打印`cars`数据集会收集几行记录并展示到R控制台。你可以在Spark网络接口中看到，一个作业用于在Spark中收集这个信息。你可以可选择Storage标签，查看Spark内存中的`mtcars`数据集，如图2-2所示。
 
-![Figure 2-2. The Storage tab on the Apache Spark web interface](figures/2_2.png)
+注意，根据Fraction Cached列100%取值，这个数据集完全加载到了内存中。因此，根据Size in Memory列，你可以准确的看到这个数据集使用了多少内存。
+
+![图2-2. Apache Spark网络接口的Storage标签](figures/2_2.png)
 
 The Executors tab, shown in Figure 2-3, provides a view of your cluster resources. For
 local connections, you will find only one executor active with only 2 GB of memory
 allocated to Spark, and 384 MB available for computation. In Chapter 9 you will learn
 how to request more compute instances and resources, and how memory is allocated.
 
-![Figure 2-3. The Executors tab on the Apache Spark web interface](figures/2_3.png)
+![图2-3. Apache Spark网络接口的Executors标签](figures/2_3.png)
 
 The last tab to explore is the Environment tab, shown in Figure 2-4; this tab lists all of
 the settings for this Spark application, which we look at in Chapter 9. As you will
 learn, most settings don’t need to be configured explicitly, but to properly run them at
 scale, you need to become familiar with some of them, eventually.
 
-![Figure 2-4. The Environment tab on the Apache Spark web interface](figures/2_4.png)
+![图2-4. Apache Spark网络接口的Environment标签](figures/2_4.png)
 
 Next, you will make use of a small subset of the practices that we cover in depth in
 Chapter 3.
