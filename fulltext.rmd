@@ -619,7 +619,7 @@ mpg cyl disp hp drat wt qsec vs am gear carb
 
 让我们看看`copy_to()`做了什么操作。第一个参数`sc`，给函数提供了一个工作的Spark连接指向，这个连接是之前通过`spark_connect()`创建的。第二个参数给出了要加载到Spark的数据集。现在，`copy_to()`返回Spark中数据集，并由R环境自动打印。只要Spark打印数据集，它都会收集几条数据记录并在前台展示。在这个例子中，数据集只包含几行描述机动车型号的信息以及诸如马力，和每加仑可行驶英里数的说明。
 
-## 网络接口
+### 网络接口
 
 大部分Spark命令都在R控制台执行。但是，监控和分析动作是在Spark的网络界面完成，如图2-1所示。这个接口是Spark提供的网络应用，你可以运行如下代码进行请求：
 ```{r}
@@ -634,29 +634,19 @@ spark_web(sc)
 
 ![图2-2. Apache Spark网络接口的Storage标签](figures/2_2.png)
 
-The Executors tab, shown in Figure 2-3, provides a view of your cluster resources. For
-local connections, you will find only one executor active with only 2 GB of memory
-allocated to Spark, and 384 MB available for computation. In Chapter 9 you will learn
-how to request more compute instances and resources, and how memory is allocated.
+Executors标签，如图2-3所示，提供了集群资源的总览。对于本地连接，你只能看到一个2 GB内存的，384 MB计算内存的Spark工作节点。在第九章中国，你会看到，如何请求更过的计算实例和资源，以及内存如何分配。
 
 ![图2-3. Apache Spark网络接口的Executors标签](figures/2_3.png)
 
-The last tab to explore is the Environment tab, shown in Figure 2-4; this tab lists all of
-the settings for this Spark application, which we look at in Chapter 9. As you will
-learn, most settings don’t need to be configured explicitly, but to properly run them at
-scale, you need to become familiar with some of them, eventually.
+最后一个要介绍的标签是Environment标签，如图2-4所示；这个标签列出了所有Spark应用的设置，我们会在第九章中介绍。你可以看到，大部分设置不需要明确的配置，但是要在大规模数据上顺利运行，你还是要熟悉这些配置。
 
 ![图2-4. Apache Spark网络接口的Environment标签](figures/2_4.png)
 
-Next, you will make use of a small subset of the practices that we cover in depth in
-Chapter 3.
+然后，你可以使用小的数据子集进行练习。我们会在第三章中国详细介绍。
 
-## Analysis
+### 分析
 
-When using Spark from R to analyze data, you can use SQL (Structured Query Lan‐
-guage) or dplyr (a grammar of data manipulation). You can use SQL through the DBI
-package; for instance, to count how many records are available in our cars dataset,
-we can run the following:
+在R中使用Spark分析数据，你可以使用SQL（结构化查询语句）或者`dplyr`（数据操作语法）。你可以通过`DBI`程序包使用SQL。例如，要计算我们的`cars`数据集中有多少记录，我们可以运行如下代码：
 
 ```{r}
 library(DBI)
@@ -665,10 +655,7 @@ count(1)
 1 32
 ```
 
-When using dplyr, you write less code, and it’s often much easier to write than SQL.
-This is precisely why we won’t make use of SQL in this book; however, if you are pro‐
-ficient in SQL, this is a viable option for you. For instance, counting records in dplyr
-is more compact and easier to understand:
+使用`dplyr`的时候，需要的代码更少。而且通常比SQL容易的多。这也是为什么本书不用SQL的原因，但是，如果你对SQL很熟悉，这也是备选方案。例如，`dplyr`中计算行数要更简洁，且易于理解：
 ```{r}
 library(dplyr)
 count(cars)
@@ -678,11 +665,8 @@ n
 1 32
 ```
 
-In general, we usually start by analyzing data in Spark with dplyr, followed by sam‐
-pling rows and selecting a subset of the available columns. The last step is to collect
-data from Spark to perform further data processing in R, like data visualization. Let’s
-perform a very simple data analysis example by selecting, sampling, and plotting the
-cars dataset in Spark:
+一般情况下，我们通常首先使用`dplyr`做Spark中的数据分析，然后进行采样和列维度的子集选取。最后一步是从Spark中收集数据，并在R中做进一步数据处理，例如数据可视化。让我们运行一个非常简单的数据分析例子，包括对Spark中`cars`数据集选取，采样，绘制图形:
+
 ```{r}
 select(cars, hp, mpg) %>%
 sample_n(100) %>%
@@ -690,21 +674,13 @@ collect() %>%
 plot()
 ```
 
-The plot in Figure 2-5 shows that as we increase the horsepower in a vehicle, its fuel
-efficiency measured in miles per gallon decreases. Although this is insightful, it’s diffi‐
-cult to predict numerically how increased horsepower would affect fuel efficiency.
-Modeling can help us overcome this.
+图2-5看到，随着汽车马力的增加，它的每加仑英里数燃料效率在降低。尽管这个分析很深刻，但是要定量预测增加的马力影响多少燃料效率也并不容易。建模工作可以帮助我们解决这个问题。
 
-![Figure 2-5. Horsepower versus miles per gallon](figures/2_5.png)
+![图2-5. 马力vs每加仑英里数](figures/2_5.png)
 
-## Modeling
+### 建模
 
-Although data analysis can take you quite far toward understanding data, building a
-mathematical model that describes and generalizes the dataset is quite powerful. In
-Chapter 1 you learned that the fields of machine learning and data science make use
-of mathematical models to perform predictions and find additional insights.
-Using Spark | 23For instance, we can use a linear model to approximate the relationship between fuel
-efficiency and horsepower:
+尽管数据分析可以让你快速理解数据，构建数学模型描述和泛化数据集也非常有用。在第一章中，你学习了机器学习和数据科学领域使用数学模型进行预测和发现重要的观点。例如，我们可以使用线性模型估计燃料效率和马力的关系：
 
 ```{r}
 model <- ml_linear_regression(cars, mpg ~ hp)
@@ -714,9 +690,7 @@ Coefficients:
 (Intercept) hp
 30.09886054 -0.06822828
 ```
-Now we can use this model to predict values that are not in the original dataset. For
-instance, we can add entries for cars with horsepower beyond 250 and also visualize
-the predicted values, as shown in Figure 2-6.
+现在我们可以使用这个模型预测不在原始数据集中的值。例如，我们可以添加马力大于250的数据，并可视化预测的值，如图2-6所示。
 
 ```{r}
 model %>% 
@@ -727,42 +701,30 @@ collect() %>%
 plot()
 ```
 
-![Figure 2-6. Horsepower versus miles per gallon with predictions](figures/2_6.png)
+![图2-6. 马力vs每加仑英里数预测结果](figures/2_6.png)
 
-Even though the previous example lacks many of the appropriate techniques that you
-should use while modeling, it’s also a simple example to briefly introduce the model‐
-ing capabilities of Spark. We introduce all of the Spark models, techniques, and best
-practices in Chapter 4.
+尽管前面的例子缺少建模中所用的诸多技术，但是也足以作为一个简单的例子简要介绍Spark的建模能力。我们会在第四章中介绍所有Spark的模型，技术和最佳实践。
 
-## Data
-For simplicity, we copied the mtcars dataset into Spark; however, data is usually not
-copied into Spark. Instead, data is read from existing data sources in a variety of for‐
-mats, like plain text, CSV, JSON, Java Database Connectivity (JDBC), and many
-more, which we examine in detail in Chapter 8. For instance, we can export our cars
-dataset as a CSV file:
+### 数据
+
+简单起见，我们确实把`mtcars`数据集复制给了Spark。但是，一般情况下数据通常不在Saprk中。相反，数据要从已有的数据源中读取，格式也多种多样，例如纯文本，CSV，JSON，Java数据库连接JDBC和其它。我们会在第八章中详细介绍这些内容。例如，我们可以把`cars`数据集输出为CSV文件：
 ```{r}
 spark_write_csv(cars, "cars.csv")
 ```
-In practice, we would read an existing dataset from a distributed storage system like
-HDFS, but we can also read back from the local file system:
+实际工作中，我们会从分布式存储系统例如HDFS中读取已有额数据集，但是我们也可以从本地文件系统中读取数据：
 ```{r}
 cars <- spark_read_csv(sc, "cars.csv")
 ```
 
-## Extensions
-In the same way that R is known for its vibrant community of package authors, at a
-smaller scale, many extensions for Spark and R have been written and are available to
-you. Chapter 10 introduces many interesting ones to perform advanced modeling,
-graph analysis, preprocessing of datasets for deep learning, and more.
-For instance, the sparkly.nested extension is an R package that extends sparklyr to
-help you manage values that contain nested information. A common use case
-involves JSON files that contain nested lists that require preprocessing before you can
-do meaningful data analysis. To use this extension, we first need to install it as
-follows:
+### 扩展
+
+R以其活跃的程序包作者社区而著名。同样的，许多Spark和R扩展已经编程实现，并随时可用，只是数量较R社区中的少些。第十章会介绍许多有趣的程序包支持高级建模，图分析，深度学习数据预处理等等。
+
+例如，`sparkly.nested`扩展是R的一个程序包，允许`sparklyr`管理包含嵌套信息的取值。常见的用例是，包含嵌套列表的JSON文件，需要在有意义的数据分析前做预处理。要使用这个扩展，我们首先需要按照如下代码安装：
 ```{r}
 install.packages("sparklyr.nested")
 ```
-Then, we can use the sparklyr.nested extension to group all of the horsepower data
+然后，我们可以使用`sparklyr.nested`扩展，根据气缸数，对所有的马力数据点分组：
 points over the number of cylinders:
 ```{r}
 sparklyr.nested::sdf_nest(cars, hp) %>%
@@ -775,17 +737,13 @@ cyl data
 2 4 <list [11]>
 3 8 <list [14]>
 ```
-Even though nesting data makes it more difficult to read, it is a requirement when
-you are dealing with nested data formats like JSON using the spark_read_json()
-and spark_write_json() functions.
+尽管嵌套数据不太容易读取，但是在借助`spark_read_json()`和`spark_write_json()`函数处理诸如JSON的嵌套数据格式的时候，确实存在这样的需求。
 
-## Distributed R
-For those few cases when a particular functionality is not available in Spark and no
-extension has been developed, you can consider distributing your own R code across
-the Spark cluster. This is a powerful tool, but it comes with additional complexity, so
-you should only use it as a last resort.
-Suppose that we need to round all of the values across all the columns in our dataset.
-One approach would be running custom R code, making use of R’s round() function:
+### 分布式R
+
+对于某些情况下，个别Spark的功能不能实现，或者扩展没有开发完成，你可以考虑把R代码发布到Spark集群上。这是一个强大的工具，但是也带了额外的复杂性。所以你应该把它做为最后的方案。
+
+假设我们需要四舍五入数据集中所有列的取值。一个方法是运行R代码，执行`round()`函数：
 ```{r}
 cars %>% spark_apply(~round(.x))
 # Source: spark<?> [?? x 11]
@@ -804,49 +762,37 @@ mpg cyl disp hp drat wt qsec vs am gear carb
 # … with more rows
 ```
 
-If you are a proficient R user, it can be quite tempting to use spark_apply() for
-everything, but please, don’t! spark_apply() was designed for advanced use cases
-where Spark falls short. You will learn how to do proper data analysis and modeling
-without having to distribute custom R code across your cluster.
+如果你是R语言高手，你会倾向于使用`spark_apply()`处理一切。但是最好别这样！`spark_apply()` 适用于Spark能力受限的高级情形。你会了解到如何执行合适的数据分析和建模，而不用把R代码分发给你的集群。
 
-## Streaming
+### 流式计算
 
-While processing large static datasets is the most typical use case for Spark, process‐
-ing dynamic datasets in real time is also possible and, for some applications, a
-requirement. You can think of a streaming dataset as a static data source with new
-data arriving continuously, like stock market quotes. Streaming data is usually read
-from Kafka (an open source stream-processing software platform) or from dis‐
-tributed storage that receives new data continuously.
-To try out streaming, let’s first create an input/ folder with some data that we will use
-as the input for this stream:
+虽然处理大量静态数据是Spark的典型应用场景，但是Spark也可以处理实时动态数据集。某些应用中确实有这样的需求。你可以把一个流式数据集看做一个持续更新数据的静态数据源，例如股票市场报价。流式数据通常从Kafka（一个开源的流式数据处理软件平台）或分布式存储中读取。
+
+要体验流式计算，首先创建一个input/文件夹，放入一些流式计算所需的输入数据：
 ```{r}
 dir.create("input")
 write.csv(mtcars, "input/cars_1.csv", row.names = F)
 ```
-Then, we define a stream that processes incoming data from the input/ folder, per‐
-forms a custom transformation in R, and pushes the output into an output/ folder:
+
+然后，定义一个作业流，处理来自input/文件夹的数据，执行R代码定义的转换，并输出到一个output/文件夹：
 ```{r}
 stream <- stream_read_csv(sc, "input/") %>%
 select(mpg, cyl, disp) %>%
 stream_write_csv("output/")
 ```
-As soon as the stream of real-time data starts, the input/ folder is processed and
-turned into a set of new files under the output/ folder containing the new transformed
-files. Since the input contained only one file, the output folder will also contain a sin‐
-gle file resulting from applying the custom spark_apply() transformation.
+
+实时数据一开始输入，input/文件夹几乎同时开始处理，并在output/文件夹中存入新的转换数据文件。因为输入文件夹只有一个文件，输出文件夹也只包含一个经过`spark_apply()`转换的文件。
 ```{r}
 dir("output", pattern = ".csv")
 [1] "part-00000-eece04d8-7cfa-4231-b61e-f1aef8edeb97-c000.csv"
 ```
-Up to this point, this resembles static data processing; however, we can keep adding
-files to the input/ location, and Spark will parallelize and process data automatically.
-Let’s add one more file and validate that it’s automatically processed:
+到目前为止，这些操作和静态数据的处理很像。但是，我们可以持续添加input/文件夹中的文件，Spark会自动的并行处理数据。让我们添加一个新的文件，检查是否可以自动处理：
 
 ```{r}
 # Write more data into the stream source
 write.csv(mtcars, "input/cars_2.csv", row.names = F)
 ```
-Wait a few seconds and validate that the data is processed by the Spark stream:
+等待几秒，确认Spark作业流处理了数据：
 
 ```{r}
 # Check the contents of the stream destination
@@ -854,20 +800,17 @@ dir("output", pattern = ".csv")
 [1] "part-00000-2d8e5c07-a2eb-449d-a535-8a19c671477d-c000.csv"
 [2] "part-00000-eece04d8-7cfa-4231-b61e-f1aef8edeb97-c000.csv"
 ```
-You should then stop the stream:
+然后你应该终止作业流：
 ```{r}
 stream_stop(stream)
 ```
-You can use dplyr, SQL, Spark models, or distributed R to analyze streams in real
-time. In Chapter 12 we properly introduce you to all the interesting transformations
-you can perform to analyze real-time data.
 
-## Logs
+你可以使用`dplyr`，SQL，Spark模型，或者分布式R分析实时数据流。在第十二章中，我们会详细介绍分析实时数据所需的所有有意思的转换。
 
-Logging is definitely less interesting than real-time data processing; however, it’s a
-tool you should be or become familiar with. A log is just a text file to which Spark
-appends information relevant to the execution of tasks in the cluster. For local clus‐
-ters, we can retrieve all the recent logs by running the following:
+### 日志
+
+日志记录肯定比实时数据处理要无聊。但是，它是你应该熟悉的工具。日志是一份文本文件，Spark可以追加集群中任务执行的相关信息。对于本地集群，我们运行如下代码，获取所有相关日志：
+
 ```{r}
 spark_log(sc)
 18/10/09 19:41:46 INFO Executor: Finished task 0.0 in stage 5.0 (TID 5)...
@@ -876,8 +819,9 @@ spark_log(sc)
 18/10/09 19:41:46 INFO DAGScheduler: ResultStage 5 (collect at utils...
 18/10/09 19:41:46 INFO DAGScheduler: Job 3 finished: collect at utils...
 ```
-Or, we can retrieve specific log entries containing, say, sparklyr, by using the filter
-parameter, as follows:
+
+我们也可以具体的日志记录，比如包含`sparklyr`的记录。使用`filter`参数，运行如下代码：
+
 ```{r}
 spark_log(sc, filter = "sparklyr")
 ## 18/10/09 18:53:23 INFO SparkContext: Submitted application: sparklyr
@@ -886,49 +830,45 @@ spark_log(sc, filter = "sparklyr")
 ## 18/10/09 18:53:27 INFO Utils: Fetching spark://localhost:52930/...
 ## 18/10/09 18:53:27 INFO Executor: Adding file:/private/var/folders/...
 ```
-Most of the time, you won’t need to worry about Spark logs, except in cases for which
-you need to troubleshoot a failed computation; in those cases, logs are an invaluable
-resource to be aware of. Now you know.
 
-### Disconnecting
+多数情况下，你不必操心Spark日志，除非你需要排查一个失败的计算任务。此时，日志是无价之宝。切记！
 
-For local clusters (really, any cluster), after you are done processing data, you should
-disconnect by running the following:
+## 断开连接
+
+对于本地集群（以及任何集群），你应该在完成数据处理后，使用如下代码断开连接：
+
 ```{r}
 spark_disconnect(sc)
 ```
-This terminates the connection to the cluster as well as the cluster tasks. If multiple
-Spark connections are active, or if the connection instance sc is no longer available,
-you can also disconnect all your Spark connections by running this command:
+这些操作会终止集群连接和集群任务。如果有多个Spark连接在工作，或者连接实例`sc`不再可用，你也可以使用如下命令，断开所有的Spark连接：
 ```{r}
 spark_disconnect_all()
 ```
-Notice that exiting R, or RStudio, or restarting your R session, also causes the Spark
-connection to terminate, which in turn terminates the Spark cluster and cached data
-that is not explicitly saved.
-Using RStudio
+注意，退出R或者RStudio，或者重启R进程，也会引起Spark连接终止，进而终止Spark集群并把没有明确保存的数据放在缓存。
+
+### 使用RStudio
 Since it’s very common to use RStudio with R, sparklyr provides RStudio extensions
 to help simplify your workflows and increase your productivity while using Spark in
 RStudio. If you are not familiar with RStudio, take a quick look at “Using RStudio” on
 page 254. Otherwise, there are a couple extensions worth highlighting.
 First, instead of starting a new connection using spark_connect() from RStudio’s R
 console, you can use the New Connection action from the Connections tab and then
-select the Spark connection, which opens the dialog shown in Figure 2-7. You can
+select the Spark connection, which opens the dialog shown in 图2-7. You can
 then customize the versions and connect to Spark, which will simply generate the
 right spark_connect() command and execute this in the R console for you.
 
-![Figure 2-7. RStudio New Spark Connection dialog](figures/2_7.png)
+![图2-7. RStudio中新建Spark连接对话窗口](figures/2_7.png)
 
 After you’re connected to Spark, RStudio displays your available datasets in the Con‐
-nections tab, as shown in Figure 2-8. This is a useful way to track your existing data‐
+nections tab, as shown in 图2-8. This is a useful way to track your existing data‐
 sets and provides an easy way to explore each of them.
 
-![Figure 2-8. The RStudio Connections tab](figures/2_8.png)
+![图2-8. RStudio的Connections标签](figures/2_8.png)
 
 Additionally, an active connection provides the following custom actions:
 Spark UI
 Opens the Spark web interface; a shortcut to spark_web(sc).
-Using RStudio | 29Log
+
 Opens the Spark web logs; a shortcut to spark_log(sc).
 SQL
 Opens a new SQL query. For more information about DBI and SQL support, see
@@ -941,7 +881,7 @@ The rest of this book will use plain R code. It is up to you whether to execute 
 in the R console, RStudio, Jupyter Notebooks, or any other tool that supports execut‐
 ing R code, since the examples provided in this book execute in any R environment.
 
-## Resources
+## 资源
 
 While we’ve put significant effort into simplifying the onboarding process, there are
 many additional resources that can help you to troubleshoot particular issues while
