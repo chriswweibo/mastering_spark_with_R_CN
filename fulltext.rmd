@@ -915,43 +915,28 @@ spark_disconnect_all()
 在本章中，你学到了使用Spark的预备操作。你已经看到如何使用`spark_connect()`连接Spark，使用`spark_install()`安装本地集群，使用`spark_web(sc)`和`spark_log(sc)`加载简单的数据集，启动网络接口和展示日志，使用RStudio的`spark_disconnect()`断开连接。最后，我们介绍了`sparklyr`提供的Rstudio扩展。
 
 现在，我们希望你准备好使用Spark和R分析真实数据和建模问题。这些内容会在接下来两章介绍。第三章会介绍数据分析，一个探查，清洗和转换数据的过程，达到发现有用的信息的目的。第四章，建模，可以看做是数据分析的一部分。但是适合独立成章，以便真正阐述和利用Spark的建模功能。
+
 ----------------
+
 # 第三章 分析
 
 
 > First lesson: stick them with the pointy end.
 > —Jon Snow
 
-Previous chapters focused on introducing Spark with R, getting you up to speed and
-encouraging you to try basic data analysis workflows. However, they have not prop‐
-erly introduced what data analysis means, especially with Spark. They presented the
-tools you will need throughout this book—tools that will help you spend more time
-learning and less time troubleshooting.
-This chapter introduces tools and concepts to perform data analysis in Spark from R.
-Spoiler alert: these are the same tools you use with plain R! This is not a mere coinci‐
-dence; rather, we want data scientists to live in a world where technology is hidden
-from them, where you can use the R packages you know and love, and they “just
-work” in Spark! Now, we are not quite there yet, but we are also not that far. There‐
-fore, in this chapter you learn widely used R packages and practices to perform data
-analysis—dplyr, ggplot2, formulas, rmarkdown, and so on—which also happen to
-work in Spark.
-Chapter 4 will focus on creating statistical models to predict, estimate, and describe
-datasets, but first, let’s get started with analysis!
+之前的章节主要介绍Spark和R，可以让你快速熟悉和鼓励尝试基础的数据分析流程。但是，我们并没有介绍什么是数据分析，尤其是Spark中的数据分析。 我们介绍了本书中需要用到的工具，它们有助于你更多的关注学习而不是排查问题。
+
+本章会介绍使用Spark和R进行数据分析的工具和概念。需要注意的是，这些工具和你只使用R的时候一样！这并非偶然。我们只是希望数据科学家能够屏蔽一些技术细节，而只使用自己熟知和喜欢的程序库，并且确实在Spark框架下可行。现在我们离这个目标还有点距离，但是并不远。所以，你会在本章学到一些广泛使用的R程序包和实际操作来进行数据分析——`dplyr`，`ggplot2`，`formulas`，`rmarkdown`等，这些程序包在Spark框架下依然有效。
+
+第四章会关注创建统计模型来预测，估计和描述数据集。但是首先，我们从分析工作开始！
 
 ## 概述
 
-In a data analysis project, the main goal is to understand what the data is trying to
-“tell us,” hoping that it provides an answer to a specific question. Most data analysis
-projects follow a set of steps, as shown in Figure 3-1.
-As the diagram illustrates, we first import data into our analysis stem, where we wran‐
-gle it by trying different data transformations, such as aggregations. We then visualize
-the data to help us perceive relationships and trends. To gain deeper insight, we can
-33
-fit one or multiple statistical models against sample data. This will help us find out
-whether the patterns hold true when new data is applied to them. Lastly, the results
-are communicated publicly or privately to colleagues and stakeholders.
+数据分析项目的主要目标是理解数据到底要告诉我们什么，希望能够给出一个具体问题的答案。大部分数据分析项目遵循一些步骤，如图3-1所示。
 
-![Figure 3-1. The general steps of a data analysis](figures/3_1.png)
+如图所示，我们首先把数据引入主要分析流程。这个流程会对通过各种数据转换，例如数据合并，完成*数据操作*。然后，我们会对数据*可视化*，以便看到数据的关系和趋势。要获得更深的理解，我们可以用一个或者多个统计模型集合数据。这会帮助我们找出相关模式在数据集上是否成立。最后，结果可以以公开的形式或者私密的形式和同事和相关人员沟通。
+
+![图3-1. 数据分析一般步骤](figures/3_1.png)
 
 When working with not-large-scale datasets—as in datasets that fit in memory—we
 can perform all those steps from R, without using Spark. However, when data does
