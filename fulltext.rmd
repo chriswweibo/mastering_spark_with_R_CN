@@ -954,12 +954,9 @@ spark_disconnect_all()
 
 ![图3-4. dplyr writes SQL in Spark](figures/3_4.png)
 
-为了边学边练，本章后边的代码使用简单的练习，可以子啊本地SparkTo practice as you learn, the rest of this chapter’s code uses a single exercise that runs
-in the local Spark master. This way, you can replicate the code on your personal com‐
-puter. Make sure `sparklyr` is already working, which should be the case if you com‐
-pleted Chapter 2.
-This chapter will make use of packages that you might not have installed. So, first,
-make sure the following packages are installed by running these commands:
+为了边学边练，本章后边的代码使用简单的练习，可以在本地Spark集群上运行。这样，你可以在自己的电脑上重复代码。确保`sparklyr`可以使用，第二章已经有过相关介绍。
+
+本章会使用一些你可能还没有安装的包，所以确保以下程序包通过如下命令安装成功：
 ```{r}
 install.packages("ggplot2")
 install.packages("corrr")
@@ -967,51 +964,35 @@ install.packages("dbplot")
 install.packages("rmarkdown")
 ```
 
-First, load the sparklyr and dplyr packages and then open a new local connection.
+首先，加载`sparklyr`和`dplyr`程序包，并打开新的本地连接。
 ```{r}
 library(sparklyr)
 library(dplyr)
 sc <- spark_connect(master = "local", version = "2.3")
 ```
-The environment is ready to be used, so our next task is to import data that we can
-later analyze.
-Import
-When using Spark with R, you need to approach importing data differently. Usually,
-importing means that R will read files and load them into memory; when you are
-using Spark, the data is imported into Spark, not R. In Figure 3-5, notice how the data
-source is connected to Spark instead of being connected to R.
 
-![图3-5. Import data to Spark not R](figures/3_5.png)
+环境已经可以用了，下面我们要导入数据，进行分析。
 
-> When you’re performing analysis over large-scale datasets, the vast
-majority of the necessary data will already be available in your
-Spark cluster (which is usually made available to users via Hive
-tables or by accessing the file system directly). Chapter 8 will cover
-this extensively.
+## 数据导入
 
-Rather than importing all data into Spark, you can request Spark to access the data
-source without importing it—this is a decision you should make based on speed and
-performance. Importing all of the data into the Spark session incurs a one-time up￾front cost, since Spark needs to wait for the data to be loaded before analyzing it. If
-the data is not imported, you usually incur a cost with every Spark operation since
-Spark needs to retrieve a subset from the cluster’s storage, which is usually disk drives
-that happen to be much slower than reading from Spark’s memory. More on this
-topic will be covered in Chapter 9.
-Let’s prime the session with some data by importing mtcars into Spark using
-copy_to(); you can also import data from distributed files in many different file for‐
-mats, which we look at in Chapter 8.
+使用Spark和R的时候，你需要使用不同的导入数据方法。通常，导入意味着R会读取文件，并加载到内存中。而使用Spark的时候，数据导入Spark，而不是R。在图3-5中，我们可以看到，数据源是如何与Spark连接而不是和R连接的。
+
+![图3-5. 数据导入到Spark，而不是R](figures/3_5.png)
+
+> 当你进行分析大规模数据集的时候，Spark集群中大部分所需的数据都可以进行操作（通常允许用户通过hive表或直接请求文件系统而实现）。第八章或详细介绍这些内容。
+
+不要把所有的数据都导入Spark中，你可以让Spark请求数据源，而不是导入数据。你应该根据机器速度和性能做出一个决定。给Spark进程导入所有的数据会引起一次性内存支出，因为Spark需要等待所有的数据都加载好了才能分析。而如果没有导入数据，你通过会遇到每次Spark操作的支出问题，因为Spark需要从集群存储，通常是磁盘驱动器中获取数据子集。这通常要比从Spark内存中读取数据要慢得多。第九章会详细介绍这一话题。
+
+让我们首先使用`copy_to()`给Spark导入数据，准备有个带有数据的进程。你也可以从各种格式的分布式文件中导入数据。相关内容会在第八章中介绍。
 ```{r}
 cars <- copy_to(sc, mtcars)
 ```
 
-> When using real clusters, you should use copy_to() to transfer
-only small tables from R; large data transfers should be performed
-with specialized data transfer tools.
+> 使用真实集群的时候，你应该只对小的R数据表格使用`copy_to()`进行转换，大的数据表格转换应该使用专门的数据转换工具。
 
-The data is now accessible to Spark and you can now apply transformations with
-ease; the next section covers how to wrangle data by running transformations inside
-Spark, using dplyr.
+现在Spark可以请求数据，你可以轻松的进行数据转换。下一节会介绍如何在Spark中使用`dplyr`转换数据。
 
-## Wrangle
+## 数据操作
 
 Data wrangling uses transformations to understand the data. It is often referred to as
 the process of transforming data from one “raw” data form into another format with
