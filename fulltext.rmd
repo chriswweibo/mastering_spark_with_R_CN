@@ -938,46 +938,25 @@ spark_disconnect_all()
 
 ![图3-1. 数据分析一般步骤](figures/3_1.png)
 
-When working with not-large-scale datasets—as in datasets that fit in memory—we
-can perform all those steps from R, without using Spark. However, when data does
-not fit in memory or computation is simply too slow, we can slightly modify this
-approach by incorporating Spark. But how?
-For data analysis, the ideal approach is to let Spark do what it’s good at. Spark is a
-parallel computation engine that works at a large scale and provides a SQL engine
-and modeling libraries. You can use these to perform most of the same operations R
-performs. Such operations include data selection, transformation, and modeling.
-Additionally, Spark includes tools for performing specialized computational work like
-graph analysis, stream processing, and many others. For now, we will skip those non￾rectangular datasets and present them in later chapters.
-You can perform data import, wrangling, and modeling within Spark. You can also
-partly do visualization with Spark, which we cover later in this chapter. The idea is to
-use R to tell Spark what data operations to run, and then only bring the results into R.
-As illustrated in Figure 3-2, the ideal method pushes compute to the Spark cluster and
-then collects results into R.
+当处理小规模数据集，也就是内存允许的数据集时，我们可以按照R语言的步骤执行，不用使用Spark。但是，当数据及无法放入内存，或者计算太慢时，我们可以结合Spark一个优化这些步骤。但是如何优化呢？
 
-![Figure 3-2. Spark computes while R collects results](figures/3_2.png)
+对于数据分析师而言，理想的方法是让Spark做它擅长的事情。Spark是并行计算的引擎，可以在大数据集上工作，并提供SQL查询引擎和建模所用的各种库。你可以使用这些技术执行与R大部分相同的操作。这些操作，包括数据选取，转换，建模。 另外，Spark包含了一些执行特殊计算的工具，例如图分析，流式处理和其他等。现在，我们跳过这些非表格数据集，留在后面的章节介绍。
 
-The sparklyr package aids in using the “push compute, collect results” principle.
-Most of its functions are wrappers on top of Spark API calls. This allows us to take
-advantage of Spark’s analysis components, instead of R’s. For example, when you need
-to fit a linear regression model, instead of using R’s familiar lm() function, you would
-use Spark’s ml_linear_regression() function. This R function then calls Spark to
-create this model. Figure 3-3 depicts this specific example.
+你可以使用Spark进行数据*导入*，*操作*和*建模*。你也可以做一部分可视化工作，后边会介绍这一内容。最终目的是要使用R告诉Spark要做什么数据操作，并把结果返回给R。如图3-2所示，理想的流程可以*推动计算（pushes compute）* 到Spark集群中，并*收集结果（collects results）*返回给。
 
-![Figure 3-3. R functions call Spark functionality](figures/3_3.png)
+![图3-2. Spark进行数据计算，R收集计算结果](figures/3_2.png)
 
-For more common data manipulation tasks, sparklyr provides a backend for dplyr.
-This means you can use dplyr verbs with which you’re already familiar in R, and then
-sparklyr and dplyr will translate those actions into Spark SQL statements, which are
-generally more compact and easier to read than SQL statements (see Figure 3-4). So,
-if you are already familiar with R and dplyr, there is nothing new to learn. This
-might feel a bit anticlimactic—indeed, it is—but it’s also great since you can focus that
-energy on learning other skills required to do large-scale computing.
+`sparklyr`程序包助力实现“推动计算，收集结果”的原则。其大部分函数都是Spark API调用的顶层封装。这可以让我们利用Spark的分析组件，而不是R的分析组件。例如，当你需要拟合线性回归模型的时候，不要使用R的熟知的`lm()`函数，你应该使用Spark对应的`ml_linear_regression()`函数。 这个R函数会调用Spark创建模型。图3-3给出了具体的例子。
 
-![Figure 3-4. dplyr writes SQL in Spark](figures/3_4.png)
+![图3-3. R函数调用Spark功能](figures/3_3.png)
 
-To practice as you learn, the rest of this chapter’s code uses a single exercise that runs
+对于更常见的数据任务，`sparklyr`提供了`dplyr`的强大支持。这就意味着，你可以使用R中已经熟知的`dplyr`操作，然后`sparklyr`和`dplyr`会把这些操作转换成Spark SQL语句。这些语句通常比SQL语句更加紧凑，易读（见图3-4）。所以，如果你对R和`dplyr`很熟悉，无需过多学习。这可能让人觉得有点虎头蛇尾。的确有点这种感觉。但是，可以专注学习大规模计算技能也是很棒的体验。
+
+![图3-4. dplyr writes SQL in Spark](figures/3_4.png)
+
+为了边学边练，本章后边的代码使用简单的练习，可以子啊本地SparkTo practice as you learn, the rest of this chapter’s code uses a single exercise that runs
 in the local Spark master. This way, you can replicate the code on your personal com‐
-puter. Make sure sparklyr is already working, which should be the case if you com‐
+puter. Make sure `sparklyr` is already working, which should be the case if you com‐
 pleted Chapter 2.
 This chapter will make use of packages that you might not have installed. So, first,
 make sure the following packages are installed by running these commands:
@@ -1002,7 +981,7 @@ importing means that R will read files and load them into memory; when you are
 using Spark, the data is imported into Spark, not R. In Figure 3-5, notice how the data
 source is connected to Spark instead of being connected to R.
 
-![Figure 3-5. Import data to Spark not R](figures/3_5.png)
+![图3-5. Import data to Spark not R](figures/3_5.png)
 
 > When you’re performing analysis over large-scale datasets, the vast
 majority of the necessary data will already be available in your
@@ -1228,7 +1207,7 @@ shave() %>%
 rplot()
 ```
 
-![Figure 3-6. Using rplot() to visualize correlations](figures/3_6.png)
+![图3-6. Using rplot() to visualize correlations](figures/3_6.png)
 
 It is much easier to see which relationships are positive or negative: positive relation‐
 ships are in gray, and negative relationships are black. The size of the circle indicates
@@ -1251,7 +1230,7 @@ To begin, a program takes the raw data and performs some sort of transformation.
 The transformed data is then mapped to a set of coordinates. Finally, the mapped val‐
 ues are drawn in a plot. Figure 3-7 summarizes each of the steps.
 
-![Figure 3-7. Stages of an R plot](figures/3_7.png)
+![图3-7. Stages of an R plot](figures/3_7.png)
 
 In essence, the approach for visualizing is the same as in wrangling: push the compu‐
 tation to Spark, and then collect the results in R for plotting. As illustrated in
@@ -1263,7 +1242,7 @@ a histogram, the bins are calculated in Spark, and then plotted in R using a sim
 column plot, as opposed to a histogram plot, because there is no need for R to recal‐
 culate the bins.
 
-![Figure 3-8. Plotting with Spark and R](figures/3_8.png)
+![图3-8. Plotting with Spark and R](figures/3_8.png)
 
 Let’s apply this conceptual model when using ggplot2.
 
@@ -1307,7 +1286,7 @@ geom_col(fill = "#999999") + coord_flip()
 
 Figure 3-9 shows the resulting plot.
 
-![Figure 3-9. Plot with aggregation in Spark](figures/3_9.png)
+![图3-9. Plot with aggregation in Spark](figures/3_9.png)
 
 
 Any other ggplot2 visualization can be made to work using this approach; however,
@@ -1336,7 +1315,7 @@ subtitle = "Histogram over miles per gallon")
 ```
 Figure 3-10 presents the resulting plot.
 
-![Figure 3-10. Histogram created by dbplot](figures/3_10.png)
+![图3-10. Histogram created by dbplot](figures/3_10.png)
 
 Histograms provide a great way to analyze a single variable. To analyze two variables,
 a scatter or raster plot is commonly used.
@@ -1351,7 +1330,7 @@ ggplot(aes(mpg, wt), data = mtcars) +
 geom_point()
 ```
 
-![Figure 3-11. Scatter plot example in Spark](figures/3_11.png)
+![图3-11. Scatter plot example in Spark](figures/3_11.png)
 
 However, for scatter plots, no amount of “pushing the computation” to Spark will
 help with this problem because the data must be plotted in individual dots.
@@ -1367,7 +1346,7 @@ dbplot_raster(cars, mpg, wt, resolution = 16)
 As shown in Figure 3-12, the resulting plot returns a grid no bigger than 5 x 5. This
 limits the number of records that need to be collected into R to 25.
 
-![Figure 3-12. A raster plot using Spark](figures/3_12.png)
+![图3-12. A raster plot using Spark](figures/3_12.png)
 
 > You can also use dbplot to retrieve the raw data and visualize by
 other means; to retrieve the aggregates, but not the plots, use
@@ -1564,7 +1543,7 @@ render() from R. The output should look like that shown in Figure 3-13.
 rmarkdown::render("report.Rmd")
 ```
 
-![Figure 3-13. R Markdown HTML output](figures/3_13.png)
+![图3-13. R Markdown HTML output](figures/3_13.png)
 You can now easily share this report, and viewers of won’t need Spark or R to read
 and consume its contents; it’s just a self-contained HTML file, trivial to open in any
 browser.
@@ -1868,7 +1847,7 @@ variable, which is the result of the following code:
 dbplot_histogram(okc_train, age)
 ```
 
-![Figure 4-1. Distribution of age](figures/4_1.png)
+![图4-1. Distribution of age](figures/4_1.png)
 
 A common EDA exercise is to look at the relationships between the response and the
 individual predictors. Often, you might have prior business knowledge of what these
@@ -1914,7 +1893,7 @@ geom_hline(yintercept = sum(prop_data$prop * prop_data$count) /
 sum(prop_data$count))
 ```
 
-![Figure 4-2. Proportion of individuals not currently employed, by religion](figures/4_2.png)
+![图4-2. Proportion of individuals not currently employed, by religion](figures/4_2.png)
 
 Next, we take a look at the relationship between a couple of predictors: alcohol use
 and drug use. We would expect there to be some correlation between them. You can
@@ -1956,7 +1935,7 @@ geom_mosaic(aes(x = product(drinks, drugs), fill = drinks,
 weight = count))
 ```
 
-![Figure 4-3. Mosaic plot of drug and alcohol use](figures/4_3.png)
+![图4-3. Mosaic plot of drug and alcohol use](figures/4_3.png)
 
 To further explore the relationship between these two variables, we can perform cor‐
 respondence analysis4
@@ -1995,7 +1974,7 @@ geom_text(aes(label = label)) +
 coord_equal()
 ```
 
-![Figure 4-4. Correspondence analysis principal coordinates for drug and alcohol use](figures/4_4.png)
+![图4-4. Correspondence analysis principal coordinates for drug and alcohol use](figures/4_4.png)
 
 62 | Chapter 4: Modeling
 In Figure 4-4, we see that the correspondence analysis procedure has transformed the
@@ -2042,7 +2021,7 @@ engineering workflow you might want to perform the normalization for all numeric
 variables that you want to include in the model.
 Feature Engineering | 63
 
-![Figure 4-5. Distribution of scaled age](figures/4_5.png)
+![图4-5. Distribution of scaled age](figures/4_5.png)
 
 Since some of the profile features are multiple-select—in other words, a person can
 choose to associate multiple options for a variable—we need to process them before
@@ -2107,7 +2086,7 @@ dbplot_histogram(okc_train, essay_length, bins = 100)
 ```
 We can see the distribution of the essay_length variable in Figure 4-6.
 
-![Figure 4-6. Distribution of essay length](figures/4_6.png)
+![图4-6. Distribution of essay length](figures/4_6.png)
 
 Feature Engineering | 65
 We use this dataset in Chapter 5, so let’s save it first as a Parquet file—an efficient file
@@ -2246,7 +2225,7 @@ ness problem helps to determine where on the curve one sets the threshold for cl
 fication. The AUC is a summary measure for determining the quality of a model, and
 we can compute it by calling the area_under_roc() function.
 
-![Figure 4-7. ROC curve for the logistic regression model](figures/4_7.png)
+![图4-7. ROC curve for the logistic regression model](figures/4_7.png)
 
 ```{r}
 validation_summary$area_under_roc()
@@ -2290,7 +2269,7 @@ geom_line() + geom_abline(lty = "dashed")
 ```
 Figure 4-8 shows the results of the plot.
 
-![Figure 4-8. Cross-validated ROC curves for the logistic regression model](figures/4_8.png)
+![图4-8. Cross-validated ROC curves for the logistic regression model](figures/4_8.png)
 
 And we can obtain the average AUC metric:
 ```{r}
@@ -2327,7 +2306,7 @@ coord_flip() +
 geom_hline(yintercept = 0, linetype = "dashed")
 ```
 
-![Figure 4-9. Coefficient estimates with 95% confidence intervals](figures/4_9.png)
+![图4-9. Coefficient estimates with 95% confidence intervals](figures/4_9.png)
 
 > Both ml_logistic_regression() and ml_linear_regression()
 support elastic net regularization5
@@ -2500,7 +2479,7 @@ facet_wrap(~ topic, scales = "free") +
 coord_flip()
 ```
 
-![Figure 4-10. The most common terms per topic in the first iteration](figures/4_10.png)
+![图4-10. The most common terms per topic in the first iteration](figures/4_10.png)
 
 At 100 iterations, we can see “topics” starting to emerge. This could be interesting
 information in its own right if you were digging into a large collection of documents
@@ -2509,7 +2488,7 @@ downstream supervised learning task; for example, we could consider using the to
 number as a predictor in our model to predict employment status in our predictive
 modeling example.
 
-![Figure 4-11. The most common terms per topic after 100 iterations](figures/4_11.png)
+![图4-11. The most common terms per topic after 100 iterations](figures/4_11.png)
 
 Finally, to conclude this chapter you should disconnect from Spark. Chapter 5 also
 makes use of the OKCupid dataset, but we provide instructions to reload it from
