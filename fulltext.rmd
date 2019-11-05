@@ -147,7 +147,7 @@ The dimensions of the table (number of rows and columns) are described in the fi
 row, followed by column names in the second row and column types in the third row.
 There are also various subtle visual improvements provided by the tibble package
 that we make use of throughout this book.
-Most plots are rendered using the ggplot2 package and a custom theme available in
+Most plots are rendered using the `ggplot2` package and a custom theme available in
 the appendix; however, because this book is not focused on data visualization, we
 only provide code to render a basic plot that won’t match the formatting we applied.
 If you are interested in learning more about visualization in R, consider specialized
@@ -180,7 +180,7 @@ Selection: A Practical Approach for Predictive Models (CRC Press).
 We also thank everyone indirectly involved but not explicitly listed in this section; we
 are truly standing on the shoulders of giants.
 This book itself was written in R using bookdown by Yihui Xie, rmarkdown by JJ Allaire
-and Yihui Xie, and knitr by Yihui Xie; we drew the visualizations using ggplot2 by
+and Yihui Xie, and knitr by Yihui Xie; we drew the visualizations using `ggplot2` by
 Hadley Wickham and Winston Chang; we created the diagrams using nomnoml by
 Daniel Kallin and Javier Luraschi; and we did the document conversions using pan
 doc by John MacFarlane.
@@ -1100,7 +1100,7 @@ summarise(cars, mpg_percentile = percentile(mpg, array(0.25, 0.5, 0.75)))
 1 <list [3]>
 ```
 You can use the explode() function to separate Spark’s array value results into their
-own record. To do this, use explode() within a mutate() command, and pass the
+own record. To do this, use `explode()` within a `mutate()` command, and pass the
 variable containing the results of the percentile operation:
 ```{r}
 summarise(cars, mpg_percentile = percentile(mpg, array(0.25, 0.5, 0.75))) %>%
@@ -1144,8 +1144,8 @@ ml_corr(cars)
 ```
 The corrr R package specializes in correlations. It contains friendly functions to pre‐
 pare and visualize the results. Included inside the package is a backend for Spark, so
-when a Spark object is used in corrr, the actual computation also happens in Spark.
-In the background, the correlate() function runs sparklyr::ml_corr(), so there is
+when a Spark object is used in `corrr`, the actual computation also happens in Spark.
+In the background, the `correlate()` function runs `sparklyr::ml_corr()`, so there is
 no need to collect any data into R prior to running the command:
 ```{r}
 library(corrr)
@@ -1168,19 +1168,19 @@ correlate(cars, use = "pairwise.complete.obs", method = "pearson")
 # ... with 5 more variables: qsec <dbl>, vs <dbl>,
 # am <dbl>, gear <dbl>, carb <dbl>
 ```
-We can pipe the results to other corrr functions. For example, the shave() function
+We can pipe the results to other `corrr` functions. For example, the `shave()` function
 turns all of the duplicated results into NAs. Again, while this feels like standard R code
 using existing R packages, Spark is being used under the hood to perform the
 correlation.
 Additionally, as shown in图3-6, the results can be easily visualized using the
-rplot() function, as shown here:
+`rplot()` function, as shown here:
 ```{r}
 correlate(cars, use = "pairwise.complete.obs", method = "pearson") %>%
 shave() %>%
 rplot()
 ```
 
-![图3-6. Using rplot() to visualize correlations](figures/3_6.png)
+![图3-6. Using `rplot()` to visualize correlations](figures/3_6.png)
 
 It is much easier to see which relationships are positive or negative: positive relation‐
 ships are in gray, and negative relationships are black. The size of the circle indicates
@@ -1217,11 +1217,11 @@ culate the bins.
 
 ![图3-8. Plotting with Spark and R](figures/3_8.png)
 
-Let’s apply this conceptual model when using ggplot2.
+Let’s apply this conceptual model when using `ggplot2`.
 
-### Using ggplot2
+### Using `ggplot2`
 
-To create a bar plot using ggplot2, we simply call a function:
+To create a bar plot using `ggplot2`, we simply call a function:
 ```{r}
 library(ggplot2)
 ggplot(aes(as.factor(cyl), mpg), data = mtcars) + geom_col()
@@ -1262,7 +1262,7 @@ Figure 3-9 shows the resulting plot.
 ![图3-9. Plot with aggregation in Spark](figures/3_9.png)
 
 
-Any other ggplot2 visualization can be made to work using this approach; however,
+Any other `ggplot2` visualization can be made to work using this approach; however,
 this is beyond the scope of the book. Instead, we recommend that you read R Graph‐
 ics Cookbook, by Winston Chang (O’Reilly) to learn additional visualization techni‐
 ques applicable to Spark. Now, to ease this transformation step before visualizing, the
@@ -1273,7 +1273,7 @@ in Spark.
 
 The dbplot package provides helper functions for plotting with remote data. The R
 code dbplot that’s used to transform the data is written so that it can be translated
-into Spark. It then uses those results to create a graph using the ggplot2 package
+into Spark. It then uses those results to create a graph using the `ggplot2` package
 where data transformation and plotting are both triggered by a single function.
 The `dbplot_histogram()` function makes Spark calculate the bins and the count per
 bin and outputs a ggplot object, which we can further refine by adding more steps to
@@ -1311,7 +1311,7 @@ The best alternative is to find a plot type that represents the x/y relationship
 centration in a way that it is easy to perceive and to “physically” plot. The raster plot
 might be the best answer. A raster plot returns a grid of x/y positions and the results
 of a given aggregation, usually represented by the color of the square.
-You can use dbplot_raster() to create a scatter-like plot in Spark, while only retriev‐
+You can use `dbplot_raster()` to create a scatter-like plot in Spark, while only retriev‐
 ing (collecting) a small subset of the remote dataset:
 ```{r}
 dbplot_raster(cars, mpg, wt, resolution = 16)
@@ -1362,7 +1362,7 @@ R-Squared: 0.869
 Root Mean Squared Error: 2.147
 ```
 At this point, it is very easy to experiment with different features, we can simply
-change the R formula from mpg ~ . to, say, mpg ~ hp + cyl to only use horsepower
+change the R formula from `mpg ~ .` to, say, `mpg ~ hp + cyl` to only use horsepower
 and cylinders as features:
 ```{r}
 cars %>%
@@ -1407,7 +1407,7 @@ large amounts of data are used for models. If the data needs to be transformed f
 the volume of the data could exact a heavy toll on the Spark session. Before fitting the
 models, it is a good idea to save the results of all the transformations in a new table
 loaded in Spark memory.
-The compute() command can take the end of a `dplyr` command and save the results
+The `compute()` command can take the end of a `dplyr` command and save the results
 to Spark memory:
 ```{r}
 cached_cars <- cars %>%
@@ -1595,8 +1595,8 @@ but to get there, we need to first understand how to train models “by hand.”
 ## Overview
 
 The R interface to Spark provides modeling algorithms that should be familiar to R
-users. For instance, we’ve already used ml_linear_regression(cars, mpg ~ .), but
-we could just as easily run ml_logistic_regression(cars, am ~ .).
+users. For instance, we’ve already used `ml_linear_regression(cars, mpg ~ .)`, but
+we could just as easily run `ml_logistic_regression(cars, am ~ .)`.
 Take a moment to look at the long list of MLlib functions included in the appendix of
 this book; a quick glance at this list shows that Spark supports Decision Trees,
 Gradient-Boosted Trees, Accelerated Failure Time Survival Regression, Isotonic
@@ -1665,7 +1665,7 @@ easily follow along in local mode. In practice, if your dataset fits
 comfortably in memory on your local machine, you might be bet‐
 ter off using an efficient, nondistributed implementation of the
 modeling algorithm. For example, you might want to use the
-ranger package instead of ml_random_forest_classifier().
+`ranger` package instead of `ml_random_forest_classifier()`.
 
 In addition, to follow along, you will need to install a few additional packages:
 ```{r}
@@ -1712,13 +1712,13 @@ mutate(drinks = ifelse(is.na(drinks), "missing", drinks)) %>%
 mutate(drugs = ifelse(is.na(drugs), "missing", drugs)) %>%
 mutate(job = ifelse(is.na(job), "missing", job))
 ```
-We specify escape = "\"" and options = list(multiline = TRUE) here to accom‐
+We specify `escape = "\""` and `options = list(multiline = TRUE)` here to accom‐
 modate embedded quote characters and newlines in the essay fields. We also convert
 the height and income columns to numeric types and recode missing values in the
 string columns. Note that it might very well take a few tries of specifying different
 parameters to get the initial data ingest correct, and sometimes you might need to
 revisit this step after you learn more about the data during modeling.
-We can now take a quick look at our data by using glimpse():
+We can now take a quick look at our data by using `glimpse()`:
 
 ```{r}
 glimpse(okc)
@@ -1781,7 +1781,7 @@ to evaluate model performance. If we were to include the entire dataset during E
 information from the testing set could “leak” into the visualizations and summary
 statistics and bias our model-building process even though the data is not used
 directly in a learning algorithm. This would undermine the credibility of our perfor‐
-mance metrics. We can easily split the data by using the sdf_random_split()
+mance metrics. We can easily split the data by using the `sdf_random_split()`
 function:
 ```{r}
 data_splits <- sdf_random_split(okc, training = 0.8, testing = 0.2, seed = 42)
@@ -1800,7 +1800,7 @@ mutate(frac = n / sum(n))
 1 0 43785 0.910
 2 1 4317 0.0897
 ```
-Using the sdf_describe() function, we can obtain numerical summaries of specific
+Using the `sdf_describe()` function, we can obtain numerical summaries of specific
 columns:
 ```{r}
 sdf_describe(okc_train, cols = c("age", "income"))
@@ -1813,7 +1813,7 @@ sdf_describe(okc_train, cols = c("age", "income"))
 4 min 18 20000.0
 5 max 110 1000000.0
 ```
-Like we saw in Chapter 3, we can also utilize the dbplot package to plot distributions
+Like we saw in Chapter 3, we can also utilize the `dbplot` package to plot distributions
 of these variables. In图4-1 we show a histogram of the distribution of the age
 variable, which is the result of the following code:
 ```{r}
@@ -1855,7 +1855,7 @@ Exploratory Data Analysis | 59
 10 catholicism 3769 0.0886 0.00458
 ```
 Note that prop_data is a small DataFrame that has been collected into memory in
-our R session, we can take advantage of ggplot2 to create an informative visualiza‐
+our R session, we can take advantage of `ggplot2` to create an informative visualiza‐
 tion (see图4-2):
 ```{r}
 prop_data %>%
@@ -1870,7 +1870,7 @@ sum(prop_data$count))
 
 Next, we take a look at the relationship between a couple of predictors: alcohol use
 and drug use. We would expect there to be some correlation between them. You can
-compute a contingency table via sdf_crosstab():
+compute a contingency table via `sdf_crosstab()`:
 ```{r}
 contingency_tbl <- okc_train %>%
 sdf_crosstab("drinks", "drugs") %>%
@@ -1910,19 +1910,17 @@ weight = count))
 
 ![图4-3. Mosaic plot of drug and alcohol use](figures/4_3.png)
 
-To further explore the relationship between these two variables, we can perform cor‐
-respondence analysis4
- using the FactoMineR package. This technique enables us to
+To further explore the relationship between these two variables, we can perform correspondence analysis4
+ using the `FactoMineR` package. This technique enables us to
 summarize the relationship between the high-dimensional factor levels by mapping
-each level to a point on the plane. We first obtain the mapping using Facto
-MineR::CA() as follows:
+each level to a point on the plane. We first obtain the mapping using `FactoMineR::CA()` as follows:
 4 Greenacre M (2017). Correspondence analysis in practice. Chapman and Hall/CRC.
 ```{r}
 dd_obj <- contingency_tbl %>%
 tibble::column_to_rownames(var = "drinks_drugs") %>%
 FactoMineR::CA(graph = FALSE)
 ```
-We can then plot the results using ggplot, which you can see in图4-4:
+We can then plot the results using `ggplot`, which you can see in图4-4:
 ```{r}
 dd_drugs <-
 dd_obj$row$coord %>%
@@ -2048,8 +2046,7 @@ $ ethnicity_white <dbl> 1, 0, 1, 0, 1, 1, 1, 0, 1, 0…
 $ ethnicity_other <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
 ```
 For the free text fields, a straightforward way to extract features is counting the total
-number of characters. We will store the train dataset in Spark’s memory with com
-pute() to speed up computation.
+number of characters. We will store the train dataset in Spark’s memory with `compute()` to speed up computation.
 ```{r}
 okc_train <- okc_train %>%
 mutate(
@@ -2057,7 +2054,7 @@ essay_length = char_length(paste(!!!syms(paste0("essay", 0:9))))
 ) %>% compute()
 dbplot_histogram(okc_train, essay_length, bins = 100)
 ```
-We can see the distribution of the essay_length variable in图4-6.
+We can see the distribution of the `essay_length` variable in图4-6.
 
 ![图4-6. Distribution of essay length](figures/4_6.png)
 
@@ -2093,8 +2090,8 @@ you can also perform this procedure multiple times with different random partiti
 of the data. In our case, we will demonstrate how to perform the cross-validation
 once. Hereinafter, we refer to the training set associated with each split as the analysis
 data, and the validation set as assessment data.
-Using the sdf_random_split() function, we can create a list of subsets from our
-okc_train table:
+Using the `sdf_random_split()` function, we can create a list of subsets from our
+`okc_train` table:
 ```{r}
 vfolds <- sdf_random_split(
 okc_train,
@@ -2129,7 +2126,7 @@ validation_set <- scale_age(assessment_set)
 ```
 For brevity, here we show only how to transform the age variable. In practice, how‐
 ever, you would want to normalize each one of your continuous predictors, such as
-the essay_length variable we derived in the previous section.
+the `essay_length` variable we derived in the previous section.
 Logistic regression is often a reasonable starting point for binary classification prob‐
 lems, so let’s give it a try. Suppose also that our domain knowledge provides us with
 an initial set of predictors. We can then fit a model by using the Formula interface:
@@ -2150,11 +2147,11 @@ drinks_very often drugs_never drugs_missing drugs_sometimes
  3.664964e-05
 ```
 To obtain a summary of performance metrics on the assessment set, we can use the
-ml_evaluate() function:
+`ml_evaluate()` function:
 ```{r}
 validation_summary <- ml_evaluate(lr, assessment_set)
 ```
-You can print validation_summary to see the available metrics:
+You can print `validation_summary` to see the available metrics:
 ```{r}
 validation_summary
 BinaryLogisticRegressionSummaryImpl
@@ -2183,8 +2180,8 @@ BinaryLogisticRegressionSummaryImpl
  - weighted_recall()
  - weighted_true_positive_rate()
 ```
-We can plot the ROC curve by collecting the output of validation_summary$roc()
-and using ggplot2:
+We can plot the ROC curve by collecting the output of `validation_summary$roc()`
+and using `ggplot2`:
 ```{r}
 roc <- validation_summary$roc() %>%
 collect()
@@ -2196,7 +2193,7 @@ The ROC curve plots the true positive rate (sensitivity) against the false posit
 (1–specificity) for varying values of the classification threshold. In practice, the busi‐
 ness problem helps to determine where on the curve one sets the threshold for classi‐
 fication. The AUC is a summary measure for determining the quality of a model, and
-we can compute it by calling the area_under_roc() function.
+we can compute it by calling the `area_under_roc()` function.
 
 ![图4-7. ROC curve for the logistic regression model](figures/4_7.png)
 
@@ -2208,7 +2205,7 @@ validation_summary$area_under_roc()
 > Spark provides evaluation methods for only generalized
 linear models (including linear models and logistic regression).
 For other algorithms, you can use the evaluator functions (e.g.,
-ml_binary_classification_evaluator() on the prediction Data‐
+`ml_binary_classification_evaluator()` on the prediction Data‐
 Frame) or compute your own metrics.
 
 Now, we can easily repeat the logic we already have and apply it to each analysis/
@@ -2253,8 +2250,7 @@ mean(cv_results$auc)
 ### Generalized Linear Regression
 
 If you are interested in generalized linear model (GLM) diagnostics,you can also fit a
-logistic regression via the generalized linear regression interface by specifying family
-= "binomial". Because the result is a regression model, the ml_predict() method
+logistic regression via the generalized linear regression interface by specifying `family= "binomial"`. Because the result is a regression model, the `ml_predict()` method
 does not give class probabilities. However, it includes confidence intervals for coeffi‐
 cient estimates:
 ```{r}
@@ -2281,12 +2277,10 @@ geom_hline(yintercept = 0, linetype = "dashed")
 
 ![图4-9. Coefficient estimates with 95% confidence intervals](figures/4_9.png)
 
-> Both ml_logistic_regression() and ml_linear_regression()
+> Both `ml_logistic_regression()` and `ml_linear_regression()`
 support elastic net regularization5
-through the reg_param and elas
-tic_net_param parameters. reg_param corresponds to λ, whereas
-elastic_net_param corresponds to α. ml_generalized_lin
-ear_regression() supports only reg_param. 
+through the `reg_param` and `elastic_net_param` parameters. `reg_param` corresponds to λ, whereas
+`elastic_net_param` corresponds to α. `ml_generalized_linear_regression()` supports only `reg_param`. 
 
 5 Zou H, Hastie T (2005). “Regularization and variable selection via the elastic net.” Journal of the royal statisti‐
 cal society: series B (statistical methodology), 67(2), 301–320.
@@ -2309,11 +2303,11 @@ layers = c(12, 64, 64, 2) )
 This gives us a feedforward neural network model with two hidden layers of 64 nodes
 each. Note that you have to specify the correct values for the input and output layers
 in the layers argument. We can obtain predictions on a validation set using
-ml_predict():
+`ml_predict()`:
 ```{r}
 predictions <- ml_predict(nn, assessment_set)
 ```
-Then, we can compute the AUC via ml_binary_classification_evaluator():
+Then, we can compute the AUC via `ml_binary_classification_evaluator()`:
 ```{r}
 ml_binary_classification_evaluator(predictions)
 [1] 0.7812709
@@ -2387,7 +2381,7 @@ mutate(essay = paste(!!!syms(essay_cols))) %>%
 mutate(words = regexp_replace(essay, "\\n|&nbsp;|<[^>]*>|[^A-Za-z|']", " "))
 ```
 
-Note here we are using regex_replace(), which is a Spark SQL function. Next, we
+Note here we are using `regex_replace()`, which is a Spark SQL function. Next, we
 discuss LDA and how to apply it to our cleaned dataset.
 
 ### Topic Modeling
@@ -2400,7 +2394,7 @@ simultaneously. A typical use case for topic models involves categorizing many d
 ments, for which the large number of documents renders manual approaches infeasi‐
 ble. The application domains range from GitHub issues to legal documents.
 After we have a reasonably clean dataset following the workflow in the previous sec‐
-tion, we can fit an LDA model with ml_lda():
+tion, we can fit an LDA model with `ml_lda()`:
 ```{r}
 stop_words <- ml_default_stop_words(sc) %>%
 c(
@@ -2412,7 +2406,7 @@ stop_words = stop_words, min_df = 5)
 ```
 We are also including a stop_words vector, consisting of commonly used English
 words and common words in our dataset, that instructs the algorithm to ignore them.
-After the model is fit, we can use the tidy() function to extract the associated betas,
+After the model is fit, we can use the `tidy()` function to extract the associated betas,
 which are the per-topic-per-word probabilities, from the model.
 ```{r}
 betas <- tidy(lda_model)
@@ -2436,7 +2430,7 @@ We can then visualize this output by looking at word probabilities by topic. In
 Figure 4-10 and图4-11, we show the results at 1 iteration and 100 iterations. The
 74 | Chapter 4: Modeling
 code that generates图4-10 follows; to generate图4-11, you would need to
-set max_iter = 100 when running ml_lda(), but beware that this can take a really
+set `max_iter = 100` when running `ml_lda()`, but beware that this can take a really
 long time in a single machine—this is the kind of big-compute problem that a proper
 Spark cluster would be able to easily tackle.
 ```{r}
@@ -2464,7 +2458,7 @@ modeling example.
 ![图4-11. The most common terms per topic after 100 iterations](figures/4_11.png)
 
 Finally, to conclude this chapter you should disconnect from Spark. Chapter 5 also
-makes use of the OKCupid dataset, but we provide instructions to reload it from
+makes use of the `OKCupid` dataset, but we provide instructions to reload it from
 scratch:
 ```{r}
 spark_disconnect(sc)
@@ -2502,8 +2496,7 @@ You learned about supervised methods first and finished the chapter with an unsu
 pervised method over raw text.
 In this chapter, we dive into Spark Pipelines, which is the engine that powers the fea‐
 tures we demonstrated in Chapter 4. So, for instance, when you invoke an MLlib
-function via the formula interface in R—for example, ml_logistic_regres
-sion(cars, am ~ .)—a pipeline is constructed for you under the hood. Therefore,
+function via the formula interface in R—for example, `ml_logistic_regression(cars, am ~ .)`—a pipeline is constructed for you under the hood. Therefore,
 Pipelines also allow you to make use of advanced data processing and modeling
 workflows. In addition, a pipeline also facilitates collaboration across data science
 and engineering teams by allowing you to deploy pipelines into production systems,
@@ -2524,6 +2517,7 @@ scale” estimator can learn the mean and standard deviation of some data and st
 the statistics in a resulting transformer object; this transformer can then be used to
 normalize the data that it was trained on and also any new, yet unseen, data.
 Here is an example of how to define an estimator:
+```{r}
 library(sparklyr)
 library(dplyr)
 sc <- spark_connect(master = "local", version = "2.3")
@@ -2541,8 +2535,10 @@ StandardScaler (Estimator)
  (Parameters)
  with_mean: TRUE
  with_std: TRUE
+```
 We can now create some data (for which we know the mean and standard deviation)
-and then fit our scaling model to it using the ml_fit() function:
+and then fit our scaling model to it using the `ml_fit()` function:
+```{r}
 df <- copy_to(sc, data.frame(value = rnorm(100000))) %>%
 ft_vector_assembler(input_cols = "value", output_col = "features")
 scaler_model <- ml_fit(scaler, df)
@@ -2555,14 +2551,15 @@ StandardScalerModel (Transformer)
  (Transformer Info)
  mean: num 0.00421
  std: num 0.999
+```
 In Spark ML, many algorithms and feature transformers require
-that the input be a vector column. The function ft_vector_assem
-bler() performs this task. You can also use the function to initial‐
+that the input be a vector column. The function `ft_vector_assembler()` performs this task. You can also use the function to initial‐
 ize a transformer to be used in a pipeline.
 78 | Chapter 5: Pipelines
 We see that the mean and standard deviation are very close to 0 and 1, respectively,
 which is what we expect. We then can use the transformer to transform a DataFrame,
-using the ml_transform() function:
+using the `ml_transform()` function:
+```{r}
 scaler_model %>%
 ml_transform(df) %>%
 glimpse()
@@ -2572,15 +2569,17 @@ Database: spark_connection
 $ value <dbl> 0.75373300, -0.84207731, 0.59365113, -…
 $ features <list> [0.753733, -0.8420773, 0.5936511, -0.…
 $ features_scaled <list> [0.7502211, -0.8470762, 0.58999, -0.4…
+```
 Now that you’ve seen basic examples of estimators and transformers, we can move on
 to pipelines.
 Creation
 A pipeline is simply a sequence of transformers and estimators, and a pipeline model is
 a pipeline that has been trained on data so all of its components have been converted
 to transformers.
-There are a couple of ways to construct a pipeline in sparklyr, both of which use the
-ml_pipeline() function.
-We can initialize an empty pipeline with ml_pipeline(sc) and append stages to it:
+There are a couple of ways to construct a pipeline in `sparklyr`, both of which use the
+`ml_pipeline()` function.
+We can initialize an empty pipeline with `ml_pipeline(sc)` and append stages to it:
+```{r}
 ml_pipeline(sc) %>%
 ft_standard_scaler(
 input_col = "features",
@@ -2597,7 +2596,8 @@ Pipeline (Estimator) with 1 stage
  | (Parameters)
  | with_mean: TRUE
  | with_std: TRUE
-Alternatively, we can pass stages directly to ml_pipeline():
+```
+Alternatively, we can pass stages directly to `ml_pipeline()`:
 pipeline <- ml_pipeline(scaler)
 We fit a pipeline as we would fit an estimator:
 Creation | 79
@@ -5967,7 +5967,7 @@ importance_tbl
  9 2_109511532 0
 10 2_109511579 0
 # … with more rows
-You then can use `dplyr` and ggplot2 to transform the output and visualize it (see
+You then can use `dplyr` and `ggplot2` to transform the output and visualize it (see
 Figure 10-9):
 library(dplyr)
 library(ggplot2)
@@ -7691,7 +7691,7 @@ Throughout the book we’ve included references to this appendix. Here we’ve i
 important content (and listed the sections where this material can be found).
 Preface
 Formatting
-The following ggplot2 theme was used to format all plots in this book:
+The following `ggplot2` theme was used to format all plots in this book:
 plot_style <- function() {
 font <- "Helvetica"
 ggplot2::theme_classic() +
