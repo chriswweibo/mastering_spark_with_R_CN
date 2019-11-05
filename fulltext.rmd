@@ -32,7 +32,7 @@ covers all of the main use cases in detail, ranging from querying data using the
 engine to exploratory data analysis, machine learning, parallel execution of R code,
 and streaming. It also has a self-contained introduction to running Spark and moni‐
 toring job execution. The authors are exactly the right people to write about this
-topic—Javier, Kevin, and Edgar have been involved in sparklyr development since
+topic—Javier, Kevin, and Edgar have been involved in `sparklyr` development since
 the project started. I was excited to see how well they’ve assembled this clear and
 focused guide about using Spark with R.
 I hope that you enjoy this book and use it to scale up your R workloads and connect
@@ -1006,7 +1006,7 @@ ble. This saves us from the cognitive cost of having to switch between multiple 
 puter technologies to accomplish a single task. In this case, it is better to take
 advantage of `dplyr` instead of writing Spark SQL statements for data exploration.
 In the R environment, cars can be treated as if it were a local DataFrame, so you can
-use dplyr verbs. For instance, we can find out the mean of all columns by using `summarise_all()`:
+use `dplyr` verbs. For instance, we can find out the mean of all columns by using `summarise_all()`:
 ```{r}
 summarise_all(cars, mean)
 # Source: spark<?> [?? x 11]
@@ -1018,9 +1018,9 @@ summarise_all(cars, mean)
 While this code is exactly the same as the code you would run when using dplyr
 without Spark, a lot is happening under the hood. The data is not being imported into
 Wrangle | 37
-R; instead, dplyr converts this task into SQL statements that are then sent to Spark.
+R; instead, `dplyr` converts this task into SQL statements that are then sent to Spark.
 The show_query() command makes it possible to peer into the SQL statement that
-sparklyr and dplyr created and sent to Spark. We can also use this time to introduce
+sparklyr and `dplyr` created and sent to Spark. We can also use this time to introduce
 the pipe operator (%>%), a custom operator from the magrittr package that pipes a
 computation into the first argument of the next function, making your data analysis
 much easier to read:
@@ -1034,8 +1034,8 @@ SELECT AVG(`mpg`) AS `mpg`, AVG(`cyl`) AS `cyl`, AVG(`disp`) AS `disp`,
  AVG(`gear`) AS `gear`, AVG(`carb`) AS `carb`
 FROM `mtcars`
 ```
-As is evident, dplyr is much more concise than SQL, but rest assured, you will not
-need to see or understand SQL when using dplyr. Your focus can remain on obtain‐
+As is evident, `dplyr` is much more concise than SQL, but rest assured, you will not
+need to see or understand SQL when using `dplyr`。 Your focus can remain on obtain‐
 ing insights from the data, as opposed to figuring out how to express a given set of
 transformations in SQL. Here is another example that groups the cars dataset by
 transmission type:
@@ -1050,23 +1050,23 @@ summarise_all(mean)
 1 automatic 17.1 6.95 290. 160. 3.29 3.77 18.2 0.368 0 3.21 2.74
 2 manmual 24.4 5.08 144. 127. 4.05 2.41 17.4 0.538 1 4.38 2.92
 ```
-Most of the data transformation operations made available by dplyr to work with
+Most of the data transformation operations made available by `dplyr` to work with
 local DataFrames are also available to use with a Spark connection. This means that
-you can focus on learning dplyr first and then reuse that skill when working with
+you can focus on learning `dplyr` first and then reuse that skill when working with
 Spark. Chapter 5 from the book R for Data Science by Hadley Wickham and Garrett
-Grolemund (O’Reilly) is a great resource to learn dplyr in depth. If proficiency with
+Grolemund (O’Reilly) is a great resource to learn `dplyr` in depth. If proficiency with
 dplyr is not an issue for you, we recommend that you take some time to experiment
-with different dplyr functions against the cars table.
+with different `dplyr` functions against the cars table.
 Sometimes, we might need to perform an operation not yet available through dplyr
-and sparklyr. Instead of downloading the data into R, there is usually a Hive func‐
+and `sparklyr`。 Instead of downloading the data into R, there is usually a Hive func‐
 tion within Spark to accomplish what we need. The next section covers this scenario.
 38 | Chapter 3: Analysis
 
 ### Built-in Functions
 
 Spark SQL is based on Hive’s SQL conventions and functions, and it is possible to call
-all these functions using dplyr as well. This means that we can use any Spark SQL
-functions to accomplish operations that might not be available via dplyr. We can
+all these functions using `dplyr` as well. This means that we can use any Spark SQL
+functions to accomplish operations that might not be available via `dplyr`。 We can
 access the functions by calling them as if they were R functions. Instead of failing,
 dplyr passes functions it does not recognize as is to the query engine. This gives us a
 lot of flexibility on the functions we can use.
@@ -1080,7 +1080,7 @@ summarise(cars, mpg_percentile = percentile(mpg, 0.25))
  <dbl>
 1 15.4
 ```
-There is no percentile() function in R, so dplyr passes that portion of the code as￾is to the resulting SQL query:
+There is no percentile() function in R, so `dplyr` passes that portion of the code as￾is to the resulting SQL query:
 ```{r}
 summarise(cars, mpg_percentile = percentile(mpg, 0.25)) %>%
 show_query()
@@ -1172,7 +1172,7 @@ We can pipe the results to other corrr functions. For example, the shave() funct
 turns all of the duplicated results into NAs. Again, while this feels like standard R code
 using existing R packages, Spark is being used under the hood to perform the
 correlation.
-Additionally, as shown in Figure 3-6, the results can be easily visualized using the
+Additionally, as shown in图3-6, the results can be easily visualized using the
 rplot() function, as shown here:
 ```{r}
 correlate(cars, use = "pairwise.complete.obs", method = "pearson") %>%
@@ -1201,7 +1201,7 @@ It is possible to create visualizations in R from data sources that exist in Spa
 understand how to do this, let’s first break down how computer programs build plots.
 To begin, a program takes the raw data and performs some sort of transformation.
 The transformed data is then mapped to a set of coordinates. Finally, the mapped val‐
-ues are drawn in a plot. Figure 3-7 summarizes each of the steps.
+ues are drawn in a plot.图3-7 summarizes each of the steps.
 
 ![图3-7. Stages of an R plot](figures/3_7.png)
 
@@ -1232,9 +1232,9 @@ plot was drawn. As R users, all of the stages of building the plot are convenien
 abstracted for us.
 In Spark, there are a couple of key steps when codifying the “push compute, collect
 results” approach. First, ensure that the transformation operations happen within
-Spark. In the example that follows, group_by() and summarise() will run inside
+Spark. In the example that follows, `group_by()` and `summarise()` will run inside
 Spark. The second is to bring the results back into R after the data has been trans‐
-formed. Be sure to transform and then collect, in that order; if collect() is run first,
+formed. Be sure to transform and then collect, in that order; if `collect()` is run first,
 R will try to ingest the entire dataset from Spark. Depending on the size of the data,
 collecting all of the data will slow down or can even bring down your system.
 ```{r}
@@ -1275,9 +1275,9 @@ The dbplot package provides helper functions for plotting with remote data. The 
 code dbplot that’s used to transform the data is written so that it can be translated
 into Spark. It then uses those results to create a graph using the ggplot2 package
 where data transformation and plotting are both triggered by a single function.
-The dbplot_histogram() function makes Spark calculate the bins and the count per
+The `dbplot_histogram()` function makes Spark calculate the bins and the count per
 bin and outputs a ggplot object, which we can further refine by adding more steps to
-the plot object. dbplot_histogram() also accepts a binwidth argument to control the
+the plot object. `dbplot_histogram()` also accepts a binwidth argument to control the
 range used to compute the bins:
 ```{r}
 library(dbplot)
@@ -1294,7 +1294,7 @@ Histograms provide a great way to analyze a single variable. To analyze two vari
 a scatter or raster plot is commonly used.
 Scatter plots are used to compare the relationship between two continuous variables.
 For example, a scatter plot will display the relationship between the weight of a car
-and its gas consumption. The plot in Figure 3-11 shows that the higher the weight,
+and its gas consumption. The plot in图3-11 shows that the higher the weight,
 the higher the gas consumption because the dots clump together into almost a line
 that goes from the upper left toward the lower right. Here’s the code to generate the
 plot:
@@ -1316,7 +1316,7 @@ ing (collecting) a small subset of the remote dataset:
 ```{r}
 dbplot_raster(cars, mpg, wt, resolution = 16)
 ```
-As shown in Figure 3-12, the resulting plot returns a grid no bigger than 5 x 5. This
+As shown in图3-12, the resulting plot returns a grid no bigger than 5 x 5. This
 limits the number of records that need to be collected into R to 25.
 
 ![图3-12. A raster plot using Spark](figures/3_12.png)
@@ -1336,7 +1336,7 @@ The next two chapters focus entirely on modeling, so rather than introducing mod
 ing in too much detail in this chapter, we want to cover how to interact with models
 while doing data analysis.
 First, an analysis project goes through many transformations and models to find the
-answer. That’s why the first data analysis diagram we introduced in Figure 3-2 illus‐
+answer. That’s why the first data analysis diagram we introduced in图3-2 illus‐
 trates a cycle of: visualizing, wrangling, and modeling—we know you don’t end with
 modeling, not in R, nor when using Spark.
 Therefore, the ideal data analysis language enables you to quickly adjust over each
@@ -1395,7 +1395,7 @@ Model | 47
 Residual deviance: 291.975 on 29 degrees of freedom
 AIC: 169.56
 ```
-Usually, before fitting a model you would need to use multiple dplyr transformations
+Usually, before fitting a model you would need to use multiple `dplyr` transformations
 to get it ready to be consumed by a model. To make sure the model can be fitted as
 efficiently as possible, you should cache your dataset before fitting it, as described
 next.
@@ -1407,7 +1407,7 @@ large amounts of data are used for models. If the data needs to be transformed f
 the volume of the data could exact a heavy toll on the Spark session. Before fitting the
 models, it is a good idea to save the results of all the transformations in a new table
 loaded in Spark memory.
-The compute() command can take the end of a dplyr command and save the results
+The compute() command can take the end of a `dplyr` command and save the results
 to Spark memory:
 ```{r}
 cached_cars <- cars %>%
@@ -1511,7 +1511,7 @@ spark_disconnect(sc)
 \```
 ```
 To knit this report, save the file with a .Rmd extension such as report.Rmd, and run
-render() from R. The output should look like that shown in Figure 3-13.
+render() from R. The output should look like that shown in图3-13.
 ```{r}
 rmarkdown::render("report.Rmd")
 ```
@@ -1623,7 +1623,7 @@ determining whether a credit card transaction is fraudulent, and coming up with 
 quote for your car insurance policy. With unsupervised learning, examples include
 automated grouping of photos of individuals, segmenting customers based on their
 purchase history, and clustering of documents.
-The ML interface in sparklyr has been designed to minimize the cognitive effort for
+The ML interface in `sparklyr` has been designed to minimize the cognitive effort for
 moving from a local, in-memory, native-R workflow to the cluster, and back. While
 the Spark ecosystem is very rich, there is still a tremendous number of packages from
 CRAN, with some implementing functionality that you might require for a project.
@@ -1814,7 +1814,7 @@ sdf_describe(okc_train, cols = c("age", "income"))
 5 max 110 1000000.0
 ```
 Like we saw in Chapter 3, we can also utilize the dbplot package to plot distributions
-of these variables. In Figure 4-1 we show a histogram of the distribution of the age
+of these variables. In图4-1 we show a histogram of the distribution of the age
 variable, which is the result of the following code:
 ```{r}
 dbplot_histogram(okc_train, age)
@@ -1856,7 +1856,7 @@ Exploratory Data Analysis | 59
 ```
 Note that prop_data is a small DataFrame that has been collected into memory in
 our R session, we can take advantage of ggplot2 to create an informative visualiza‐
-tion (see Figure 4-2):
+tion (see图4-2):
 ```{r}
 prop_data %>%
 ggplot(aes(x = religion, y = prop)) + geom_point(size = 2) +
@@ -1889,7 +1889,7 @@ contingency_tbl
 7 rarely 613 3689 35 445
 ```
 
-We can visualize this contingency table using a mosaic plot (see Figure 4-3):
+We can visualize this contingency table using a mosaic plot (see图4-3):
 ```{r}
 library(ggmosaic)
 library(forcats)
@@ -1922,7 +1922,7 @@ dd_obj <- contingency_tbl %>%
 tibble::column_to_rownames(var = "drinks_drugs") %>%
 FactoMineR::CA(graph = FALSE)
 ```
-We can then plot the results using ggplot, which you can see in Figure 4-4:
+We can then plot the results using ggplot, which you can see in图4-4:
 ```{r}
 dd_drugs <-
 dd_obj$row$coord %>%
@@ -1950,7 +1950,7 @@ coord_equal()
 ![图4-4. Correspondence analysis principal coordinates for drug and alcohol use](figures/4_4.png)
 
 62 | Chapter 4: Modeling
-In Figure 4-4, we see that the correspondence analysis procedure has transformed the
+In图4-4, we see that the correspondence analysis procedure has transformed the
 factors into variables called principal coordinates, which correspond to the axes in the
 plot and represent how much information in the contingency table they contain. We
 can, for example, interpret the proximity of “drinking often” and “using drugs very
@@ -1964,7 +1964,7 @@ formance of the model. This can include things like centering and scaling numeri
 values and performing string manipulation to extract meaningful variables. It also
 often includes variable selection—the process of selecting which predictors are used
 in the model.
-In Figure 4-1 we see that the age variable has a range from 18 to over 60. Some algo‐
+In图4-1 we see that the age variable has a range from 18 to over 60. Some algo‐
 rithms, especially neural networks, train faster if we normalize our inputs so that they
 are of the same magnitude. Let’s now normalize the age variable by removing the
 mean and scaling to unit variance, beginning by calculating its mean and standard
@@ -1988,7 +1988,7 @@ mutate(scaled_age = (age - !!scale_values$mean_age) /
 !!scale_values$sd_age)
 dbplot_histogram(okc_train, scaled_age)
 ```
-In Figure 4-5, we see that the scaled age variable has values that are closer to zero. We
+In图4-5, we see that the scaled age variable has values that are closer to zero. We
 now move on to discussing other types of transformations, but during your feature
 engineering workflow you might want to perform the normalization for all numeric
 variables that you want to include in the model.
@@ -2057,7 +2057,7 @@ essay_length = char_length(paste(!!!syms(paste0("essay", 0:9))))
 ) %>% compute()
 dbplot_histogram(okc_train, essay_length, bins = 100)
 ```
-We can see the distribution of the essay_length variable in Figure 4-6.
+We can see the distribution of the essay_length variable in图4-6.
 
 ![图4-6. Distribution of essay length](figures/4_6.png)
 
@@ -2329,7 +2329,7 @@ big data explosion. Prior to modern text-mining techniques and the computational
 resources to support them, companies had little use for freeform text fields. Today,
 text is considered a rich source of insights that can be found anywhere from physi‐
 cian’s notes to customer complaints. In this section, we show some basic text analysis
-capabilities of sparklyr. If you would like more background on text-mining techni‐
+capabilities of `sparklyr`。 If you would like more background on text-mining techni‐
 ques, we recommend reading Text Mining with R by David Robinson and Julie Silge
 (O’Reilly).
 In this section, we show how to perform a basic topic-modeling task on the essay data
@@ -2433,9 +2433,9 @@ betas
 # … with 256,982 more rows
 ```
 We can then visualize this output by looking at word probabilities by topic. In
-Figure 4-10 and Figure 4-11, we show the results at 1 iteration and 100 iterations. The
+Figure 4-10 and图4-11, we show the results at 1 iteration and 100 iterations. The
 74 | Chapter 4: Modeling
-code that generates Figure 4-10 follows; to generate Figure 4-11, you would need to
+code that generates图4-10 follows; to generate图4-11, you would need to
 set max_iter = 100 when running ml_lda(), but beware that this can take a really
 long time in a single machine—this is the kind of big-compute problem that a proper
 Spark cluster would be able to easily tackle.
@@ -2707,7 +2707,7 @@ case it is the pipeline that we defined. We provide the hyperparameter values we
 interested in via the estimator_param_maps parameter, which takes a nested named
 list. The names at the first level correspond to UIDs, which are unique identifiers
 associated with each pipeline stage object, of the stages we want to tune (if a partial
-UID is provided, sparklyr will attempt to match it to a pipeline stage), and the
+UID is provided, `sparklyr` will attempt to match it to a pipeline stage), and the
 names at the second level correspond to parameters of each stage. In the preceding
 snippet, we are specifying that we want to test the following:
 Standard scaler
@@ -2758,7 +2758,7 @@ ft_string_indexer(sc)
 Pipeline Pipeline ml_pipeline(sc) %>% ft_string_indexer()
 DataFrame, without formula DataFrame ft_string_indexer(iris, "Species", 
 "indexed")
-DataFrame, with formula sparklyr ML model object ml_logistic_regression(iris, Species ~ 
+DataFrame, with formula `sparklyr` ML model object ml_logistic_regression(iris, Species ~ 
 .)
 These functions are implemented using S3, which is the most popular object-oriented
 programming paradigm provided by R. For our purposes, it suffices to know that the
@@ -2776,7 +2776,7 @@ ft_), or an ML algorithm without also providing a formula, the function instan�
 tiates the pipeline stage object, fits it to the data if necessary (if the stage is an
 estimator), and then transforms the DataFrame returning a DataFrame.
 • If a DataFrame and a formula are provided to an ML algorithm that supports the
-formula interface, sparklyr builds a pipeline model under the hood and returns
+formula interface, `sparklyr` builds a pipeline model under the hood and returns
 an ML model object that contains additional metadata information.
 The formula interface approach is what we studied in Chapter 4, and this is what we
 recommend users new to Spark start with, since its syntax is similar to existing R
@@ -2833,7 +2833,7 @@ full.names = TRUE), "data")
  <int> <int> <list> <list> <lgl>
 1 2 12 <dbl [1]> <-1.27950828662… FALSE
 We see that quite a bit of information has been exported, from the SQL statement in
-the dplyr transformer to the fitted coefficient estimates of the logistic regression. We
+the `dplyr` transformer to the fitted coefficient estimates of the logistic regression. We
 can then (in a new Spark session) reconstruct the model by using ml_load():
 model_reload <- ml_load(sc, model_dir)
 Let’s see if we can retrieve the logistic regression stage from this pipeline model:
@@ -2862,10 +2862,10 @@ pick up a data preprocessing pipeline from a data engineer working in Python, bu
 a prediction model on top of it, and then hand off the final pipeline to a deployment
 engineering working in Scala. In the next section, we discuss deployment of models
 in more detail.
-When ml_save() is called for sparklyr ML models (created using
+When ml_save() is called for `sparklyr` ML models (created using
 the formula interface), the associated pipeline model is saved, but
 any sparklyr-specific metadata, such as index labels, is not. In
-other words, saving a sparklyr ml_model object and then loading
+other words, saving a `sparklyr` ml_model object and then loading
 it will yield a pipeline model object, as if you created it via the ML
 Pipelines API. This behavior is required to use pipelines with other
 programming languages.
@@ -2961,7 +2961,7 @@ though not all, Spark ML transformers. At runtime, the only prerequisites for th
 environment are the Java Virtual Machine (JVM) and the MLeap runtime library.
 This avoids both the Spark binaries and expensive overhead in converting data to and
 from Spark DataFrames.
-Since mleap is a sparklyr extension and an R package, first we need to install it from
+Since mleap is a `sparklyr` extension and an R package, first we need to install it from
 CRAN:
 88 | Chapter 5: Pipelines
 install.packages("mleap")
@@ -3073,7 +3073,7 @@ Overview
 There are three major trends in cluster computing worth discussing: on-premises,
 cloud computing, and Kubernetes. Framing these trends over time will help us under‐
 stand how they came to be, what they are, and what their future might be. To illus‐
-trate this, Figure 6-1 plots these trends over time using data from Google trends.
+trate this,图6-1 plots these trends over time using data from Google trends.
 For on-premises clusters, you or someone in your organization purchased physical
 computers that were intended to be used for cluster computing. The computers in
 this cluster are made of off-the-shelf hardware, meaning that someone placed an order
@@ -3153,7 +3153,7 @@ you are planning to use your cluster to run only Spark applications; if this clu
 not dedicated to Spark, a generic cluster manager like YARN, Mesos, or Kubernetes
 would be more suitable. The Spark Standalone documentation contains detailed
 information on configuring, launching, monitoring, and enabling high availability, as
-illustrated in Figure 6-2.
+illustrated in图6-2.
 However, since Spark Standalone is contained within a Spark installation, by com‐
 pleting Chapter 2, you have now a Spark installation available that you can use to ini‐
 tialize a local Spark Standalone cluster on your own machine. In practice, you would
@@ -3170,7 +3170,7 @@ system2(spark_path, "org.apache.spark.deploy.master.Master", wait = FALSE)
 96 | Chapter 6: Clusters
 Figure 6-2. Spark Standalone website
 The previous command initializes the master node. You can access the master node
-interface at localhost:8080, as captured in Figure 6-3. Note that the Spark master URL
+interface at localhost:8080, as captured in图6-3. Note that the Spark master URL
 is specified as spark://address:port; you will need this URL to initialize worker nodes.
 We then can initialize a single worker using the master URL; however, you could use
 a similar approach to initialize multiple workers by running the code multiple times
@@ -3182,7 +3182,7 @@ On-Premises | 97
 Figure 6-3. The Spark Standalone web interface
 There is one worker register in Spark Standalone. Click the link to this worker node
 to view details for this particular worker, like available memory and cores, as shown
-in Figure 6-4.
+in图6-4.
 Figure 6-4. Spark Standalone worker web interface
 After you are done performing computations in this cluster, you will need to stop the
 master and worker nodes. You can use the jps command to identify the process
@@ -3228,7 +3228,7 @@ Since YARN is the cluster manager from the Hadoop project, you can find YARN’s
 documentation at hadoop.apache.org. You can also reference the “Running Spark on
 YARN” guide at spark.apache.org.
 On-Premises | 99
-Figure 6-5. YARN’s Resource Manager running a sparklyr application
+Figure 6-5. YARN’s Resource Manager running a `sparklyr` application
 Apache Mesos
 Apache Mesos is an open source project to manage computer clusters. Mesos began
 as a research project in the UC Berkeley RAD Lab. It makes use of Linux Cgroups to
@@ -3244,7 +3244,7 @@ by scheduling tasks in shorter intervals, allowing them to share resources betwe
 them.
 Mesos provides a web interface to manage your running applications, resources, and
 so on. After connecting to Spark from R, your application will be registered like any
-other application running in Mesos. Figure 6-6 shows a successful connection to
+other application running in Mesos.图6-6 shows a successful connection to
 Spark from R.
 Mesos is an Apache project with its documentation available at mesos.apache.org.
 The Running Spark on Mesos guide is also a great resource if you choose to use Mesos
@@ -3271,18 +3271,18 @@ beyond the scope of this book to present how to configure Cloudera clusters, but
 resources and documentation can be found under cloudera.com, and “Introducing
 sparklyr, an R Interface for Apache Spark” on the Cloudera blog.
 Cloudera provides the Cloudera Manager web interface to manage resources, serv‐
-ices, parcels, diagnostics, and more. Figure 6-7 shows a Spark parcel running in Clou‐
+ices, parcels, diagnostics, and more.图6-7 shows a Spark parcel running in Clou‐
 dera Manager, which you can later use to connect from R.
 On-Premises | 101
 Figure 6-7. Cloudera Manager running Spark parcel
 sparklyr is certified with Cloudera, meaning that Cloudera’s support is aware of spar
 klyr and can be effective helping organizations that are using Spark and R. Table 6-1
 summarizes the versions currently certified.
-Table 6-1. Versions of sparklyr certified with Cloudera
+Table 6-1. Versions of `sparklyr` certified with Cloudera
 Cloudera version Product Version Components Kerberos
-CDH5.9 sparklyr 0.5 HDFS, Spark Yes
-CDH5.9 sparklyr 0.6 HDFS, Spark Yes
-CDH5.9 sparklyr 0.7 HDFS, Spark Yes
+CDH5.9 `sparklyr` 0.5 HDFS, Spark Yes
+CDH5.9 `sparklyr` 0.6 HDFS, Spark Yes
+CDH5.9 `sparklyr` 0.7 HDFS, Spark Yes
 Hortonworks is a big data software company based in Santa Clara, California. The
 company develops, supports, and provides expertise on an expansive set of entirely
 open source software designed to manage data and processing for everything from
@@ -3351,9 +3351,9 @@ introduce each one.
 Amazon
 Amazon provides cloud services through AWS; more specifically, it provides an on￾demand Spark cluster through Amazon EMR.
 Detailed instructions on using R with Amazon EMR were published under Amazon’s
-Big Data blog in a post called “Running sparklyr on Amazon EMR”. This post intro‐
-duced the launch of sparklyr and instructions to configure Amazon EMR clusters
-with sparklyr. For instance, it suggests you can use the Amazon Command Line
+Big Data blog in a post called “Running `sparklyr` on Amazon EMR”. This post intro‐
+duced the launch of `sparklyr` and instructions to configure Amazon EMR clusters
+with `sparklyr`。 For instance, it suggests you can use the Amazon Command Line
 Interface to launch a cluster with three nodes, as follows:
 aws emr create-cluster --applications Name=Hadoop Name=Spark Name=Hive \
  --release-label emr-5.8.0 --service-role EMR_DefaultRole --instance-groups \
@@ -3363,7 +3363,7 @@ InstanceGroupType=CORE,InstanceCount=2,InstanceType=m3.2xlarge \
 rstudio-sparklyr/rstudio_sparklyr_emr5.sh,Args=["--user-pw", "<password>", \
 "--rstudio", "--arrow"] --ec2-attributes InstanceProfile=EMR_EC2_DefaultRole
 You can then see the cluster launching and then eventually running under the AWS
-portal, as illustrated in Figure 6-8.
+portal, as illustrated in图6-8.
 You then can navigate to the Master Public DNS and find RStudio under port 8787—
 for example, ec2-12-34-567-890.us-west-1.compute.amazonaws.com:8787—and
 then log in with user hadoop and password password.
@@ -3398,12 +3398,12 @@ help clients with cloud-based big data processing using Spark. Databricks grew o
 the AMPLab project at the University of California, Berkeley.
 Databricks provides enterprise-level cluster computing plans as well as a free/
 community tier to explore functionality and become familiar with their environment.
-After a cluster is launched, you can use R and sparklyr from Databricks notebooks
+After a cluster is launched, you can use R and `sparklyr` from Databricks notebooks
 following the steps provided in Chapter 2 or by installing RStudio on Databricks.
 Figure 6-9 shows a Databricks notebook using Spark through sparkylyr.
 Figure 6-9. Databricks community notebook running sparklyr
 Additional resources are available under the Databricks Engineering Blog post “Using
-sparklyr in Databricks” and the Databricks documentation for sparklyr.
+sparklyr in Databricks” and the Databricks documentation for `sparklyr`。
 You can find the latest pricing information at databricks.com/product/pricing.
 Table 6-3 lists the available plans as of this writing.
 Table 6-3. Databricks procong information
@@ -3423,7 +3423,7 @@ GCP technologies, such as Google Compute Engine and Google Cloud Storage, to
 offer fully managed clusters running popular data processing frameworks such as
 Apache Hadoop and Apache Spark.
 You can easily create a cluster from the Google Cloud console or the Google Cloud
-command-line interface (CLI) as illustrated in Figure 6-10.
+command-line interface (CLI) as illustrated in图6-10.
 Figure 6-10. Launching a Dataproc cluster
 Cloud | 107
 After you’ve created your cluster, ports can be forwarded to allow you to access this
@@ -3434,7 +3434,7 @@ gcloud compute ssh sparklyr-m --project=<project> --zone=<region> -- -D 1080 \
  -N "<path to chrome>" --proxy-server="socks5://localhost:1080" \
  --user-data-dir="/tmp/sparklyr-m" http://sparklyr-m:8088
 There are various tutorials available (cloud.google.com/dataproc/docs/tutorials),
-including a comprehensive tutorial to configure RStudio and sparklyr.
+including a comprehensive tutorial to configure RStudio and `sparklyr`。
 You can find the latest pricing information at cloud.google.com/dataproc/pricing. In
 Table 6-4 notice that the cost is split between compute engine and a dataproc
 premium.
@@ -3450,11 +3450,11 @@ as a Service (PaaS) offered through public, private, and hybrid cloud delivery m
 in addition to the components that make up those clouds.
 From within IBM Cloud, open Watson Studio and create a Data Science project, add
 a Spark cluster under the project settings, and then, on the Launch IDE menu, start
-RStudio. Please note that, as of this writing, the provided version of sparklyr was not
-the latest version available in CRAN, since sparklyr was modified to run under the
+RStudio. Please note that, as of this writing, the provided version of `sparklyr` was not
+the latest version available in CRAN, since `sparklyr` was modified to run under the
 IBM Cloud. In any case, follow IBM’s documentation as an authoritative reference to
 run R and Spark on the IBM Cloud and particularly on how to upgrade sparklyr
-appropriately. Figure 6-11 captures IBM’s Cloud portal launching a Spark cluster.
+appropriately.图6-11 captures IBM’s Cloud portal launching a Spark cluster.
 108 | Chapter 6: Clusters
 Figure 6-11. IBM Watson Studio launching Spark with R support
 The most up-to-date pricing information is available at ibm.com/cloud/pricing. In
@@ -3471,9 +3471,9 @@ Microsoft-managed datacenters. It provides SaaS, PaaS, and IaaS and supports man
 different programming languages, tools, and frameworks, including both Microsoft￾specific and third-party software and systems.
 From the Azure portal, the Azure HDInsight service provides support for on￾demand Spark clusters. You can easily create HDInsight cluster with support for
 Spark and RStudio by selecting the ML Services cluster type. Note that the provided
-version of sparklyr might not be the latest version available in CRAN since the
+version of `sparklyr` might not be the latest version available in CRAN since the
 default package repository seems to be initialized using a Microsoft R Application
-Network (MRAN) snapshot, not directly from CRAN. Figure 6-12 shows the Azure
+Network (MRAN) snapshot, not directly from CRAN.图6-12 shows the Azure
 portal launching a Spark cluster with support for R.
 Cloud | 109
 Figure 6-12. Creating an Azure HDInsight Spark cluster
@@ -3488,8 +3488,8 @@ Qubole
 Qubole was founded in 2013 with a mission to close the data accessibility gap. Qubole
 delivers a self-service platform for big data analytics built on Amazon, Microsoft,
 Google, and Oracle Clouds. In Qubole, you can launch Spark clusters, which you can
-then use from Qubole notebooks or RStudio Server. Figure 6-13 shows a Qubole clus‐
-ter initialized with RStudio and sparklyr.
+then use from Qubole notebooks or RStudio Server.图6-13 shows a Qubole clus‐
+ter initialized with RStudio and `sparklyr`。
 110 | Chapter 6: Clusters
 Figure 6-13. A Qubole cluster initialized with RStudio and sparklyr
 You can find the latest pricing information at Qubole’s pricing page. Table 6-7 lists the
@@ -3543,11 +3543,11 @@ From reading Chapter 1, you are aware that RStudio is a well-known and free desk
 top development environment for R; therefore, it is likely that you are following the
 examples in this book using RStudio Desktop. However, you might not be aware that
 you can run RStudio as a web service within a Spark cluster. This version of RStudio
-is known as RStudio Server. You can see RStudio Server running in Figure 6-15. In the
+is known as RStudio Server. You can see RStudio Server running in图6-15. In the
 same way that the Spark UI runs in the cluster, you can install RStudio Server within
 the cluster. Then you can connect to RStudio Server and use RStudio in exactly the
 same way you use RStudio Desktop but with the ability to run code against the Spark
-cluster. As you can see in Figure 6-15, RStudio Server looks and feels just like RStudio
+cluster. As you can see in图6-15, RStudio Server looks and feels just like RStudio
 Desktop, but adds support to run commands efficiently by being located within the
 cluster.
 Figure 6-15. RStudio Server Pro running in AWS
@@ -3557,7 +3557,7 @@ Spark cluster.
 RStudio Server and Shiny Server are a free and open source; however, RStudio also
 provides professional products like RStudio Server, RStudio Server Pro, Shiny Server
 Pro, and RStudio Connect, which you can install within the cluster to support addi‐
-tional R workflows. While sparklyr does not require any additional tools, they pro‐
+tional R workflows. While `sparklyr` does not require any additional tools, they pro‐
 vide significant productivity gains worth considering. You can learn more about them
 at rstudio.com/products/.
 Tools | 113
@@ -3565,7 +3565,7 @@ Jupyter
 Project Jupyter exists to develop open source software, open standards, and services
 for interactive computing across dozens of programming languages. A Jupyter note‐
 book provides support for various programming languages, including R. You can use
-sparklyr with Jupyter notebooks using the R Kernel. Figure 6-16 shows sparklyr
+sparklyr with Jupyter notebooks using the R Kernel.图6-16 shows sparklyr
 running within a local Jupyter notebook.
 Figure 6-16. Jupyter notebook running sparklyr
 Livy
@@ -3574,8 +3574,8 @@ ters remotely through a web interface. It is ideal to connect directly into the 
 cluster; however, there are times where connecting directly to the cluster is not feasi‐
 ble. When facing those constraints, you can consider installing Livy in the cluster and
 secure it properly to enable remote use over web protocols. Be aware, though, that
-there is a significant performance overhead from using Livy in sparklyr.
-To help test Livy locally, sparklyr provides support to list, install, start, and stop a
+there is a significant performance overhead from using Livy in `sparklyr`。
+To help test Livy locally, `sparklyr` provides support to list, install, start, and stop a
 local Livy instance by executing livy_available_versions():
 ## livy
 ## 1 0.2.0
@@ -3593,7 +3593,7 @@ livy_installed_versions()
 livy_service_start()
 You then can navigate to the local Livy session at http://localhost:8998. Chapter 7 will
 detail how to connect through Livy. After you’re connected, you can navigate to the
-Livy web application, as shown in Figure 6-17.
+Livy web application, as shown in图6-17.
 Figure 6-17. Apache Livy running as a local service
 Make sure you also stop the Livy service when working with local Livy instances (for
 proper Livy services running in a cluster, you won’t have to):
@@ -3695,11 +3695,11 @@ connect to an edge node in your cluster. There are two methods to connect:
 Terminal
 Using a computer terminal application, you can use a Secure Shell to establish a
 remote connection into the cluster; after you connect into the cluster, you can
-launch R and then use sparklyr. However, a terminal can be cumbersome for
+launch R and then use `sparklyr`。 However, a terminal can be cumbersome for
 some tasks, like exploratory data analysis, so it’s often used only while configur‐
 ing the cluster or troubleshooting issues.
 Web browser
-While using sparklyr from a terminal is possible, it is usually more productive
+While using `sparklyr` from a terminal is possible, it is usually more productive
 to install a web server in an edge node that provides access to run R with spar
 klyr from a web browser. Most likely, you will want to consider using RStudio or
 Jupyter rather than connecting from the terminal.
@@ -3729,14 +3729,14 @@ Local
 When you connect to Spark in local mode, Spark starts a single process that runs
 most of the cluster components like the Spark context and a single executor. This is
 ideal to learn Spark, work offline, troubleshoot issues, or test code before you run it
-over a large compute cluster. Figure 7-3 depicts a local connection to Spark.
+over a large compute cluster.图7-3 depicts a local connection to Spark.
 120 | Chapter 7: Connections
 Figure 7-3. Local connection diagram
 Notice that there is neither a cluster manager nor worker process since, in local
 mode, everything runs inside the driver application. It’s also worth noting that spar
 klyr starts the Spark context through spark-submit, a script available in every Spark
 installation to enable users to submit custom applications to Spark. If you’re curious,
-Chapter 13 explains the internal processes that take place in sparklyr to submit this
+Chapter 13 explains the internal processes that take place in `sparklyr` to submit this
 application and connect properly from R.
 To perform this local connection, we can use the following familiar code from previ‐
 ous chapters:
@@ -3747,12 +3747,12 @@ Connecting to a Spark Standalone cluster requires the location of the cluster ma
 er’s master instance, which you can find in the cluster manager web interface as
 described in the “Standalone” on page 96 section. You can find this location by look‐
 ing for a URL starting with spark://.
-A connection in standalone mode starts from sparklyr, which launches spark￾submit, which then submits the sparklyr application and creates the Spark Context,
+A connection in standalone mode starts from sparklyr, which launches spark￾submit, which then submits the `sparklyr` application and creates the Spark Context,
 which requests executors from the Spark Standalone instance running under the
 given master address.
 Figure 7-4 illustrates this process, which is quite similar to the overall connection
-architecture from Figure 7-1 but with additional details that are particular to stand‐
-alone clusters and sparklyr.
+architecture from图7-1 but with additional details that are particular to stand‐
+alone clusters and `sparklyr`。
 Standalone | 121
 Figure 7-4. Spark Standalone connection diagram
 To connect, use master = "spark://hostname:port" in spark_connect() as fol‐
@@ -3768,7 +3768,7 @@ it’s more efficient and easier to set up.
 YARN Client
 When you connect in YARN client mode, the driver instance runs R, sparklyr, and
 the Spark context, which requests worker nodes from YARN to run Spark executors,
-as shown in Figure 7-5.
+as shown in图7-5.
 122 | Chapter 7: Connections
 Figure 7-5. YARN client connection diagram
 To connect, you simply run with master = "yarn", as follows:
@@ -3782,7 +3782,7 @@ when you’re running YARN in cluster mode.
 YARN Cluster
 The main difference between running YARN in cluster mode and running YARN in
 client mode is that, in cluster mode, the driver node is not required to be the node
-where R and sparklyr were launched; instead, the driver node remains the designa‐
+where R and `sparklyr` were launched; instead, the driver node remains the designa‐
 ted driver node, which is usually a different node than the edge node where R is run‐
 ning. It can be helpful to consider using cluster mode when the edge node has too
 many concurrent users, when it is lacking computing resources, or when tools (like
@@ -3791,7 +3791,7 @@ Figure 7-6 shows how the different components become decoupled when running in
 cluster mode. Notice there is still a line connecting the client with the cluster manager
 since, first of all, resources still need to be allocated from the cluster manager; how‐
 ever, after they’re allocated, the client communicates directly with the driver node,
-which communicates with the worker nodes. From Figure 7-6, you might think that
+which communicates with the worker nodes. From图7-6, you might think that
 cluster mode looks much more complicated than client mode—this would be a
 YARN | 123
 correct assessment; therefore, if possible, it’s best to avoid cluster mode due to its
@@ -3813,7 +3813,7 @@ As opposed to other connection methods that require using an edge node in the cl
 ter, Livy provides a web API that makes the Spark cluster accessible from outside the
 cluster and does not require a Spark installation in the client. After it’s connected
 through the web API, the Livy Service starts the Spark context by requesting resources
-from the cluster manager and distributing work as usual. Figure 7-7 illustrates a Livy
+from the cluster manager and distributing work as usual.图7-7 illustrates a Livy
 connection; notice that the client connects remotely to the driver through a web API.
 124 | Chapter 7: Connections
 Figure 7-7. Livy connection diagram
@@ -3833,7 +3833,7 @@ sc <- spark_connect(
 master = "http://localhost:8998",
 method = "livy",
 version = "2.3.1")
-After you’re connected through Livy, you can make use of any sparklyr feature; how‐
+After you’re connected through Livy, you can make use of any `sparklyr` feature; how‐
 ever, Livy is not suitable for exploratory data analysis, since executing commands has
 a significant performance cost. That said, while running long-running computations,
 this overhead could be considered irrelevant. In general, you should prefer to avoid
@@ -3872,7 +3872,7 @@ spark_home = spark_home_dir())
 Kubernetes
 Kubernetes clusters do not support client modes like Mesos or YARN; instead, the
 connection model is similar to YARN cluster, where the driver node is assigned by
-Kubernetes, as illustrated in Figure 7-9.
+Kubernetes, as illustrated in图7-9.
 Figure 7-9. Kubernetes connection diagram
 To use Kubernetes, you need to prepare a virtual machine with Spark installed and
 properly configured; however, it is beyond the scope of this book to present how to
@@ -3906,7 +3906,7 @@ Connecting from Qubole requires using the qubole connection method:
 sc <- spark_connect(method = "qubole")
 Refer to your cloud provider’s documentation and support channels if you need help.
 Batches
-Most of the time, you use sparklyr interactively; that is, you explicitly connect with
+Most of the time, you use `sparklyr` interactively; that is, you explicitly connect with
 spark_connect() and then execute commands to analyze and model large-scale data.
 However, you can also automate processes by scheduling Spark jobs that use spar
 klyr. Spark does not provide tools to schedule data-processing tasks; instead, you
@@ -3923,7 +3923,7 @@ the master parameter should be set appropriately:
 spark_submit(master = "local", "batch.R")
 You can also invoke spark-submit from the shell directly through the following:
 /spark-home-path/spark-submit
- --class sparklyr.Shell '/spark-jars-path/sparklyr-2.3-2.11.jar'
+ --class `sparklyr`。Shell '/spark-jars-path/sparklyr-2.3-2.11.jar'
 8880 12345 --batch /path/to/batch.R
 The last parameters represent the port number 8880 and the session number 12345,
 which you can set to any unique numeric identifier. You can use the following R code
@@ -3939,9 +3939,9 @@ When connecting to a Spark cluster using tools like Jupyter and RStudio, you can
 the same connection parameters presented in this chapter. However, since many
 cloud providers make use of a web proxy to secure Spark’s web interface, to use
 spark_web() or the RStudio Connections pane extension, you need to properly con‐
-figure the sparklyr.web.spark setting, which you would then pass to spark_con
+figure the `sparklyr`。web.spark setting, which you would then pass to spark_con
 fig() through the config parameter.
-For instance, when using Amazon EMR, you can configure sparklyr.web.spark and
+For instance, when using Amazon EMR, you can configure `sparklyr`。web.spark and
 sparklyr.web.yarn by dynamically retrieving the YARN application and building
 the EMR proxy URL:
 domain <- "http://ec2-12-345-678-9.us-west-2.compute.amazonaws.com"
@@ -3979,7 +3979,7 @@ Logging
 The first technique to troubleshoot connections is to print Spark logs directly to the
 console to help you spot additional error messages:
 sc <- spark_connect(master = "local", log = "console")
-In addition, you can enable verbose logging by setting the sparklyr.verbose option
+In addition, you can enable verbose logging by setting the `sparklyr`。verbose option
 to TRUE when connecting:
 sc <- spark_connect(master = "local", log = "console",
 config = list(sparklyr.verbose = TRUE))
@@ -4026,9 +4026,9 @@ pattern = "sparklyr", full.names = T)
 Ensure that you identify the correct version that matches your Spark cluster—for
 instance, sparklyr-2.1-2.11.jar for Spark 2.1.
 Then, from the terminal, run this:
-$SPARK_HOME/bin/spark-submit --class sparklyr.Shell $PATH_TO_SPARKLYR_JAR 8880 42
+$SPARK_HOME/bin/spark-submit --class `sparklyr`。Shell $PATH_TO_SPARKLYR_JAR 8880 42
 18/06/11 12:13:53 INFO sparklyr: Session (42) found port 8880 is available
-18/06/11 12:13:53 INFO sparklyr: Gateway (42) is waiting for sparklyr client
+18/06/11 12:13:53 INFO sparklyr: Gateway (42) is waiting for `sparklyr` client
  to connect to port 8880
 Troubleshooting | 131
 The parameter 8880 represents the default port to use in sparklyr, while 42 is the
@@ -4050,7 +4050,7 @@ Connecting from Windows is, in most cases, as straightforward as connecting from
 Linux and macOS. However, there are a few common connection issues that you
 should be aware of:
 • Firewalls and antivirus software might block ports for your connection. The
-default port used by sparklyr is 8880; double-check that this port is not being
+default port used by `sparklyr` is 8880; double-check that this port is not being
 blocked.
 • Long path names can cause issues, especially with older Windows systems like
 Windows 7. When you’re using these systems, try connecting with Spark
@@ -4064,7 +4064,7 @@ should have provided you with enough information to successfully connect to any
 Apache Spark cluster.
 To troubleshoot connection problems beyond the techniques described in this chap‐
 ter, we recommend that you search for the connection problem in Stack Overflow,
-the sparklyr issues GitHub page, and, if needed, open a new GitHub issue in spar
+the `sparklyr` issues GitHub page, and, if needed, open a new GitHub issue in spar
 klyr to assist further.
 132 | Chapter 7: Connections
 In Chapter 8, we cover how to use Spark to read and write from a variety of data
@@ -4127,7 +4127,7 @@ and the data from multiple data sources needs to be carefully transformed into s
 tables that are shared across data sources.
 Instead of trying to transform all data sources into a common format, you can
 embrace this variety of data sources in a data lake, a system or repository of data
-stored in its natural format (see Figure 8-1). Since data lakes make data available in its
+stored in its natural format (see图8-1). Since data lakes make data available in its
 original format, there is no need to carefully transform it in advance; anyone can use
 it for analysis, which adds significant flexibility over ETL. You then can use Spark to
 unify data processing from data lakes, databases, and data warehouses through a sin‐
@@ -4252,7 +4252,7 @@ Reading Data | 139
 5 b 2
 6 c 3
 In Spark, malformed entries can cause errors during reading, particularly for non￾character fields. To prevent such errors, we can use a file specification that imports
-them as characters and then use dplyr to coerce the field into the desired type.
+them as characters and then use `dplyr` to coerce the field into the desired type.
 This subsection reviewed how we can read files faster and with fewer failures, which
 lets us start our analysis more quickly. Another way to accelerate our analysis is by
 loading less data into Spark memory, which we examine in the next section.
@@ -4275,7 +4275,7 @@ table are needed. For example, take a very large file that contains many columns
 Assuming this is not the first time you interact with this data, you would know what
 columns are needed for the analysis. When you know which columns you need, the
 files can be read using memory = FALSE, and then the needed columns can be selected
-with dplyr. The resulting dplyr variable can then be cached into memory, using the
+with `dplyr`。 The resulting `dplyr` variable can then be cached into memory, using the
 compute() function. This will make Spark query the file(s), pull the selected fields,
 and copy only that data into memory. The result is an in-memory table that took
 comparatively less time to ingest:
@@ -4288,7 +4288,7 @@ names of imported data.
 Columns
 Spark 1.6 required that column names be sanitized, so R does that by default. There
 might be cases when you would like to keep the original names intact, or when work‐
-ing with Spark version 2.0 or above. To do that, set the sparklyr.sanitize.col
+ing with Spark version 2.0 or above. To do that, set the `sparklyr`。sanitize.col
 umn.names option to FALSE:
 options(sparklyr.sanitize.column.names = FALSE)
 copy_to(sc, iris, overwrite = TRUE)
@@ -4316,14 +4316,14 @@ model. The job processes the mass generation of predictions, but then the predic
 need to be stored. This section focuses on how you should use Spark for moving the
 data from Spark into an external destination.
 Many new users start by downloading Spark data into R, and then upload it to a tar‐
-get, as illustrated in Figure 8-2. It works for smaller datasets, but it becomes ineffi‐
+get, as illustrated in图8-2. It works for smaller datasets, but it becomes ineffi‐
 cient for larger ones. The data typically grows in size to the point that it is no longer
 feasible for R to be the middle point.
 Writing Data | 141
 Figure 8-2. Incorrect use of Spark when writing large datasets
 All efforts should be made to have Spark connect to the target location. This way,
 reading, processing, and writing happens within the same Spark session.
-As Figure 8-3 shows, a better approach is to use Spark to read, process, and write to
+As图8-3 shows, a better approach is to use Spark to read, process, and write to
 the target. This approach is able to scale as big as the Spark cluster allows, and pre‐
 vents R from becoming a choke point.
 Figure 8-3. Correct use of Spark when writing large datasets
@@ -4441,7 +4441,7 @@ Drop Malformed
 Drops lines that are malformed
 Fail Fast
 Aborts if it encounters any malformed line
-You can use these in sparklyr by passing them inside the options argument. The fol‐
+You can use these in `sparklyr` by passing them inside the options argument. The fol‐
 lowing example creates a file with a broken entry. It then shows how it can be read
 into Spark:
 ## Creates bad test file
@@ -4518,7 +4518,7 @@ is row-based. All of them are binary file formats, which reduces storage space a
 improves performance. This comes at the cost of making them a bit more difficult to
 read by external systems and libraries; however, this is usually not an issue when used
 as intermediate data storage within Spark.
-To illustrate this, Figure 8-4 plots the result of running a 1-million-row write-speed
+To illustrate this,图8-4 plots the result of running a 1-million-row write-speed
 benchmark using the bench package; feel free to use your own benchmarks over
 meaningful datasets when deciding which format best fits your needs:
 numeric <- copy_to(sc, data.frame(nums = runif(10^6)))
@@ -4544,7 +4544,7 @@ using the appropriate package.
 Packages need to be loaded into Spark at connection time. To load the package, Spark
 needs its location, which could be inside the cluster, in a file share, or the internet.
 In sparklyr, the package location is passed to spark_connect(). All packages should
-be listed in the sparklyr.connect.packages entry of the connection configuration.
+be listed in the `sparklyr`。connect.packages entry of the connection configuration.
 It is possible to access data source types that we didn’t previously list. Loading the
 appropriate default package for Spark is the first of two steps The second step is to
 actually read or write the data. The spark_read_source() and
@@ -4564,7 +4564,7 @@ which you can also write back to XML with ease, as follows:
 tbl(sc, "simple_xml") %>%
 spark_write_source("xml", options = list(path = "data.xml"))
 In addition, there are a few extensions developed by the R community to load addi‐
-tional file formats, such as sparklyr.nested to assist with nested data,
+tional file formats, such as `sparklyr`。nested to assist with nested data,
 spark.sas7bdat to read data from SAS, sparkavro to read data in AVRO format, and
 sparkwarc to read WARC files, which use extensibility mechanisms introduced in
 Chapter 10. Chapter 11 presents techniques to use R packages to load additional file
@@ -4578,7 +4578,7 @@ file.csv will be read from the cluster’s HDFS folders, not the Linux folders. 
 ing system’s file system will be accessed for other deployments, such as Standalone,
 and sparklyr’s local.
 The file system protocol can be changed when reading or writing. You do this via the
-path argument of the sparklyr function. For example, a full path of file://home/user/
+path argument of the `sparklyr` function. For example, a full path of file://home/user/
 file.csv forces the use of the local operating system’s file system.
 There are many other file system protocols, such as _dbfs://_ for Databricks’ file
 system, _s3a://_ for Amazon’s S3 service, _wasb://_ for Microsoft Azure storage,
@@ -4615,11 +4615,11 @@ statement:
 sc <- spark_connect(master = "local", version = "2.3")
 spark_read_csv(sc, "test", "data-csv/", memory = FALSE)
 DBI::dbGetQuery(sc, "SELECT * FROM test limit 10")
-Another way to reference a table is with dplyr using the tbl() function, which
+Another way to reference a table is with `dplyr` using the tbl() function, which
 retrieves a reference to the table:
 dplyr::tbl(sc, "test")
 It is important to reiterate that no data is imported into R; the tbl() function only
-creates a reference. You then can pipe more dplyr verbs following the tbl()
+creates a reference. You then can pipe more `dplyr` verbs following the tbl()
 command:
 dplyr::tbl(sc, "test") %>%
 dplyr::group_by(y) %>%
@@ -4633,7 +4633,7 @@ tbl() call:
 tbl(sc, dbplyr::in_schema("databasename", "table"))
 150 | Chapter 8: Data
 You can also use the tbl_change_db() function to set the current session’s default
-database. Any subsequent call via DBI or dplyr will use the selected name as the
+database. Any subsequent call via DBI or `dplyr` will use the selected name as the
 default database:
 tbl_change_db(sc, "databasename")
 The following examples require additional Spark packages and databases which
@@ -4682,7 +4682,7 @@ which at times is trivial and other times is quite an adventure. To keep this si
 can briefly consider how a connection to a remote MySQL database could be
 accomplished.
 First, you would need to download the appropriate JDBC driver from MySQL’s devel‐
-oper portal and specify this additional driver as a sparklyr.shell.driver-class￾path connection option. Since JDBC drivers are Java-based, the code is contained
+oper portal and specify this additional driver as a `sparklyr`。shell.driver-class￾path connection option. Since JDBC drivers are Java-based, the code is contained
 within a JAR (Java ARchive) file. As soon as you’re connected to Spark with the
 appropriate driver, you can use the jdbc:// protocol to access particular drivers and
 databases. Unless you are willing to download and configure MySQL on your own,
@@ -4772,14 +4772,14 @@ across the cluster, the sorted results can be optionally cached in memory to avo
 rerunning this computation multiple times.
 Finally, a small subset of the results is serialized, through the network connecting the
 cluster machines, back to the driver node to print a preview of this sorting example.
-Notice that while Figure 9-1 describes a sorting operation, a similar approach applies
+Notice that while图9-1 describes a sorting operation, a similar approach applies
 to filtering or joining datasets and analyzing and modeling data at scale. Spark pro‐
 vides support to perform custom partitions, custom shuffling, and so on, but most of
-these lower-level operations are not exposed in sparklyr; instead, sparklyr makes
+these lower-level operations are not exposed in sparklyr; instead, `sparklyr` makes
 those operations available through higher-level commands provided by data analysis
-tools like dplyr or DBI, modeling, and by using many extensions. For those few cases
+tools like `dplyr` or DBI, modeling, and by using many extensions. For those few cases
 in which you might need to implement low-level operations, you can always use
-Spark’s Scala API through sparklyr extensions or run custom distributed R code.
+Spark’s Scala API through `sparklyr` extensions or run custom distributed R code.
 156 | Chapter 9: Tuning
 To effectively tune Spark, we will start by getting familiar with Spark’s computation
 graph and Spark’s event timeline. Both are accessible through Spark’s web interface.
@@ -4790,7 +4790,7 @@ means that all computations in Spark move computation forward without repeating
 previous steps, which helps Spark optimize computations effectively.
 The best way to understand Spark’s computation graph for a given operation—sort‐
 ing for our example—is to open the last completed query on the SQL tab in Spark’s
-web interface. Figure 9-2 shows the resulting graph for this sorting operation, which
+web interface.图9-2 shows the resulting graph for this sorting operation, which
 contains the following operations:
 WholeStageCodegen
 This block specifies that the operations it contains were used to generate com‐
@@ -4810,7 +4810,7 @@ final stage.
 Figure 9-2. Spark graph for a sorting query
 From the query details, you then can open the last Spark job to arrive to the job
 details page, which you can expand by using “DAG Visualization” to create a graph
-similar to Figure 9-3. This graph shows a few additional details and the stages in this
+similar to图9-3. This graph shows a few additional details and the stages in this
 job. Notice that there are no arrows pointing back to previous steps, since Spark
 makes use of acyclic graphs.
 Figure 9-3. Spark graph for a sorting job
@@ -4822,12 +4822,12 @@ over each stage. Ideally, you want to see this timeline consisting of mostly CPU
 since other tasks can be considered overhead. You also want to see Spark using all the
 CPUs across all the cluster nodes available to you.
 Select the first stage in the current job and expand the event timeline, which should
-look similar to Figure 9-4. Notice that we explicitly requested three partitions, which
+look similar to图9-4. Notice that we explicitly requested three partitions, which
 are represented by three lanes in this visualization.
 Figure 9-4. Spark event timeline
 Since our machine is equipped with four CPUs, we can parallelize this computation
 even further by explicitly repartitioning data using sdf_repartition(), with the
-result shown in Figure 9-5:
+result shown in图9-5:
 data %>% sdf_repartition(4) %>% arrange(id) %>% collect()
 Figure 9-5. Spark event timeline with additional partitions
 Figure 9-5 now shows four execution lanes with most time spent under Executor
@@ -4881,7 +4881,7 @@ config["sparklyr.shell.executor-memory"] <- "2g"
 config["sparklyr.shell.executor-cores"] <- 1
 # Number of workers
 config["sparklyr.shell.num-executors"] <- 3
-When using YARN in cluster mode you can use sparklyr.shell.driver-cores to
+When using YARN in cluster mode you can use `sparklyr`。shell.driver-cores to
 configure total cores requested in the driver node. The Spark on YARN guide pro‐
 vides additional configuration settings that can benefit you.
 There are a few types of configuration settings:
@@ -4889,12 +4889,12 @@ Connect
 These settings are set as parameters to spark_connect(). They are common set‐
 tings used while connecting.
 Submit
-These settings are set while sparklyr is being submitted to Spark through spark￾submit; some are dependent on the cluster manager being used.
+These settings are set while `sparklyr` is being submitted to Spark through spark￾submit; some are dependent on the cluster manager being used.
 Runtime
 These settings configure Spark when the Spark session is created. They are inde‐
 pendent of the cluster manager and specific to Spark.
 sparklyr
-Use these to configure sparklyr behavior. These settings are independent of the
+Use these to configure `sparklyr` behavior. These settings are independent of the
 cluster manager and particular to R.
 The following subsections present extensive lists of all the available settings. It is not
 required that you fully understand them all while tuning Spark, but skimming
@@ -4935,17 +4935,17 @@ Name Value
 sparklyr.shell.jars Specified as jars parameter in spark_connect().
 sparklyr.shell.packages Comma-separated list of Maven coordinates of JARs to include on the driver
 and executor classpaths. Will search the local Maven repo, then Maven Central
-and any additional remote repositories given by sparklyr.shell.repo
+and any additional remote repositories given by `sparklyr`。shell.repo
 sitories. The format for the coordinates should be groupId:artifac
 tId:version.
 sparklyr.shell.exclude￾packages
 Comma-separated list of groupId:artifactId, to exclude while
-resolving the dependencies provided in sparklyr.shell.packages to
+resolving the dependencies provided in `sparklyr`。shell.packages to
 avoid dependency conflicts.
 162 | Chapter 9: Tuning
 Name Value
 sparklyr.shell.repositories Comma-separated list of additional remote repositories to search for the
-Maven coordinates given with sparklyr.shell.packages.
+Maven coordinates given with `sparklyr`。shell.packages.
 sparklyr.shell.files Comma-separated list of files to be placed in the working directory of each
 executor. Filepaths of these files in executors can be accessed via Spark
 Files.get(fileName).
@@ -4961,7 +4961,7 @@ sparklyr.shell.driver-class￾path
 Extra class path entries to pass to the driver. Note that JARs added with spar
 klyr.shell.jars are automatically included in the classpath.
 sparklyr.shell.proxy-user User to impersonate when submitting the application. This argument does not
-work with sparklyr.shell.principal/ sparklyr.shell.key
+work with `sparklyr`。shell.principal/ `sparklyr`。shell.key
 tab.
 sparklyr.shell.verbose Print additional debug output.
 The remaining settings, shown in Table 9-3, are specific to YARN.
@@ -4975,7 +4975,7 @@ sparklyr.shell.keytab The full path to the file that contains the keytab for the
 keytab will be copied to the node running the Application Master via the Secure
 Distributed Cache, for renewing the login tickets and the delegation tokens
 periodically.
-In general, any spark-submit setting is configured through sparklyr.shell.X,
+In general, any spark-submit setting is configured through `sparklyr`。shell.X,
 where X is the name of the spark-submit parameter without the -- prefix.
 Runtime Settings
 As mentioned, some Spark settings configure the session runtime. The runtime set‐
@@ -5005,13 +5005,13 @@ in the Spark Configuration guide. It’s beyond the scope of this book to descri
 all, so, if possible, take some time to identify the ones that might be of interest to your
 particular use cases.
 sparklyr Settings
-Apart from Spark settings, there are a few settings particular to sparklyr. You usually
+Apart from Spark settings, there are a few settings particular to `sparklyr`。 You usually
 don’t use these settings while tuning Spark; instead, they are helpful while trouble‐
-shooting Spark from R. For instance, you can use sparklyr.log.console = TRUE to
+shooting Spark from R. For instance, you can use `sparklyr`。log.console = TRUE to
 output the Spark logs into the R console; this is ideal while troubleshooting but too
 noisy otherwise. Here’s how to list the settings (results are presented in Table 9-5):
 spark_config_settings()
-Table 9-5. Settings available to configure the sparklyr package
+Table 9-5. Settings available to configure the `sparklyr` package
 Name Description
 sparklyr.apply.packages Configures default value for packages parameter in
 spark_apply().
@@ -5024,15 +5024,15 @@ the closure.
 sparklyr.apply.schema.infer Number of rows collected to infer schema when column
 types specified in spark_apply().
 sparklyr.arrow Use Apache Arrow to serialize data?
-sparklyr.backend.interval Total seconds sparklyr will check on a backend
+sparklyr.backend.interval Total seconds `sparklyr` will check on a backend
 operation.
-sparklyr.backend.timeout Total seconds before sparklyr will give up waiting for a
+sparklyr.backend.timeout Total seconds before `sparklyr` will give up waiting for a
 backend operation to complete.
 sparklyr.collect.batch Total rows to collect when using batch collection; defaults
 to 100,000.
 sparklyr.cancellable Cancel Spark jobs when the R session is interrupted?
 sparklyr.connect.aftersubmit R function to call after spark-submit executes.
-sparklyr.connect.app.jar The path to the sparklyr JAR used in spark_con
+sparklyr.connect.app.jar The path to the `sparklyr` JAR used in spark_con
 nect().
 sparklyr.connect.cores.local Number of cores to use in spark_connect(master 
 = "local"), defaults to parallel::detect
@@ -5052,7 +5052,7 @@ sparklyr.connect.sparksubmit Command executed instead of spark-submit when
 connecting.
 sparklyr.connect.timeout Total seconds before giving up connecting to the spar
 klyr gateway while initializing.
-sparklyr.dplyr.period.splits Should dplyr split column names into database and
+sparklyr.dplyr.period.splits Should `dplyr` split column names into database and
 table?
 sparklyr.extensions.catalog Catalog PATH where extension JARs are located. Defaults
 to TRUE; FALSE to disable.
@@ -5064,13 +5064,13 @@ Configuring | 165
 Name Description
 sparklyr.gateway.interval Total of seconds sparkyr will check on a gateway
 connection.
-sparklyr.gateway.port The port the sparklyr gateway uses in the driver
+sparklyr.gateway.port The port the `sparklyr` gateway uses in the driver
 machine.
-sparklyr.gateway.remote Should the sparklyr gateway allow remote
+sparklyr.gateway.remote Should the `sparklyr` gateway allow remote
 connections? This is required in YARN cluster, for example.
-sparklyr.gateway.routing Should the sparklyr gateway service route to other
+sparklyr.gateway.routing Should the `sparklyr` gateway service route to other
 sessions? Consider disabling in Kubernetes.
-sparklyr.gateway.service Should the sparklyr gateway be run as a service
+sparklyr.gateway.service Should the `sparklyr` gateway be run as a service
 without shutting down when the last connection
 disconnects?
 sparklyr.gateway.timeout Total seconds before giving up connecting to the spar
@@ -5079,8 +5079,8 @@ sparklyr.gateway.wait Total seconds to wait before retrying to contact the spar
 klyr gateway.
 sparklyr.livy.auth Authentication method for Livy connections.
 sparklyr.livy.headers Additional HTTP headers for Livy connections.
-sparklyr.livy.sources Should sparklyr sources be sourced when connecting?
-If false, manually register sparklyr JARs.
+sparklyr.livy.sources Should `sparklyr` sources be sourced when connecting?
+If false, manually register `sparklyr` JARs.
 sparklyr.log.invoke Should every call to invoke() be printed in the console?
 Can be set to callstack to log call stack.
 sparklyr.log.console Should driver logs be printed in the console?
@@ -5093,7 +5093,7 @@ sparklyr.stream.collect.timeout Total seconds before stopping collecting a strea
 in sdf_collect_stream().
 sparklyr.stream.validate.timeout Total seconds before stopping to check if stream has errors
 while being created.
-sparklyr.verbose Use verbose logging across all sparklyr operations?
+sparklyr.verbose Use verbose logging across all `sparklyr` operations?
 sparklyr.verbose.na Use verbose logging when dealing with NAs?
 sparklyr.verbose.sanitize Use verbose logging while sanitizing columns and other
 objects?
@@ -5101,7 +5101,7 @@ sparklyr.web.spark The URL to Spark’s web interface.
 sparklyr.web.yarn The URL to YARN’s web interface.
 sparklyr.worker.gateway.address The address of the worker machine, most likely local
 host.
-sparklyr.worker.gateway.port The port the sparklyr gateway uses in the driver
+sparklyr.worker.gateway.port The port the `sparklyr` gateway uses in the driver
 machine.
 166 | Chapter 9: Tuning
 Name Description
@@ -5187,17 +5187,17 @@ accomplish this by tracking data lineage information to rebuild lost data automa
 cally on failure.
 In sparklyr, you can control when an RDD is loaded or unloaded from memory
 using tbl_cache() and tbl_uncache().
-Most sparklyr operations that retrieve a Spark DataFrame cache the results in mem‐
+Most `sparklyr` operations that retrieve a Spark DataFrame cache the results in mem‐
 ory. For instance, running spark_read_parquet() or copy_to() will provide a Spark
 DataFrame that is already cached in memory. As a Spark DataFrame, this object can
-be used in most sparklyr functions, including data analysis with dplyr or machine
+be used in most `sparklyr` functions, including data analysis with `dplyr` or machine
 learning:
 library(sparklyr)
 sc <- spark_connect(master = "local")
 iris_tbl <- copy_to(sc, iris, overwrite = TRUE)
 You can inspect which tables are cached by navigating to the Spark UI using
 spark_web(sc), clicking the Storage tab, and then clicking on a specific RDD, as illus‐
-trated in Figure 9-7.
+trated in图9-7.
 Caching | 169
 Figure 9-7. Cached RDD in the Spark web interface
 Data loaded in memory will be released when the R session terminates, either explic‐
@@ -5229,8 +5229,8 @@ Reserved memory is the memory Spark needs to function and therefore is over‐
 head that is required and should not be configured. This value defaults to 300
 MB.
 User
-User memory is the memory used to execute custom code. sparklyr makes use
-of this memory only indirectly when executing dplyr expressions or modeling a
+User memory is the memory used to execute custom code. `sparklyr` makes use
+of this memory only indirectly when executing `dplyr` expressions or modeling a
 dataset.
 Execution
 Execution memory is used to execute code by Spark, mostly to process the results
@@ -5280,7 +5280,7 @@ transmitted between machines and reconstructed on the receiving end.
 It is not that common to need to adjust serialization when tuning Spark; however, it is
 worth mentioning that there are alternative serialization modules like the Kryo Seri‐
 alizer that can provide performance improvements over the default Java Serializer.
-You can turn on the Kryo Serializer in sparklyr through the following:
+You can turn on the Kryo Serializer in `sparklyr` through the following:
 config <- spark_config()
 config$spark.serializer <- "org.apache.spark.serializer.KryoSerializer"
 sc <- spark_connect(master = "local", config = config)
@@ -5359,14 +5359,14 @@ Spark extensions and, in fact, many R extensions make use of Spark extensions.
 Extensions are constantly being created, so this section will be outdated at some given
 point in time. In addition, we might not even be aware of many Spark and R exten‐
 sions. However, at the very least we can track the extensions that are available in
-CRAN by looking at the “reverse imports” for sparklyr in CRAN. Extensions and R
+CRAN by looking at the “reverse imports” for `sparklyr` in CRAN. Extensions and R
 packages published in CRAN tend to be the most stable since when a package is pub‐
 lished in CRAN, it goes through a review process that increases the overall quality of
 a contribution.
 While we wish we could present all the extensions, we’ve instead scoped this chapter
 to the extensions that should be the most interesting to you. You can find additional
 extensions at the github.com/r-spark organization or by searching repositories on
-GitHub with the sparklyr tag.
+GitHub with the `sparklyr` tag.
 rsparkling
 The rsparkling extensions allow you to use H2O and Spark from R. This exten‐
 sion is what we would consider advanced modeling in Spark. While Spark’s built￾in modeling library, Spark MLlib, is quite useful in many cases, H2O’s modeling
@@ -5421,7 +5421,7 @@ the extension can be used. So, in general, here’s the pattern you should follo
 library(sparkextension)
 library(sparklyr)
 sc <- spark_connect(master = "<master>")
-Notice that sparklyr is loaded after the extension to allow the extension to register
+Notice that `sparklyr` is loaded after the extension to allow the extension to register
 properly. If you had to install and load a new extension, you would first need to dis‐
 connect using spark_disconnect(sc), restart your R session, and repeat the preced‐
 ing steps with the new extension.
@@ -5449,7 +5449,7 @@ involved: H2O, Sparkling Water, rsparkling, and Spark. Sparkling Water allows
 users to combine the fast, scalable machine learning algorithms of H2O with the
 capabilities of Spark. You can think of Sparkling Water as a component bridging
 Spark with H2O and rsparkling as the R frontend for Sparkling Water, as depicted
-in Figure 10-1.
+in图10-1.
 Figure 10-1. H2O components with Spark and R
 178 | Chapter 10: Extensions
 First, install rsparkling and h2o as specified on the rsparkling documentation site.
@@ -5475,7 +5475,7 @@ config = list(sparklyr.connect.timeout = 3 * 60))
 cars <- copy_to(sc, mtcars)
 H2O provides a web interface that can help you monitor training and access much of
 H2O’s functionality. You can access the web interface (called H2O Flow) through
-h2o_flow(sc), as shown in Figure 10-2.
+h2o_flow(sc), as shown in图10-2.
 When using H2O, you will need to convert your Spark DataFrame into an H2O Data‐
 Frame through as_h2o_frame:
 cars_h2o <- as_h2o_frame(sc, cars)
@@ -5578,11 +5578,11 @@ cial GitHub repository for the rsparkling package.
 The next extension, graphframes, allows you to process large-scale relational data‐
 sets. Before you start using it, make sure to disconnect with spark_disconnect(sc)
 and restart your R session since using a different extension requires you to reconnect
-to Spark and reload sparklyr.
+to Spark and reload `sparklyr`。
 Graphs
 The first paper in the history of graph theory was written by Leonhard Euler on the
 Seven Bridges of Königsberg in 1736. The problem was to devise a walk through the
-city that would cross each bridge once and only once. Figure 10-3 presents the origi‐
+city that would cross each bridge once and only once.图10-3 presents the origi‐
 nal diagram.
 182 | Chapter 10: Extensions
 Figure 10-3. The Seven Bridges of Königsberg from the Euler archive
@@ -5718,7 +5718,7 @@ Edges:
  $ src <dbl> 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 12, 12, 12,…
  $ dst <dbl> 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,…
  $ weight <dbl> 0.25000000, 0.25000000, 0.25000000, 0.25000000, 0.25000000,…
-To give you some insights into this dataset, Figure 10-4 plots this chart using the
+To give you some insights into this dataset,图10-4 plots this chart using the
 ggraph and highlights the highest PageRank scores for the following dataset:
 highschool_tbl %>%
 igraph::graph_from_data_frame(directed = FALSE) %>%
@@ -5738,7 +5738,7 @@ extension.
 XGBoost
 A decision tree is a flowchart-like structure in which each internal node represents a
 test on an attribute, each branch represents the outcome of the test, and each leaf
-node represents a class label. For example, Figure 10-5 shows a decision tree that
+node represents a class label. For example,图10-5 shows a decision tree that
 could help classify whether an employee is likely to leave given a set of factors like job
 satisfaction and overtime. When a decision tree is used to predict continuous vari‐
 ables instead of discrete outcomes—say, how likely someone is to leave a company—it
@@ -5840,7 +5840,7 @@ m wixi + b > 0
 Minsky and Papert found out that a single perceptron can classify only datasets that
 are linearly separable; however, they also revealed in their book Perceptrons that
 Deep Learning | 189
-layering perceptrons would bring additional classification capabilities.3 Figure 10-6
+layering perceptrons would bring additional classification capabilities.3图10-6
 presents the original diagram showcasing a multilayered perceptron.
 Figure 10-6. Layered perceptrons, as illustrated in the book Perceptrons
 Before we start, let’s first install all the packages that we are about to use:
@@ -5907,7 +5907,7 @@ enough for most applications; however, recent state-of-the-art deep learning mod
 train using distributed computing frameworks like Apache Spark. Distributed com‐
 puting frameworks are used to achieve higher petaflops each day the systems spends
 training these models. OpenAI analyzed trends in the field of artificial intelligence
-(AI) and cluster computing (illustrated in Figure 10-7). It should be obvious from the
+(AI) and cluster computing (illustrated in图10-7). It should be obvious from the
 figure that there is a trend in recent years to use distributed computing frameworks.
 Figure 10-7. Training using distributed systems based on OpenAI analysis
 Training large-scale deep learning models is possible in Spark and TensorFlow
@@ -5917,7 +5917,7 @@ MPI, this goes beyond the scope of this book. Next, we will introduce a differen
 Spark extension in the domain of genomics.
 Genomics
 The human genome consists of two copies of about 3 billion base pairs of DNA
-within the 23 chromosome pairs. Figure 10-8 shows the organization of the genome
+within the 23 chromosome pairs.图10-8 shows the organization of the genome
 into chromosomes. DNA strands are composed of nucleotides, each composed of one
 of four nitrogen-containing nucleobases: cytosine (C), guanine (G), adenine (A), or
 thymine (T). Since the DNA of all humans is nearly identical, we need to store only
@@ -5967,7 +5967,7 @@ importance_tbl
  9 2_109511532 0
 10 2_109511579 0
 # … with more rows
-You then can use dplyr and ggplot2 to transform the output and visualize it (see
+You then can use `dplyr` and ggplot2 to transform the output and visualize it (see
 Figure 10-9):
 library(dplyr)
 library(ggplot2)
@@ -6003,7 +6003,7 @@ read.table(sep = "|", col.names = c("city", "state", "geom"))
 polygons_wkt <- copy_to(sc, polygons)
 points_wkt <- copy_to(sc, points)
 Spatial | 195
-There are various spatial operations defined in geospark, as depicted in Figure 10-10.
+There are various spatial operations defined in geospark, as depicted in图10-10.
 These operations allow you to control how geospatial data should be queried based
 on overlap, intersection, disjoint sets, and so on.
 Figure 10-10. Spatial operations available in geospark
@@ -6128,7 +6128,7 @@ equivalent to function(.x) 10 * .x; this compact form is also known as an anony�
 mous function, or lambda expression.
 The f(x) function must take an R DataFrame (or something that can be automati‐
 cally transformed to one) as input and must also produce an R DataFrame as output,
-as shown in Figure 11-2.
+as shown in图11-2.
 200 | Chapter 11: Distributed R
 Figure 11-2. Expected function signature in spark_apply() mappings
 We can refer back to the original MapReduce example from Chapter 1, where the
@@ -6280,7 +6280,7 @@ group_by = "Species")
 1 versicolor 0.619
 2 virginica 0.104
 3 setosa 0.110
-As you can see from the r.squared results and intuitively in Figure 11-3, the linear
+As you can see from the r.squared results and intuitively in图11-3, the linear
 model for versicolor better fits to the regression line:
 purrr::map(c("versicolor", "virginica", "setosa"),
 ~dplyr::filter(datasets::iris, Species == !!.x) %>%
@@ -6415,7 +6415,7 @@ add_object(sphere(material = metal(color="orange"), x = -2))
 render_scene(scene, lookfrom = c(10, 5, 0), parallel = TRUE)
 Figure 11-4. Ray tracing in Spark using R and rayrender
 In higher resolutions, say 1920 x 1080, the previous example takes several minutes to
-render the single frame from Figure 11-4; rendering a few seconds at 30 frames per
+render the single frame from图11-4; rendering a few seconds at 30 frames per
 second would take several hours in a single machine. However, we can reduce this
 time using multiple machines by parallelizing computation across them. For instance,
 using 10 machines with the same number of CPUs would cut rendering time tenfold:
@@ -6443,7 +6443,7 @@ come to find other use cases for your particular needs. The next sections presen
 technical concepts you’ll need to understand to create additional use cases and to use
 spark_apply() effectively.
 Partitions
-Most Spark operations that analyze data with dplyr or model with MLlib don’t
+Most Spark operations that analyze data with `dplyr` or model with MLlib don’t
 require understanding how Spark partitions data; they simply work automatically.
 However, for distributed R computations, this is not the case. For these you will have
 to learn and understand how exactly Spark is partitioning your data and provide
@@ -6697,7 +6697,7 @@ Requires connecting to each machine and installing R; tools like pssh allow you
 to run a single installation command against multiple machines.
 Cloudera
 Provides an R parcel (see the Cloudera blog post “How to Distribute Your R code
-with sparklyr and Cloudera Data Science Workbench”), which enables R over
+with `sparklyr` and Cloudera Data Science Workbench”), which enables R over
 each worker node.
 Amazon EMR
 R is preinstalled when starting an EMR cluster as mentioned in “Amazon” on
@@ -6714,14 +6714,14 @@ strongly recommend you use Apache Arrow with spark_apply() to support large￾sc
 Apache Arrow
 Before introducing Apache Arrow, we’ll discuss how data is stored and transferred
 between Spark and R. As R was designed from its inception to perform fast numeric
-computations to accomplish this, it’s important to figure out the best way to store
+computations to accomplish this, it’s important to图out the best way to store
 data.
 Some computing systems store data internally by row; however, most interesting
 numerical operations require data to be processed by column. For example, calculat‐
 ing the mean of a column requires processing each column on its own, not the entire
 row. Spark stores data by default by row, since it’s easier to partition; in contrast, R
 stores data by column. Therefore, something needs to transform both representations
-when data is transferred between Spark and R, as shown in Figure 11-6.
+when data is transferred between Spark and R, as shown in图11-6.
 Figure 11-6. Data transformation between Spark and R
 This transformation from rows to columns needs to happen for each partition. In
 addition, data also must be transformed from Scala’s internal representation to R’s
@@ -6734,7 +6734,7 @@ form between Scala’s internal representation and R’s, you can use the same s
 for both languages. In addition, transforming data from row-based storage to colum‐
 nar storage is performed in parallel in Spark, which can be further optimized by using
 the columnar storage formats presented in Chapter 8. The improved transformations
-are shown in Figure 11-7.
+are shown in图11-7.
 Cluster Requirements | 217
 Figure 11-7. Data transformation between Spark and R using Apache Arrow
 Apache Arrow is not required but is strongly recommended while you are working
@@ -6796,7 +6796,7 @@ A custom transformation can fail for many reasons. To learn how to troubleshoot
 errors, let’s simulate a problem by triggering an error ourselves:
 sdf_len(sc, 1) %>% spark_apply(~stop("force an error"))
 Error in force(code) :
- sparklyr worker rscript failure, check worker logs for details
+ `sparklyr` worker rscript failure, check worker logs for details
  Log: wm_bx4cn70s6h0r5vgsldm0000gn/T/Rtmpob83LD/file2aac1a6188_spark.log
 ---- Output Log ----
 19/03/11 14:12:24 INFO sparklyr: Worker (1) completed wait using lock for RScript
@@ -6856,7 +6856,7 @@ stop("force an error")
 })
 We will get an error similar to the following:
  Error in force(code) :
- sparklyr worker rscript failure, check worker logs for details
+ `sparklyr` worker rscript failure, check worker logs for details
 As suggested by the error, we can look in the worker logs for the specific errors as
 follows:
 spark_log(sc)
@@ -6931,7 +6931,7 @@ stop("Error!")
 Debugging spark_apply(), connect to worker debugging session as follows:
  1. Find the workers <sessionid> and <port> in the worker logs, from RStudio
  click 'Log' under the connection, look for the last entry with contents:
- 'Session (<sessionid>) is waiting for sparklyr client to connect to
+ 'Session (<sessionid>) is waiting for `sparklyr` client to connect to
  port <port>'
  2. From a new R session run:
  debugonce(sparklyr:::spark_worker_main)
@@ -7048,7 +7048,7 @@ processed in the source, and in the destination, and their latest values over ti
 Overview | 227
 future::future(stream_generate_test(interval = 0.5))
 stream_view(stream)
-The result is shown in Figure 12-2.
+The result is shown in图12-2.
 Figure 12-2. Monitoring a stream generating rows following a binomial distribution
 Notice that the rps rate in the destination stream is higher than that in the source
 stream. This is expected and desirable since Spark measures incoming rates from the
@@ -7068,15 +7068,15 @@ then write the transformed data.
 228 | Chapter 12: Streaming
 Streams can be transformed using dplyr, SQL queries, ML pipelines, or R code. We
 can use as many transformations as needed in the same way that Spark DataFrames
-can be transformed with sparklyr.
+can be transformed with `sparklyr`。
 The source of the transformation can be a stream or DataFrame, but the output is
 always a stream. If needed, you can always take a snapshot from the destination
-stream and then save the output as a DataFrame. That is what sparklyr will do for
+stream and then save the output as a DataFrame. That is what `sparklyr` will do for
 you if a destination stream is not specified.
-Each of the following subsections covers an option provided by sparklyr to perform
+Each of the following subsections covers an option provided by `sparklyr` to perform
 transformations on a stream.
 Analysis
-You can analyze streams with dplyr verbs and SQL using DBI. As a quick example, we
+You can analyze streams with `dplyr` verbs and SQL using DBI. As a quick example, we
 will filter rows and add columns over a stream. We won’t explicitly call stream_gener
 ate_test(), but you can call it on your own through the later package if you feel
 the urge to verify that data is being processed continuously:
@@ -7159,7 +7159,7 @@ That said, there are other modeling concepts we can use with streams, like featu
 transformers and scoring. Let’s try out a feature transformer with streams, and leave
 scoring for the next section, since we will need to train a model.
 The next example uses the ft_bucketizer() feature transformer to modify the
-stream followed by regular dplyr functions, which you can use just as you would
+stream followed by regular `dplyr` functions, which you can use just as you would
 with static datasets:
 stream_read_csv(sc, "source") %>%
 mutate(x = as.numeric(x)) %>%
@@ -7264,7 +7264,7 @@ by topic. Kafka is commonly used to connect multiple real-time applications. A p
 ducer is an application that streams data into Kafka, while a consumer is the one that
 reads from Kafka; in Kafka terminology, a consumer application subscribes to topics.
 Therefore, the most basic workflow we can accomplish with Kafka is one with a sin‐
-gle producer and a single consumer; this is illustrated in Figure 12-3.
+gle producer and a single consumer; this is illustrated in图12-3.
 Figure 12-3. A basic Kaa workflow
 Kafka | 233
 If you are new to Kafka, we don’t recommend you run the code from this section.
@@ -7291,7 +7291,7 @@ Though we’ve started by presenting a simple single-producer and single-consume
 use case, Kafka also allows much more complex interactions. We will next read from
 one topic, process its data, and then write the results to a different topic. Systems that
 are producers and consumers from the same topic are referred to as stream processors.
-In Figure 12-4, the stream processor reads topic A and then writes results to topic B.
+In图12-4, the stream processor reads topic A and then writes results to topic B.
 This allows for a given consumer application to read results instead of “raw” feed
 data.
 Figure 12-4. A Kaa workflow using stream processors
@@ -7340,7 +7340,7 @@ already familiar with Shiny, this example should be quite easy to understand.
 We have a modified version of the k-means Shiny example that, instead of getting the
 data from the static iris dataset, is generated with stream_generate_test(), con‐
 sumed by Spark, retrieved to Shiny through reactiveSpark(), and then displayed as
-shown in Figure 12-5.
+shown in图12-5.
 To run this example, store the following Shiny app under shiny/shiny-stream.R:
 library(sparklyr)
 library(shiny)
@@ -7398,7 +7398,7 @@ point A to point B.
 This humble start became quite useful when you learned about the several different
 transformations you can apply to streaming data—from data analysis transformations
 Recap | 237
-using the dplyr and DBI packages, to feature transformers introduced while model‐
+using the `dplyr` and DBI packages, to feature transformers introduced while model‐
 ing, to fully fledged pipelines capable of scoring in real time, to, last but not least,
 transforming datasets with custom R code. This was a lot to digest, for sure.
 We then presented Apache Kafka as a reliable and scalable solution for real-time data.
@@ -7460,7 +7460,7 @@ spark_read_text(sc, "/path/that/is/hard/to/remember/data.csv") }
 This is an improvement, but it would require users to manually share this file again
 and again. Fortunately, this problem is easily solved in R, through R packages.
 An R package contains R code in a format that is installable using the function
-install.packages(). One example is sparklyr. There are many other R packages
+install.packages(). One example is `sparklyr`。 There are many other R packages
 available; you can also create your own. For those of you new to creating them, we
 encourage you to read Hadley Wickham’s book, R Packages (O’Reilly). Creating an R
 package allows you to easily share your functions with others by sharing the package
@@ -7485,7 +7485,7 @@ would be to use the Spark API to access methods provided by Spark. A third
 approach would be to check whether someone in the Spark community has already
 provided a Spark extension that supports this new file format. Last but not least, you
 could write your own custom Scala code that makes use of any Java library, including
-Spark and its extensions. This is shown in Figure 13-1.
+Spark and its extensions. This is shown in图13-1.
 Figure 13-1. Extending Spark using the Spark API or Spark extensions, or writing Scala
 code
 We will focus first on extending Spark using the Spark API, since the techniques
@@ -7539,7 +7539,7 @@ spark_dataframe() transforms a spark_jobj into a Spark DataFrame when possible,
 whereas spark_connect() retrieves the original Spark connection object, which can
 be useful to avoid passing the sc object across functions.
 While calling the Spark API can be useful in some cases, most of the functionality
-available in Spark is already supported in sparklyr. Therefore, a more interesting
+available in Spark is already supported in `sparklyr`。 Therefore, a more interesting
 way to extend Spark is by using one of its many existing extensions.
 Spark Extensions
 Before we get started with this section, consider navigating to spark-packages.org, a
@@ -7552,22 +7552,22 @@ this by using a Spark extension.
 First, if you search “spark-packages.org” to find a Solr extension, you should be able
 to locate spark-solr. The “How to” extension mentions that the
 com.lucidworks.spark:spark-solr:2.0.1 should be loaded. We can accomplish
-this in R using the sparklyr.shell.packages configuration option:
+this in R using the `sparklyr`。shell.packages configuration option:
 config <- spark_config()
 config["sparklyr.shell.packages"] <- "com.lucidworks.spark:spark-solr:3.6.3"
 config["sparklyr.shell.repositories"] <-
 "http://repo.spring.io/plugins-release/,http://central.maven.org/maven2/"
 sc <- spark_connect(master = "local", config = config)
-While specifying the sparklyr.shell.packages parameter is usually enough, for this
+While specifying the `sparklyr`。shell.packages parameter is usually enough, for this
 particular extension, dependencies failed to download from the Spark packages
 repository. You would need to manually find the failed dependencies in the Maven
-repo and add further repositories under the sparklyr.shell.repositories
+repo and add further repositories under the `sparklyr`。shell.repositories
 parameter.
 Spark Extensions | 243
 When you use an extension, Spark connects to the Maven package
 repository to retrieve it. This can take significant time depending
 on the extension and your download speeds. In this case, consider
-using the sparklyr.connect.timeout configuration parameter to
+using the `sparklyr`。connect.timeout configuration parameter to
 allow Spark to download the required files.
 From the spark-solr documentation, you would find that this extension can be used
 with the following Scala code:
@@ -7645,7 +7645,7 @@ This extension will be mostly empty but will contain the appropriate project str
 to call the Scala code.
 Since spark_extension() is registered as a custom project extension in RStudio, you
 can also create an R package that extends Spark using Scala code from the File menu;
-click New Project and then select “R Package using Spark” as shown in Figure 13-3.
+click New Project and then select “R Package using Spark” as shown in图13-3.
 Figure 13-3. Creating a Scala extension package from RStudio
 Once you are ready to compile your package JARs, you can simply run the following:
 compile_package_jars()
@@ -7658,7 +7658,7 @@ ling to consider writing libraries for R users and the R community in Scala and 
 easily packaging these into R packages that are easy to consume, use, and share
 among them.
 If you are interested in developing a Spark extension with R and you get stuck along
-the way, consider joining the sparklyr Gitter channel, where many of us hang out to
+the way, consider joining the `sparklyr` Gitter channel, where many of us hang out to
 help this wonderful community to grow. We hope to hear from you soon!
 Recap
 This final chapter introduced you to a new set of tools to use to expand Spark func‐
@@ -7729,7 +7729,7 @@ You can activate this with the following:
 ggplot2::theme_set(plot_style())
 Chapter 1
 The World’s Capacity to Store Information
-The following script was used to generate Figure 1-1:
+The following script was used to generate图1-1:
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -7769,12 +7769,12 @@ labels = c("", "1M", "", "2M", "", "3M", "") )
 Chapter 2
 Prerequisites
 Installing R
-Download the R installer (see Figure A-1) and launch it for your Windows, Mac, or
+Download the R installer (see图A-1) and launch it for your Windows, Mac, or
 Linux platform.
 Supplemental Code References | 251
 Figure A-1. The R Project for Statistical Computing
 Installing Java
-Download the Java installer (see Figure A-2) and launch it for your Windows, Mac, or
+Download the Java installer (see图A-2) and launch it for your Windows, Mac, or
 Linux platform.
 252 | Appendix A: Supplemental Code References
 Figure A-2. Java download page
@@ -7787,19 +7787,19 @@ ting JAVA_HOME appropiately.
 Installing RStudio
 While installing RStudio is not strictly required to work with Spark with R, it will
 make you much more productive and therefore, we recommend it. Download the
-RStudio installer (see Figure A-3), then launch it for your Windows, Mac, or Linux
+RStudio installer (see图A-3), then launch it for your Windows, Mac, or Linux
 platform.
 Supplemental Code References | 253
 Figure A-3. RStudio download page
 After launching RStudio, you can use its console panel to execute the code provided
 in this chapter.
 Using RStudio
-If you’re unfamiliar with RStudio (see Figure A-4), you should make note of the fol‐
+If you’re unfamiliar with RStudio (see图A-4), you should make note of the fol‐
 lowing panes:
 Console
 You can use a standalone R console to execute all the code presented in this book.
 Packages
-This pane allows you to install sparklyr with ease, check its version, navigate to
+This pane allows you to install `sparklyr` with ease, check its version, navigate to
 the help contents, and more.
 Connections
 This pane allows you to connect to Spark, manage your active connection, and
@@ -8221,7 +8221,7 @@ Bucketizer ft_bucketizer()
 Chi-squared feature selector ft_chisq_selector()
 Vocabulary from document collections ft_count_vectorizer()
 Discrete cosine transform ft_discrete_cosine_transform()
-Transformation using dplyr ft_dplyr_transformer()
+Transformation using `dplyr` ft_dplyr_transformer()
 Hadamard product ft_elementwise_product()
 Feature hasher ft_feature_hasher()
 Term frequencies using hashing export(ft_hashing_tf)
@@ -8251,7 +8251,7 @@ Transform word into code ft_word2vec()
 Chapter 6
 Google Trends for On-Premises (Mainframes), Cloud Computing, and
 Kubernetes
-The data that created Figure 6-1 can be downloaded from https://bit.ly/2YnHkNI.
+The data that created图6-1 can be downloaded from https://bit.ly/2YnHkNI.
 library(dplyr)
 read.csv("data/clusters-trends.csv", skip = 2) %>%
 mutate(year = as.Date(paste(Month, "-01", sep = ""))) %>%
@@ -8540,7 +8540,7 @@ writing data, 141
 data lakes, 8
 data science
 benefits of R for, 11
-benefits of sparklyr for, 14
+benefits of `sparklyr` for, 14
 performing at scale, 15
 data wrangling, 37-40
 Databricks, 16, 106, 128
@@ -8561,7 +8561,7 @@ pipelines and, 81
 reading VCF files and running analyses, 193
 retrieving, 169, 222
 transforming, 77, 79, 81, 84, 229
-using dplyr verbs with, 35, 37
+using `dplyr` verbs with, 35, 37
 visualization using ggplot2, 60
 DBI package, 14, 22
 dbplot package
@@ -8876,7 +8876,7 @@ spark executor, 118
 Spark Standalone, 96-99, 121, 216
 Spark Streaming, 226
 Spark using R
-benefits of sparklyr package for, 13
+benefits of `sparklyr` package for, 13
 data analysis, 22, 33-52
 data formats, 25
 distributed R, 26
