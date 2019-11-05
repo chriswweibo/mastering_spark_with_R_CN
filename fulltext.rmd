@@ -952,7 +952,7 @@ spark_disconnect_all()
 
 对于更常见的数据任务，`sparklyr`提供了`dplyr`的强大支持。这就意味着，你可以使用R中已经熟知的`dplyr`操作，然后`sparklyr`和`dplyr`会把这些操作转换成Spark SQL语句。这些语句通常比SQL语句更加紧凑，易读（见图3-4）。所以，如果你对R和`dplyr`很熟悉，无需过多学习。这可能让人觉得有点虎头蛇尾。的确有点这种感觉。但是，可以专注学习大规模计算技能也是很棒的体验。
 
-![图3-4. dplyr writes SQL in Spark](figures/3_4.png)
+![图3-4. `dplyr`在Spark中执行SQL语句](figures/3_4.png)
 
 为了边学边练，本章后边的代码使用简单的练习，可以在本地Spark集群上运行。这样，你可以在自己的电脑上重复代码。确保`sparklyr`可以使用，第二章已经有过相关介绍。
 
@@ -994,27 +994,19 @@ cars <- copy_to(sc, mtcars)
 
 ## 数据操作
 
-Data wrangling uses transformations to understand the data. It is often referred to as
-the process of transforming data from one “raw” data form into another format with
-the intent of making it more appropriate for data analysis.
-Malformed or missing values and columns with multiple attributes are common data
-problems you might need to fix, since they prevent you from understanding your
-dataset. For example, a “name” field contains the last and first name of a customer.
-There are two attributes (first and last name) in a single column. To be usable, we
-need to transform the “name” field, by changing it into “first_name” and “last_name”
-fields.
-After the data is cleaned, you still need to understand the basics about its content.
-Other transformations such as aggregations can help with this task. For example, the
-result of requesting the average balance of all customers will return a single row and
-column. The value will be the average of all customers. That information will give us
-context when we see individual, or grouped, customer balances.
+数据操作利用数据转换理解数据。它通常指的是把“原始”数据转换成其他格式的数据，并试图利于后续数据分析的过程。
+
+异常值，缺失值，以及多重属性的列是常见的需要解决的数据问题，因为这些问题妨碍你理解数据集。例如，“name”字段包括客户的姓和名，这个列有两个属性（姓和名）。为了可用，我们需要把“name”字段转换成“first_name”和“last_name”。
+
+
+完成数据清洗，你还需要理解数据内容的基本情况。其他转换诸如聚合，可以帮助我们完成这个任务。例如，所有客户的平均余额结果会返回一个数据表。值是所有客户的平均值。当我们观察单个客户或群体客户的余额时，这些信息会提供一些背景知识。
+
 The main goal is to write the data transformations using R syntax as much as possi‐
 ble. This saves us from the cognitive cost of having to switch between multiple com‐
 puter technologies to accomplish a single task. In this case, it is better to take
-advantage of dplyr instead of writing Spark SQL statements for data exploration.
+advantage of `dplyr` instead of writing Spark SQL statements for data exploration.
 In the R environment, cars can be treated as if it were a local DataFrame, so you can
-use dplyr verbs. For instance, we can find out the mean of all columns by using sum
-marise_all():
+use dplyr verbs. For instance, we can find out the mean of all columns by using `summarise_all()`:
 ```{r}
 summarise_all(cars, mean)
 # Source: spark<?> [?? x 11]
