@@ -1564,7 +1564,7 @@ learn many more techniques that we did not even mention in the brief modeling se
 tion from this chapter.
 -------
 
-#第四章 建模
+# 第四章 建模
 
 > I’ve trusted in your visions, in your prophecies, for years.
 > —Stannis Baratheon
@@ -3120,12 +3120,14 @@ time waiting! Not only that, but we could use cluster resources to run broader
 hyperparameter-tuning jobs and process large datasets. To get there, Chapter 6
 presents what exactly a computing cluster is and explains the various options you can
 consider, like building your own or using cloud clusters on demand.
+
 ------
 
-# Clusters
+# 第六章 集群
 
-I have a very large army and very large dragons.
-—Daenerys Targaryen
+> I have a very large army and very large dragons.
+> —Daenerys Targaryen
+
 Previous chapters focused on using Spark over a single computing instance, your per‐
 sonal computer. In this chapter, we introduce techniques to run Spark over multiple
 computing instances, also known as a computing cluster. This chapter and subsequent
@@ -3139,7 +3141,9 @@ to Chapter 7, which teaches you how to connect to an existing cluster. Otherwise
 you don’t have a cluster or are considering improvements to your existing infrastruc‐
 ture, this chapter introduces the cluster trends, managers, and providers available
 today.
-Overview
+
+## Overview
+
 There are three major trends in cluster computing worth discussing: on-premises,
 cloud computing, and Kubernetes. Framing these trends over time will help us under‐
 stand how they came to be, what they are, and what their future might be. To illus‐
@@ -3152,8 +3156,8 @@ to purchase computers usually found on store shelves, or high-performance hardwa
 meaning that a computing vendor provided highly customized computing hardware,
 which also comes optimized for high-performance network connectivity, power con‐
 sumption, and so on.
-Figure 6-1. Google trends for on-premises (mainframe), cloud computing, and Kuber‐
-netes
+![图6-1. Google trends for on-premises (mainframe), cloud computing, and Kubernetes](figures/6_1.png)
+
 When purchasing hundreds or thousands of computing instances, it doesn’t make
 sense to keep them in the usual computing case that we are all familiar with; instead,
 it makes sense to stack them as efficiently as possible on top of one another to mini‐
@@ -3175,7 +3179,7 @@ sidered renting servers in their datacenters to the public, and two years later,
 Web Services (AWS) launched as a way to let anyone rent servers in the company’s
 datacenters on demand, meaning that you did not need to purchase, configure, main‐
 tain, or tear down your own clusters; rather, you could rent them directly from AWS.
-94 | Chapter 6: Clusters
+
 This on-demand compute model is what we know today as cloud computing. In the
 cloud, the cluster you use is not owned by you, and it’s not in your physical building;
 instead it’s a datacenter owned and managed by someone else. Today, there are many
@@ -3192,31 +3196,39 @@ more recently, Kubernetes. These technologies are often loosely described as the
 vate cloud, the public cloud, and as one of the orchestration services that can enable a
 hybrid cloud, respectively. This chapter walks you through each cluster computing
 trend in the context of Spark and R.
-On-Premises
+
+## 本地化
+
 As mentioned in the overview section, on-premises clusters represent a set of com‐
 puting instances procured and managed by staff members from your organization.
 These clusters can be highly customized and controlled; however, they can also incur
 higher initial expenses and maintenance costs.
 When using on-premises Spark clusters, there are two concepts you should consider:
-Cluster manager
-In a similar way as to how an operating system (like Windows or macOS) allows
+
+* Cluster manager
+    In a similar way as to how an operating system (like Windows or macOS) allows
 you to run multiple applications in the same computer, a cluster manager allows
 multiple applications to be run in the same cluster. You need to choose one your‐
 self when working with on-premises clusters.
-Spark distribution
-While you can install Spark from the Apache Spark site, many organizations
+* Spark distribution
+    While you can install Spark from the Apache Spark site, many organizations
 partner with companies that can provide support and enhancements to Apache
 Spark, which we often refer to as Spark distributions.
-Managers
+
+### Managers
+
 To run Spark within a computing cluster, you will need to run software capable of
 initializing Spark over each physical machine and register all the available computing
-On-Premises | 95
+
 nodes. This software is known as a cluster manager. The available cluster managers in
 Spark are Spark Standalone, YARN, Mesos, and Kubernetes.
-In distributed systems and clusters literature, we often refer to each
+
+> In distributed systems and clusters literature, we often refer to each
 physical machine as a compute instance, compute node, instance, or
 node.
-Standalone
+
+#### Standalone
+
 In Spark Standalone, Spark uses itself as its own cluster manager, which allows you to
 use Spark without installing additional software in your cluster. This can be useful if
 you are planning to use your cluster to run only Spark applications; if this cluster is
@@ -3229,43 +3241,46 @@ pleting Chapter 2, you have now a Spark installation available that you can use 
 tialize a local Spark Standalone cluster on your own machine. In practice, you would
 want to start the worker nodes on different machines, but for simplicity, we present
 the code to start a standalone cluster on a single machine.
-First, retrieve the SPARK_HOME directory by running spark_home_dir(), and then start
+First, retrieve the SPARK_HOME directory by running `spark_home_dir()`, and then start
 the master node and a worker node as follows:
+```{r}
 # Retrieve the Spark installation directory
 spark_home <- spark_home_dir()
 # Build paths and classes
 spark_path <- file.path(spark_home, "bin", "spark-class")
 # Start cluster manager master node
 system2(spark_path, "org.apache.spark.deploy.master.Master", wait = FALSE)
-96 | Chapter 6: Clusters
-Figure 6-2. Spark Standalone website
+```
+![Figure 6-2. Spark Standalone website](figures/6_2.png)
 The previous command initializes the master node. You can access the master node
 interface at localhost:8080, as captured in图6-3. Note that the Spark master URL
 is specified as spark://address:port; you will need this URL to initialize worker nodes.
 We then can initialize a single worker using the master URL; however, you could use
 a similar approach to initialize multiple workers by running the code multiple times
 and, potentially, across different machines:
+```{r}
 # Start worker node, find master URL at http://localhost:8080/
 system2(spark_path, c("org.apache.spark.deploy.worker.Worker",
 "spark://address:port"), wait = FALSE)
-On-Premises | 97
-Figure 6-3. The Spark Standalone web interface
+```
+![Figure 6-3. The Spark Standalone web interface](figures/6_3.png)
 There is one worker register in Spark Standalone. Click the link to this worker node
 to view details for this particular worker, like available memory and cores, as shown
 in图6-4.
-Figure 6-4. Spark Standalone worker web interface
+![Figure 6-4. Spark Standalone worker web interface](figures/6_4.png)
 After you are done performing computations in this cluster, you will need to stop the
 master and worker nodes. You can use the jps command to identify the process
 numbers to terminate. In the following example, 15330 and 15353 are the processes
 that you can terminate to finalize this cluster. To terminate a process, you can use
 system("Taskkill /PID ##### /F") in Windows, or system("kill -9 #####") in
 macOS and Linux.
+```{r}
 system("jps")
 15330 Master
 15365 Jps
 15353 Worker
 1689 QuorumPeerMain
-98 | Chapter 6: Clusters
+```
 You can follow a similar approach to configure a cluster by running the initialization
 code over each machine in the cluster.
 While it’s possible to initialize a simple standalone cluster, configuring a proper Spark
@@ -3274,7 +3289,9 @@ multiple users, permissions, and so on, is usually a much longer process that fa
 beyond the scope of this book. The following sections present several alternatives that
 can be much easier to manage on-premises or through cloud services. We will start
 by introducing YARN.
-YARN
+
+#### YARN
+
 Hadoop YARN, or simply YARN, as it is commonly called, is the resource manager of
 the Hadoop project. It was originally developed in the Hadoop project but was refac‐
 tored into its own project in Hadoop 2. As we mentioned in Chapter 1, Spark was
@@ -3298,8 +3315,10 @@ Since YARN is the cluster manager from the Hadoop project, you can find YARN’s
 documentation at hadoop.apache.org. You can also reference the “Running Spark on
 YARN” guide at spark.apache.org.
 On-Premises | 99
-Figure 6-5. YARN’s Resource Manager running a `sparklyr` application
-Apache Mesos
+![Figure 6-5. YARN’s Resource Manager running a `sparklyr` application](figures/6_5.png)
+
+#### Apache Mesos
+
 Apache Mesos is an open source project to manage computer clusters. Mesos began
 as a research project in the UC Berkeley RAD Lab. It makes use of Linux Cgroups to
 provide isolation for CPU, memory, I/O, and file system access.
@@ -3320,8 +3339,10 @@ Mesos is an Apache project with its documentation available at mesos.apache.org.
 The Running Spark on Mesos guide is also a great resource if you choose to use Mesos
 as your cluster manager.
 100 | Chapter 6: Clusters
-Figure 6-6. Mesos web interface running Spark and R
-Distributions
+![Figure 6-6. Mesos web interface running Spark and R](figures/6_6.png)
+
+### Distributions
+
 You can use a cluster manager in on-premises clusters, as described in the previous
 section; however, many organizations—including, but not limited to, Apache Spark—
 choose to partner with companies providing additional management software, serv‐
@@ -3343,16 +3364,19 @@ sparklyr, an R Interface for Apache Spark” on the Cloudera blog.
 Cloudera provides the Cloudera Manager web interface to manage resources, serv‐
 ices, parcels, diagnostics, and more.图6-7 shows a Spark parcel running in Clou‐
 dera Manager, which you can later use to connect from R.
-On-Premises | 101
-Figure 6-7. Cloudera Manager running Spark parcel
+
+![Figure 6-7. Cloudera Manager running Spark parcel](figures/6_7.png)
 sparklyr is certified with Cloudera, meaning that Cloudera’s support is aware of spar
 klyr and can be effective helping organizations that are using Spark and R. Table 6-1
 summarizes the versions currently certified.
 Table 6-1. Versions of `sparklyr` certified with Cloudera
-Cloudera version Product Version Components Kerberos
-CDH5.9 `sparklyr` 0.5 HDFS, Spark Yes
-CDH5.9 `sparklyr` 0.6 HDFS, Spark Yes
-CDH5.9 `sparklyr` 0.7 HDFS, Spark Yes
+
+Cloudera version |Product |Version |Components |Kerberos
+------|----------|-------|------|-------
+CDH5.9 |`sparklyr` |0.5 |HDFS, Spark | Yes
+CDH5.9 |`sparklyr` |0.6 |HDFS, Spark |Yes
+CDH5.9 |`sparklyr` |0.7 |HDFS, Spark |Yes
+
 Hortonworks is a big data software company based in Santa Clara, California. The
 company develops, supports, and provides expertise on an expansive set of entirely
 open source software designed to manage data and processing for everything from
@@ -3371,7 +3395,9 @@ including big data workloads such as Apache Hadoop and Apache Spark, a dis‐
 tributed file system, a multimodel database management system, and event stream
 processing, combining analytics in real time with operational applications. Its tech‐
 nology runs on both commodity hardware and public cloud computing services.
-Cloud
+
+## Cloud
+
 If you have neither an on-premises cluster nor spare machines to reuse, starting with
 a cloud cluster can be quite convenient since it will allow you to access a proper clus‐
 ter in a matter of minutes. This section briefly mentions some of the major cloud
@@ -3418,13 +3444,16 @@ tributions in the cloud.
 Some of the major providers of cloud computing infrastructure are Amazon, Data‐
 bricks, Google, IBM, and Microsoft and Qubole. The subsections that follow briefly
 introduce each one.
-Amazon
+
+### Amazon
+
 Amazon provides cloud services through AWS; more specifically, it provides an on￾demand Spark cluster through Amazon EMR.
 Detailed instructions on using R with Amazon EMR were published under Amazon’s
 Big Data blog in a post called “Running `sparklyr` on Amazon EMR”. This post intro‐
 duced the launch of `sparklyr` and instructions to configure Amazon EMR clusters
 with `sparklyr`。 For instance, it suggests you can use the Amazon Command Line
 Interface to launch a cluster with three nodes, as follows:
+```
 aws emr create-cluster --applications Name=Hadoop Name=Spark Name=Hive \
  --release-label emr-5.8.0 --service-role EMR_DefaultRole --instance-groups \
 InstanceGroupType=MASTER,InstanceCount=1,InstanceType=m3.2xlarge \
@@ -3432,13 +3461,14 @@ InstanceGroupType=CORE,InstanceCount=2,InstanceType=m3.2xlarge \
  --bootstrap-action Path=s3://aws-bigdata-blog/artifacts/aws-blog-emr-\
 rstudio-sparklyr/rstudio_sparklyr_emr5.sh,Args=["--user-pw", "<password>", \
 "--rstudio", "--arrow"] --ec2-attributes InstanceProfile=EMR_EC2_DefaultRole
+```
 You can then see the cluster launching and then eventually running under the AWS
 portal, as illustrated in图6-8.
 You then can navigate to the Master Public DNS and find RStudio under port 8787—
 for example, ec2-12-34-567-890.us-west-1.compute.amazonaws.com:8787—and
 then log in with user hadoop and password password.
-104 | Chapter 6: Clusters
-Figure 6-8. Launching an Amazon EMR cluster
+
+![Figure 6-8. Launching an Amazon EMR cluster](figures/6_8.png)
 It is also possible to launch the Amazon EMR cluster using the web interface; the
 same introductory post contains additional details and walkthroughs specifically
 designed for Amazon EMR.
@@ -3462,7 +3492,9 @@ between vendors and locations; therefore, you can’t use these hard‐
 ware tables as an accurate price comparison. Accurate comparison
 would require running your particular workloads and considering
 other aspects beyond compute instance cost.
-Databricks
+
+### Databricks
+
 Databricks is a company founded by the creators of Apache Spark, whose aim is to
 help clients with cloud-based big data processing using Spark. Databricks grew out of
 the AMPLab project at the University of California, Berkeley.
@@ -3486,7 +3518,9 @@ Azure Premium $0.35/DBU $0.55/DBU
 Notice that pricing is based on cost of DBU per hour. From Databricks, “a Databricks
 Unit (DBU) is a unit of Apache Spark processing capability per hour. For a varied set
 of instances, DBUs are a more transparent way to view usage instead of the node￾hour.”
-Google
+
+### Google
+
 Google provides Google Cloud Dataproc as a cloud-based managed Spark and
 Hadoop service offered on Google Cloud Platform (GCP). Dataproc utilizes many
 GCP technologies, such as Google Compute Engine and Google Cloud Storage, to
@@ -3513,7 +3547,9 @@ Instance CPUs Memory Compute engine Dataproc premium
 n1-standard-1 1 3.75 GB $0.0475/hour $0.010/hour
 n1-standard-8 8 30 GB $0.3800/hour $0.080/hour
 n1-standard-64 64 244 GB $3.0400/hour $0.640/hour
-IBM
+
+### IBM
+
 IBM cloud computing is a set of cloud computing services for business. IBM cloud
 includes Infrastructure as a Service (IaaS), Software as a Service (SaaS), and Platform
 as a Service (PaaS) offered through public, private, and hybrid cloud delivery models,
@@ -3534,7 +3570,9 @@ Instance CPUs Memory Storage Cost
 C1.1x1x25 1 1 GB 25 GB $0.033/hour
 C1.4x4x25 4 4 GB 25 GB $0.133/hour
 C1.32x32x25 32 25 GB 25 GB $0.962/hour
-Microsoft
+
+### Microsoft
+
 Microsoft Azure is a cloud computing service created by Microsoft for building, test‐
 ing, deploying, and managing applications and services through a global network of
 Microsoft-managed datacenters. It provides SaaS, PaaS, and IaaS and supports many
@@ -3554,7 +3592,9 @@ Instance CPUs Memory Total cost
 D1 v2 1 3.5 GB $0.074/hour
 D4 v2 8 28 GB $0.59/hour
 G5 64 448 GB $9.298/hour
-Qubole
+
+### Qubole
+
 Qubole was founded in 2013 with a mission to close the data accessibility gap. Qubole
 delivers a self-service platform for big data analytics built on Amazon, Microsoft,
 Google, and Oracle Clouds. In Qubole, you can launch Spark clusters, which you can
@@ -3569,7 +3609,9 @@ Edition requires an annual contract.
 Table 6-7. Qubole pricing information
 Test Drive Full-featured trial Enterprise Edition
 $0 $0 $0.14/QCU
-Kubernetes
+
+## Kubernetes
+
 Kubernetes is an open source container orchestration system for automating deploy‐
 ment, scaling, and management of containerized applications that was originally
 designed by Google and is now maintained by the Cloud Native Computing Founda‐
@@ -3601,14 +3643,18 @@ early to precisely categorize the leading technologies that will form a hybrid a
 to cluster computing; although, as previously mentioned, Kubernetes is the leading
 one, many more are likely to form to complement or even replace existing
 technologies.
-Tools
+
+## Tools
+
 While using only R and Spark can be sufficient for some clusters, it is common to
 install complementary tools in your cluster to improve monitoring, SQL analysis,
 workflow coordination, and more, with applications like Ganglia, Hue, and Oozie,
 respectively. This section is not meant to cover all tools; rather, it mentions the ones
 that are commonly used.
 112 | Chapter 6: Clusters
-RStudio
+
+#### RStudio
+
 From reading Chapter 1, you are aware that RStudio is a well-known and free desk‐
 top development environment for R; therefore, it is likely that you are following the
 examples in this book using RStudio Desktop. However, you might not be aware that
@@ -3631,14 +3677,18 @@ tional R workflows. While `sparklyr` does not require any additional tools, they
 vide significant productivity gains worth considering. You can learn more about them
 at rstudio.com/products/.
 Tools | 113
-Jupyter
+
+#### Jupyter
+
 Project Jupyter exists to develop open source software, open standards, and services
 for interactive computing across dozens of programming languages. A Jupyter note‐
 book provides support for various programming languages, including R. You can use
 sparklyr with Jupyter notebooks using the R Kernel.图6-16 shows sparklyr
 running within a local Jupyter notebook.
 Figure 6-16. Jupyter notebook running sparklyr
-Livy
+
+#### Livy
+
 Apache Livy is an incubation project in Apache providing support to use Spark clus‐
 ters remotely through a web interface. It is ideal to connect directly into the Spark
 cluster; however, there are times where connecting directly to the cluster is not feasi‐
@@ -3647,13 +3697,16 @@ secure it properly to enable remote use over web protocols. Be aware, though, th
 there is a significant performance overhead from using Livy in `sparklyr`。
 To help test Livy locally, `sparklyr` provides support to list, install, start, and stop a
 local Livy instance by executing livy_available_versions():
+```{r}
 ## livy
 ## 1 0.2.0
 ## 2 0.3.0
 ## 3 0.4.0
 ## 4 0.5.0
+```
 This lists the versions that you can install; we recommend installing the latest version
 and verifying it as follows:
+```{r}
 # Install default Livy version
 livy_install()
 114 | Chapter 6: Clusters
@@ -3661,15 +3714,20 @@ livy_install()
 livy_installed_versions()
 # Start the Livy service
 livy_service_start()
+```
 You then can navigate to the local Livy session at http://localhost:8998. Chapter 7 will
 detail how to connect through Livy. After you’re connected, you can navigate to the
 Livy web application, as shown in图6-17.
 Figure 6-17. Apache Livy running as a local service
 Make sure you also stop the Livy service when working with local Livy instances (for
 proper Livy services running in a cluster, you won’t have to):
+```{r}
 # Stops the Livy service
 livy_service_stop()
-Recap
+```
+
+## Recap
+
 This chapter explained the history and trade-offs of on-premises and cloud comput‐
 ing and presented Kubernetes as a promising framework to provide flexibility across
 on-premises or multiple cloud providers. It also introduced cluster managers (Spark
@@ -3681,15 +3739,15 @@ While this chapter provided a solid foundation to understand current cluster com
 puting trends, tools, and service providers useful to perform data science at scale, it
 did not provide a comprehensive framework to help you decide which cluster tech‐
 nologies to choose. Instead, use this chapter as an overview and a starting point to
-Recap | 115
 seek out additional resources to help you find the cluster stack that best fits your
 organization needs.
 Chapter 7 will focus on understanding how to connect to existing clusters; therefore,
 it assumes a Spark cluster like those we presented in this chapter is already available
 to you.
+
 -------
 
-# Connections
+# 第七章 Connections
 
 They don’t get to choose.
 —Daenerys Targaryen
