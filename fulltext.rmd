@@ -4151,62 +4151,83 @@ spark-submit and then read them back in R using `commandArgs()`.
 When connecting to a Spark cluster using tools like Jupyter and RStudio, you can run
 the same connection parameters presented in this chapter. However, since many
 cloud providers make use of a web proxy to secure Spark’s web interface, to use
-spark_web() or the RStudio Connections pane extension, you need to properly con‐
-figure the `sparklyr`。web.spark setting, which you would then pass to spark_con
-fig() through the config parameter.
-For instance, when using Amazon EMR, you can configure `sparklyr`。web.spark and
-sparklyr.web.yarn by dynamically retrieving the YARN application and building
+`spark_web()` or the RStudio Connections pane extension, you need to properly con‐
+figure the `sparklyr.web.spark` setting, which you would then pass to `spark_config()` through the config parameter.
+For instance, when using Amazon EMR, you can configure `sparklyr.web.spark` and
+`sparklyr.web.yarn` by dynamically retrieving the YARN application and building
 the EMR proxy URL:
+```{r}
 domain <- "http://ec2-12-345-678-9.us-west-2.compute.amazonaws.com"
 config <- spark_config()
 config$sparklyr.web.spark <- ~paste0(
 domain, ":20888/proxy/", invoke(spark_context(sc), "applicationId"))
 config$sparklyr.web.yarn <- paste0(domain, ":8088")
 sc <- spark_connect(master = "yarn", config = config)
-Multiple Connections
+```
+
+## Multiple Connections
+
 It is common to connect once, and only once, to Spark. However, you can also open
 multiple connections to Spark by connecting to different clusters or by specifying the
 app_name parameter. This can be helpful to compare Spark versions or validate your
 analysis before submitting to the cluster. The following example opens connections to
 Spark 1.6.3, 2.3.0 and Spark Standalone:
-Tools | 129
+
+```{r}
 # Connect to local Spark 1.6.3
 sc_16 <- spark_connect(master = "local", version = "1.6")
 # Connect to local Spark 2.3.0
 sc_23 <- spark_connect(master = "local", version = "2.3", appName = "Spark23")
 # Connect to local Spark Standalone
 sc_standalone <- spark_connect(master = "spark://host:port")
+```
 Finally, you can disconnect from each connection:
+```{r}
 spark_disconnect(sc_1_6_3)
 spark_disconnect(sc_2_3_0)
 spark_disconnect(sc_standalone)
+```
 Alternatively, you can disconnect from all connections at once:
+```{r}
 spark_disconnect_all()
-Troubleshooting
+```
+
+## Troubleshooting
+
 Last but not least, we introduce the following troubleshooting techniques: Logging,
 Spark Submit, and Windows. When in doubt about where to begin, start with the
 Windows section when using Windows systems, followed by Logging and finally
-Spark Submit. These techniques are useful when running spark_connect() fails with
+Spark Submit. These techniques are useful when running `spark_connect()` fails with
 an error message.
-Logging
+
+### Logging
+
 The first technique to troubleshoot connections is to print Spark logs directly to the
 console to help you spot additional error messages:
+```{r}
 sc <- spark_connect(master = "local", log = "console")
-In addition, you can enable verbose logging by setting the `sparklyr`。verbose option
+```
+In addition, you can enable verbose logging by setting the `sparklyr.verbose` option
 to TRUE when connecting:
+```{r}
 sc <- spark_connect(master = "local", log = "console",
 config = list(sparklyr.verbose = TRUE))
-Spark Submit
+```
+
+### Spark Submit
+
 You can diagnose whether a connection issue is specific to R or Spark in general by
 running an example job through spark-submit and validating that no errors are
 thrown:
+```{r}
 # Find the spark directory using an environment variable
 spark_home <- Sys.getenv("SPARK_HOME")
 # Or by getting the local spark installation
 spark_home <- sparklyr::spark_home_dir()
-130 | Chapter 7: Connections
+```
 Then, execute the sample compute Pi example by replacing "local" with the correct
 master parameter that you are troubleshooting:
+```{r}
 # Launching a sample application to compute Pi
 system2(
 file.path(spark_home, "bin", "spark-submit"),
@@ -4219,33 +4240,38 @@ pattern = "spark-examples", full.names = TRUE),
 stderr = FALSE
 )
 Pi is roughly 3.1415503141550314
+```
 If the preceding message is not displayed, you will need to investigate why your Spark
 cluster is not properly configured, which is beyond the scope of this book. As a start,
-rerun the Pi example but remove stderr = FALSE; this prints errors to the console,
+rerun the Pi example but remove `stderr = FALSE`; this prints errors to the console,
 which you then can use to investigate what the problem might be. When using a
 cloud provider or a Spark distribution, you can contact their support team to help
 you troubleshoot this further; otherwise, Stack Overflow is a good place to start.
 If you do see the message, this means that your Spark cluster is properly configured
 but somehow R is not able to use Spark, so you need to troubleshoot in detail, as we
 will explain next.
-Detailed troubleshooting
+
+#### Detailed troubleshooting
+
 To troubleshoot the connection process in detail, you can manually replicate the two￾step connection process, which is often very helpful to diagnose connection issues.
 First, spark-submit is triggered from R, which submits the application to Spark; sec‐
 ond, R connects to the running Spark application.
-First, identify the Spark installation directory and the path to the correct spar
-klyr*.jar file by running the following:
+First, identify the Spark installation directory and the path to the correct `sparklyr*.jar` file by running the following:
+```{r}
 dir(system.file("java", package = "sparklyr"),
 pattern = "sparklyr", full.names = T)
+```
 Ensure that you identify the correct version that matches your Spark cluster—for
-instance, sparklyr-2.1-2.11.jar for Spark 2.1.
+instance, `sparklyr-2.1-2.11.jar` for Spark 2.1.
 Then, from the terminal, run this:
+```
 $SPARK_HOME/bin/spark-submit --class `sparklyr`。Shell $PATH_TO_SPARKLYR_JAR 8880 42
 18/06/11 12:13:53 INFO sparklyr: Session (42) found port 8880 is available
 18/06/11 12:13:53 INFO sparklyr: Gateway (42) is waiting for `sparklyr` client
  to connect to port 8880
-Troubleshooting | 131
-The parameter 8880 represents the default port to use in sparklyr, while 42 is the
-session number, which is a cryptographically secure number generated by sparklyr,
+```
+The parameter 8880 represents the default port to use in `sparklyr`, while 42 is the
+session number, which is a cryptographically secure number generated by `sparklyr`,
 but for troubleshooting purposes can be as simple as 42.
 If this first connection step fails, it means that the cluster can’t accept the application.
 This usually means that there are not enough resources, or there are permission
@@ -4253,48 +4279,58 @@ restrictions.
 The second step is to connect from R as follows (notice that there is a 60-second
 timeout, so you’ll need to run the R command after running the terminal command;
 if needed, you can configure this timeout as described in Chapter 9):
+```{r}
 library(sparklyr)
 sc <- spark_connect(master = "sparklyr://localhost:8880/42", version = "2.3")
+```
 If this second connection step fails, it usually means that there is a connectivity prob‐
 lem between R and the driver node. You can try using a different connection port, for
 instance.
-Windows
+
+### Windows
+
 Connecting from Windows is, in most cases, as straightforward as connecting from
 Linux and macOS. However, there are a few common connection issues that you
 should be aware of:
-• Firewalls and antivirus software might block ports for your connection. The
+
+* Firewalls and antivirus software might block ports for your connection. The
 default port used by `sparklyr` is 8880; double-check that this port is not being
 blocked.
-• Long path names can cause issues, especially with older Windows systems like
+* Long path names can cause issues, especially with older Windows systems like
 Windows 7. When you’re using these systems, try connecting with Spark
 installed with all folders, using at most eight characters and no spaces in their
 names.
-Recap
+
+## Recap
+
 This chapter presented an overview of Spark’s architecture, connection concepts, and
 examples to connect in local mode, standalone, YARN, Mesos, Kubernetes, and Livy.
 It also presented edge nodes and their role while connecting to Spark clusters. This
 should have provided you with enough information to successfully connect to any
 Apache Spark cluster.
+
 To troubleshoot connection problems beyond the techniques described in this chap‐
 ter, we recommend that you search for the connection problem in Stack Overflow,
 the `sparklyr` issues GitHub page, and, if needed, open a new GitHub issue in spar
 klyr to assist further.
-132 | Chapter 7: Connections
+
 In Chapter 8, we cover how to use Spark to read and write from a variety of data
 sources and formats, which allows you to be more agile when adding new data sour‐
 ces for data analysis. What used to take days, weeks, or even months, you now can
 complete in hours by embracing data lakes.
+
 ------
 
 # Data
 
-Has it occurred to you that she might not have
-been a reliable source of information?
-—Jon Snow
+> Has it occurred to you that she might not have
+> been a reliable source of information?
+> —Jon Snow
+
 With the knowledge acquired in previous chapters, you are now equipped to start
 doing analysis and modeling at scale! So far, however, we haven’t really explained
-much about how to read data into Spark. We’ve explored how to use copy_to() to
-upload small datasets or functions like spark_read_csv() or spark_write_csv()
+much about how to read data into Spark. We’ve explored how to use `copy_to()` to
+upload small datasets or functions like `spark_read_csv()` or `spark_write_csv()`
 without explaining in detail how and why.
 So, you are about to learn how to read and write data using Spark. And, while this is
 important on its own, this chapter will also introduce you to the data lake—a reposi‐
@@ -4306,7 +4342,9 @@ In addition, we will also discuss how to extend Spark’s capabilities to work w
 not accessible out of the box and make several recommendations focused on improv‐
 ing performance for reading and writing data. Reading large datasets often requires
 you to fine-tune your Spark cluster configuration, but that’s the topic of Chapter 9.
-Overview
+
+## Overview
+
 In Chapter 1, you learned that beyond big data and big compute, you can also use
 Spark to improve velocity, variety, and veracity in data tasks. While you can use the
 learnings of this chapter for any task requiring loading and storing data, it is particu‐
@@ -4349,25 +4387,31 @@ replace their existing ETL process; however, this falls in the realm of data eng
 ing, which is well beyond the scope of this book. We illustrate this with dotted lines in
 Figure 8-1. 1 Codd EF (1970). “A relational model of data for large shared data banks.”
 136 | Chapter 8: Data
-Figure 8-1. Spark processing raw data from a data lakes, databases, and data ware‐
-houses
+
+![Figure 8-1. Spark processing raw data from a data lakes, databases, and data warehouses](figures/8_1.png)
+
 To support a broad variety of data sources, Spark needs to be able to read and write
 data in several different file formats (CSV, JSON, Parquet, and others), and access
 them while stored in several file systems (HDFS, S3, DBFS, and more) and, poten‐
 tially, interoperate with other storage systems (databases, data warehouses, etc.). We
 will get to all of that, but first, we will start by presenting how to read, write, and copy
 data using Spark.
-Reading Data
+
+## Reading Data
+
 If you are new to Spark, it is highly recommended to review this section before you
 start working with large datasets. We will introduce several techniques that improve
 the speed and efficiency of reading data. Each subsection presents specific ways to
 take advantage of how Spark reads files, such as the ability to treat entire folders as
 datasets as well as being able to describe them to read datasets faster in Spark.
-Paths
+
+### Paths
+
 When analyzing data, loading multiple files into a single data object is a common sce‐
 nario. In R, we typically use a loop or a functional programming directive to accom‐
 plish this. This is because R must load each file individually into your R session. Let’s
 create a few CSV files inside a folder and read them with R first:
+```{r}
 letters <- data.frame(x = letters, y = 1:length(letters))
 dir.create("data-csv")
 write.csv(letters[1:3, ], "data-csv/letters1.csv", row.names = FALSE)
@@ -4381,6 +4425,7 @@ do.call("rbind", lapply(dir("data-csv", full.names = TRUE), read.csv))
 4 a 1
 5 b 2
 6 c 3
+```
 In Spark, there is the notion of a folder as a dataset. Instead of enumerating each file,
 simply pass the path containing all the files. Spark assumes that every file in that
 folder is part of the same dataset. This implies that the target folder should be used
@@ -4389,6 +4434,7 @@ store files across multiple machines, but, conceptually, they are stored in the 
 folder; when Spark reads the files from this folder, it’s actually executing distributed
 code to read each file within each machine—no data is transferred between machines
 when distributed files are read:
+```{r}
 library(sparklyr)
 sc <- spark_connect(master = "local", version = "2.3")
 spark_read_csv(sc, "data-csv/")
@@ -4405,13 +4451,16 @@ spark_read_csv(sc, "data-csv/")
  8 c 3
  9 d 4
 10 e 5
+```
 The “folder as a table” idea is found in other open source technologies as well. Under
 the hood, Hive tables work the same way. When you query a Hive table, the mapping
 is done over multiple files within the same folder. The folder’s name usually matches
 the name of the table visible to the user.
 Next, we will present a technique that allows Spark to read files faster as well as to
 reduce read failures by describing the structure of a dataset in advance.
-Schema
+
+### Schema
+
 When reading data, Spark is able to determine the data source’s column names and
 column types, also known as the schema. However, guessing the schema comes at a
 138 | Chapter 8: Data
@@ -4422,21 +4471,25 @@ again, the additional read time accumulates over time.
 To avoid this, Spark allows you to provide a column definition by providing a col
 umns argument to describe your dataset. You can create this schema by sampling a
 small portion of the original file yourself:
+```{r}
 spec_with_r <- sapply(read.csv("data-csv/letters1.csv", nrows = 10), class)
 spec_with_r
  x y
  "factor" "integer"
+```
 Or, you can set the column specification to a vector containing the column types
 explicitly. The vector’s values are named to match the field names:
+```{r}
 spec_explicit <- c(x = "character", y = "numeric")
 spec_explicit
  x y
 "character" "numeric"
-The accepted variable types are: integer, character, logical, double, numeric,
-`factor`, Date, and POSIXct.
-Then, when reading using spark_read_csv(), you can pass spec_with_r to the col
-umns argument to match the names and types of the original file. This helps to
+```
+The accepted variable types are: `integer`, `character`, `logical`, `double`, `numeric`,
+`factor`, `Date`, and `POSIXct`.
+Then, when reading using `spark_read_csv()`, you can pass `spec_with_r` to the `columns` argument to match the names and types of the original file. This helps to
 improve performance since Spark will not need to determine the column types.
+```{r}
 spark_read_csv(sc, "data-csv/", columns = spec_with_r)
 # Source: spark<datacsv> [?? x 2]
  x y
@@ -4447,14 +4500,16 @@ spark_read_csv(sc, "data-csv/", columns = spec_with_r)
 4 a 1
 5 b 2
 6 c 3
+```
 The following example shows how to set the field type to something different. How‐
 ever, the new field type needs to be a compatible type in the original dataset. For
-example, you cannot set a character field to numeric. If you use an incompatible
+example, you cannot set a `character` field to `numeric`. If you use an incompatible
 type, the file read will fail with an error. Additionally, the following example also
 changes the names of the original fields:
+```{r}
 spec_compatible <- c(my_letter = "character", my_number = "character")
 spark_read_csv(sc, "data-csv/", columns = spec_compatible)
-Reading Data | 139
+
 # Source: spark<datacsv> [?? x 2]
  my_letter my_number
  <chr> <chr>
@@ -4464,12 +4519,15 @@ Reading Data | 139
 4 a 1
 5 b 2
 6 c 3
+```
 In Spark, malformed entries can cause errors during reading, particularly for non￾character fields. To prevent such errors, we can use a file specification that imports
 them as characters and then use `dplyr` to coerce the field into the desired type.
 This subsection reviewed how we can read files faster and with fewer failures, which
 lets us start our analysis more quickly. Another way to accelerate our analysis is by
 loading less data into Spark memory, which we examine in the next section.
-Memory
+
+### Memory
+
 By default, when using Spark with R, when you read data, it is copied into Spark’s dis‐
 tributed memory, making data analysis and other operations very fast. There are
 cases, such as when the data is too big, for which loading all the data might not be
@@ -4480,29 +4538,32 @@ query runs against that table, Spark needs to read the data from the files at th
 Any consecutive reads after that will do the same. In effect, Spark becomes a pass￾through for the data. The advantage of this method is that there is almost no up-front
 time cost to “reading” the file; the mapping is very fast. The downside is that running
 queries that actually extract data will take longer.
-This is controlled by the memory argument of the read functions. Setting it to FALSE
+This is controlled by the memory argument of the read functions. Setting it to `FALSE`
 prevents the data copy (the default is TRUE):
+```{r}
 mapped_csv <- spark_read_csv(sc, "data-csv/", memory = FALSE)
+```
 There are good use cases for this method, one of which is when not all columns of a
 table are needed. For example, take a very large file that contains many columns.
 Assuming this is not the first time you interact with this data, you would know what
 columns are needed for the analysis. When you know which columns you need, the
-files can be read using memory = FALSE, and then the needed columns can be selected
+files can be read using `memory = FALSE`, and then the needed columns can be selected
 with `dplyr`。 The resulting `dplyr` variable can then be cached into memory, using the
-compute() function. This will make Spark query the file(s), pull the selected fields,
+`compute()` function. This will make Spark query the file(s), pull the selected fields,
 and copy only that data into memory. The result is an in-memory table that took
 comparatively less time to ingest:
-140 | Chapter 8: Data
+```{r}
 mapped_csv %>%
 dplyr::select(y) %>%
 dplyr::compute("test")
+```
 The next section covers a short technique to make it easier to carry the original field
 names of imported data.
 Columns
 Spark 1.6 required that column names be sanitized, so R does that by default. There
 might be cases when you would like to keep the original names intact, or when work‐
-ing with Spark version 2.0 or above. To do that, set the `sparklyr`。sanitize.col
-umn.names option to FALSE:
+ing with Spark version 2.0 or above. To do that, set the `sparklyr.sanitize.column.names` option to `FALSE`:
+```{r}
 options(sparklyr.sanitize.column.names = FALSE)
 copy_to(sc, iris, overwrite = TRUE)
 # Source: table<iris> [?? x 5]
@@ -4520,9 +4581,12 @@ copy_to(sc, iris, overwrite = TRUE)
  9 4.4 2.9 1.4 0.2 setosa
 10 4.9 3.1 1.5 0.1 setosa
 # ... with more rows
+```
 With this review of how to read data into Spark, we move on to look at how we can
 write data from our Spark session.
-Writing Data
+
+## Writing Data
+
 Some projects require that new data generated in Spark be written back to a remote
 source. For example, the data could be new predicted values returned by a Spark
 model. The job processes the mass generation of predictions, but then the predictions
@@ -4533,13 +4597,17 @@ get, as illustrated in图8-2. It works for smaller datasets, but it becomes inef
 cient for larger ones. The data typically grows in size to the point that it is no longer
 feasible for R to be the middle point.
 Writing Data | 141
-Figure 8-2. Incorrect use of Spark when writing large datasets
+
+![Figure 8-2. Incorrect use of Spark when writing large datasets](figures/8_2.png)
+
 All efforts should be made to have Spark connect to the target location. This way,
 reading, processing, and writing happens within the same Spark session.
 As图8-3 shows, a better approach is to use Spark to read, process, and write to
 the target. This approach is able to scale as big as the Spark cluster allows, and pre‐
 vents R from becoming a choke point.
-Figure 8-3. Correct use of Spark when writing large datasets
+
+![Figure 8-3. Correct use of Spark when writing large datasets](figures/8_3.png)
+
 Consider the following scenario: a Spark job just processed predictions for a large
 dataset, resulting in a considerable amount of predictions. Choosing a method to
 write results will depend on the technology infrastructure you are working on. More
@@ -4551,39 +4619,47 @@ data transfer is between RAM and disk of the same cluster or efficiently shuffle
 through a high-bandwidth connection.
 But what to do if the target is not within the Spark cluster? There are two options,
 and choosing one will depend on the size of the data and network speed:
-Spark transfer
-In this case, Spark connects to the remote target location and copies the new
+
+* Spark transfer
+    In this case, Spark connects to the remote target location and copies the new
 data. If this is done within the same datacenter, or cloud provider, the data trans‐
 fer could be fast enough to have Spark write the data directly.
-External transfer and otherwise
-Spark can write the results to disk and transfers them via a third-party applica‐
+* External transfer and otherwise
+    Spark can write the results to disk and transfers them via a third-party applica‐
 tion. Spark writes the results as files and then a separate job copies the files over.
 In the target location, you would use a separate process to transfer the data into
 the target location.
-142 | Chapter 8: Data
+
 It is best to recognize that Spark, R, and any other technology are tools. No tool can
 do everything, nor should you expect it to. Next we describe how to copy data into
 Spark or collect large datasets that don’t fit in memory, which you can use to transfer
 data across clusters or help initialize your distributed datasets.
-Copying Data
-Previous chapters used copy_to() as a handy helper to copy data into Spark; how‐
-ever, you can use copy_to() only to transfer in-memory datasets that are already
+
+## Copying Data
+
+Previous chapters `used copy_to()` as a handy helper to copy data into Spark; how‐
+ever, you can use `copy_to()` only to transfer in-memory datasets that are already
 loaded in memory. These datasets tend to be much smaller than the kind of datasets
 you would want to copy into Spark.
 For instance, suppose that we have a 3 GB dataset generated as follows:
+```{r}
 dir.create("largefile.txt")
 write.table(matrix(rnorm(10 * 10^6), ncol = 10), "largefile.txt/1",
 append = T, col.names = F, row.names = F)
 for (i in 2:30)
 file.copy("largefile.txt/1", paste("largefile.txt/", i))
+```
 If we had only 2 GB of memory in the driver node, we would not be able to load this
-3 GB file into memory using copy_to(). Instead, when using the HDFS as storage in
-your cluster, you can use the hadoop command-line tool to copy files from disk into
+3 GB file into memory using `copy_to()`. Instead, when using the HDFS as storage in
+your cluster, you can use the `hadoop` command-line tool to copy files from disk into
 Spark from the terminal as follows. Notice that the following code works only in clus‐
 ters using HDFS, not in local environments.
+```
 hadoop fs -copyFromLocal largefile.txt largefile.txt
+```
 You then can read the uploaded file, as described in the “File Formats” on page 144
 section; for text files, you would run:
+```{r}
 spark_read_text(sc, "largefile.txt", memory = FALSE)
 # Source: spark<largefile> [?? x 1]
  line
@@ -4599,64 +4675,79 @@ spark_read_text(sc, "largefile.txt", memory = FALSE)
  9 1.39983023148955 -1.08723592838627 1.02517804413913 -0.412680186313667…
 10 0.6318328148434 -1.08741784644221 -0.550575696474202 0.971967251067794…
 # … with more rows
-collect() has a similar limitation in that it can collect only datasets that fit your
+```
+`collect()` has a similar limitation in that it can collect only datasets that fit your
 driver memory; however, if you had to extract a large dataset from Spark through the
 Copying Data | 143
 driver node, you could use specialized tools provided by the distributed storage. For
 HDFS, you would run the following:
+```
 hadoop fs -copyToLocal largefile.txt largefile.txt
+```
 Alternatively, you can also collect datasets that don’t fit in memory by providing a
-callback to collect(). A callback is just an R function that will be called over each
+callback to `collect()`. A callback is just an R function that will be called over each
 Spark partition. You then can write this dataset to disk or push to other clusters over
 the network.
 You could use the following code to collect 3 GB even if the driver node collecting
 this dataset had less than 3 GB of memory. That said, as Chapter 3 explains, you
 should avoid collecting large datasets into a single machine since this creates a signifi‐
 cant performance bottleneck. For conciseness, we will collect only the first million
-rows; feel free to remove head(10^6) if you have a few minutes to spare:
+rows; feel free to remove `head(10^6)` if you have a few minutes to spare:
+```{r}
 dir.create("large")
 spark_read_text(sc, "largefile.txt", memory = FALSE) %>%
 head(10^6) %>%
 collect(callback = function(df, idx) {
 writeLines(df$line, paste0("large/large-", idx, ".txt"))
 })
+```
 Make sure you clean up these large files and empty your recycle bin as well:
+```{r}
 unlink("largefile.txt", recursive = TRUE)
 unlink("large", recursive = TRUE)
+```
 In most cases, data will already be stored in the cluster, so you should not need to
 worry about copying large datasets; instead, you can usually focus on reading and
 writing different file formats, which we describe next.
-File Formats
+
+## File Formats
+
 Out of the box, Spark is able to interact with several file formats, like CSV, JSON,
 LIBSVM, ORC, and Parquet. Table 8-1 maps the file format to the function you
 should use to read and write data in Spark.
 Table 8-1. Spark functions to read and write file formats
-Format Read Write
-CSV spark_read_csv() spark_write_csv()
-JSON spark_read_json() spark_write_json()
-LIBSVM spark_read_libsvm() spark_write_libsvm()
-ORC spark_read_orc() spark_write_orc()
-Apache Parquet spark_read_parquet() spark_write_parquet()
-Text spark_read_text() spark_write_text()
-144 | Chapter 8: Data
+
+Format |Read |Write
+-----|------|------
+CSV |`spark_read_csv()` |`spark_write_csv()`
+JSON |`spark_read_json()` |`spark_write_json()`
+LIBSVM |`spark_read_libsvm()` |`spark_write_libsvm()`
+ORC |`spark_read_orc()` |`spark_write_orc()`
+Apache Parquet |`spark_read_parquet()` |`spark_write_parquet()`
+Text |`spark_read_text()` |`spark_write_text()`
+
 The following sections will describe special considerations particular to each file for‐
 mat as well as some of the strengths and weaknesses of some popular file formats,
 starting with the well-known CSV file format.
-CSV
+
+### CSV
+
 The CSV format might be the most common file type in use today. It is defined by a
 text file separated by a given character, usually a comma. It should be pretty straight‐
 forward to read CSV files; however, it’s worth mentioning a couple techniques that
 can help you process CSVs that are not fully compliant with a well-formed CSV file.
 Spark offers the following modes for addressing parsing issues:
-Permissive
-Inserts NULL values for missing tokens
-Drop Malformed
-Drops lines that are malformed
-Fail Fast
-Aborts if it encounters any malformed line
-You can use these in `sparklyr` by passing them inside the options argument. The fol‐
+
+* Permissive
+    Inserts NULL values for missing tokens
+* Drop Malformed
+    Drops lines that are malformed
+* Fail Fast
+    Aborts if it encounters any malformed line
+You can use these in `sparklyr` by passing them inside the `options` argument. The fol‐
 lowing example creates a file with a broken entry. It then shows how it can be read
 into Spark:
+```{r}
 ## Creates bad test file
 writeLines(c("bad", 1, 2, 3, "broken"), "bad.csv")
 spark_read_csv(
@@ -4671,14 +4762,15 @@ options = list(mode = "DROPMALFORMED"))
 1 1
 2 2
 3 3
+```
 Spark provides an issue tracking column, which was hidden by default. To enable it,
-add _corrupt_record to the columns list. You can combine this with the use of the
-PERMISSIVE mode. All rows will be imported, invalid entries will receive an NA, and
-the issue will be tracked in the _corrupt_record column:
+`add _corrupt_record` to the columns list. You can combine this with the use of the
+`PERMISSIVE` mode. All rows will be imported, invalid entries will receive an `NA`, and
+the issue will be tracked in the `_corrupt_record` column:
+```{r}
 spark_read_csv(
 sc,
 "bad2",
-File Formats | 145
 "bad.csv",
 columns = list(foo = "integer", "_corrupt_record" = "character"),
 options = list(mode = "PERMISSIVE") )
@@ -4689,13 +4781,17 @@ options = list(mode = "PERMISSIVE") )
 2 2 NA
 3 3 NA
 4 NA broken
+```
 Reading and storing data as CSVs is quite common and supported across most sys‐
 tems. For tabular datasets, it is still a popular option, but for datasets containing nes‐
 ted structures and nontabular data, JSON is usually preferred.
-JSON
+
+### JSON
+
 JSON is a file format originally derived from JavaScript that has grown to be
 language-independent and very popular due to its flexibility and ubiquitous support.
 Reading and writing JSON files is quite straightforward:
+```{r}
 writeLines("{'a':1, 'b': {'f1': 2, 'f3': 3}}", "data.json")
 simple_json <- spark_read_json(sc, "data.json")
 simple_json
@@ -4703,28 +4799,34 @@ simple_json
  a b
  <dbl> <list>
 1 1 <list [2]>
+```
 However, when you deal with a dataset containing nested fields like the one from this
 example, it is worth pointing out how to extract nested fields. One approach is to use
 a JSON path, which is a domain-specific syntax commonly used to extract and query
-JSON files. You can use a combination of get_json_object() and to_json() to spec‐
+JSON files. You can use a combination of `get_json_object()` and `to_json()` to spec‐
 ify the JSON path you are interested in. To extract f1 you would run the following
 transformation:
+```{r}
 simple_json %>% dplyr::transmute(z = get_json_object(to_json(b), '$.f1'))
 # Source: spark<?> [?? x 3]
  a b z
  <dbl> <list> <chr>
 1 1 <list [2]> 2
-Another approach is to install sparkly.nested from CRAN with install.pack
-ages("sparklyr.nested") and then unnest nested data with sdf_unnest():
+```
+Another approach is to install `sparkly.nested` from CRAN with `install.packages("sparklyr.nested")` and then unnest nested data with `sdf_unnest()`:
+```{r}
 sparklyr.nested::sdf_unnest(simple_json, "b")
 # Source: spark<?> [?? x 3]
  a f1 f3
 146 | Chapter 8: Data
  <dbl> <dbl> <dbl>
 1 1 2 3
+```
 While JSON and CSVs are quite simple to use and versatile, they are not optimized
 for performance; however, other formats like ORC, AVRO, and Parquet are.
-Parquet
+
+### Parquet
+
 Apache Parquet, Apache ORC, and Apache AVRO are all file formats designed with
 performance in mind. Parquet and ORC store data in columnar format, while AVRO
 is row-based. All of them are binary file formats, which reduces storage space and
@@ -4734,6 +4836,7 @@ as intermediate data storage within Spark.
 To illustrate this,图8-4 plots the result of running a 1-million-row write-speed
 benchmark using the bench package; feel free to use your own benchmarks over
 meaningful datasets when deciding which format best fits your needs:
+```{r}
 numeric <- copy_to(sc, data.frame(nums = runif(10^6)))
 bench::mark(
 CSV = spark_write_csv(numeric, "data.csv", mode = "overwrite"),
@@ -4742,28 +4845,35 @@ Parquet = spark_write_parquet(numeric, "data.parquet", mode = "overwrite"),
 ORC = spark_write_parquet(numeric, "data.orc", mode = "overwrite"),
 iterations = 20
 ) %>% ggplot2::autoplot()
+```
 From now on, be sure to disconnect from Spark whenever we present a new
-spark_connect() command:
+`spark_connect()` command:
+```{r}
 spark_disconnect(sc)
+```
 This concludes the introduction to some of the out-of-the-box supported file formats.
 Next, we describe how to deal with formats that require external packages and
 customization.
 File Formats | 147
-Figure 8-4. One-million-rows write benchmark between CSV, JSON, Parquet, and ORC
-Others
+
+![Figure 8-4. One-million-rows write benchmark between CSV, JSON, Parquet, and ORC](figures/8_4.png)
+
+### Others
+
 Spark is a very flexible computing platform. It can add functionality by using exten‐
 sion programs, called packages. You can access a new source type or file system by
 using the appropriate package.
 Packages need to be loaded into Spark at connection time. To load the package, Spark
 needs its location, which could be inside the cluster, in a file share, or the internet.
-In sparklyr, the package location is passed to spark_connect(). All packages should
-be listed in the `sparklyr`。connect.packages entry of the connection configuration.
+In `sparklyr`, the package location is passed to `spark_connect()`. All packages should
+be listed in the `sparklyr.connect.packages` entry of the connection configuration.
 It is possible to access data source types that we didn’t previously list. Loading the
 appropriate default package for Spark is the first of two steps The second step is to
-actually read or write the data. The spark_read_source() and
-spark_write_source() functions do that. They are generic functions that can use the
+actually read or write the data. The `spark_read_source()` and
+`spark_write_source()` functions do that. They are generic functions that can use the
 libraries imported by a default package.
 For instance, we can read XML files as follows:
+```{r}
 sc <- spark_connect(master = "local", version = "2.3", config = list(
 sparklyr.connect.packages = "com.databricks:spark-xml_2.11:0.5.0"))
 writeLines("<ROWS><ROW><text>Hello World</text></ROW>", "simple.xml")
@@ -4772,19 +4882,23 @@ spark_read_source(sc, "simple_xml", "simple.xml", "xml")
  text
  <chr>
 1 Hello World
-148 | Chapter 8: Data
+```
 which you can also write back to XML with ease, as follows:
+```{r}
 tbl(sc, "simple_xml") %>%
 spark_write_source("xml", options = list(path = "data.xml"))
+```
 In addition, there are a few extensions developed by the R community to load addi‐
-tional file formats, such as `sparklyr`。nested to assist with nested data,
+tional file formats, such as `sparklyr.nested` to assist with nested data,
 spark.sas7bdat to read data from SAS, sparkavro to read data in AVRO format, and
 sparkwarc to read WARC files, which use extensibility mechanisms introduced in
 Chapter 10. Chapter 11 presents techniques to use R packages to load additional file
 formats, and Chapter 13 presents techniques to use Java libraries to complement this
 further. But first, let’s explore how to retrieve and store files from several different file
 systems.
-File Systems
+
+## File Systems
+
 Spark defaults to the file system on which it is currently running. In a YARN man‐
 aged cluster, the default file system will be HDFS. An example path of /home/user/
 file.csv will be read from the cluster’s HDFS folders, not the Linux folders. The operat‐
@@ -4798,19 +4912,23 @@ system, _s3a://_ for Amazon’s S3 service, _wasb://_ for Microsoft Azure storag
 and _gs://_ for Google storage.
 Spark does not provide support for all them directly; instead, they are configured as
 needed. For instance, accessing the “s3a” protocol requires adding a package to the
-sparklyr.connect.packages configuration setting, while connecting and specifying
-appropriate credentials might require using the AWS_ACCESS_KEY_ID and
-AWS_SECRET_ACCESS_KEY environment variables.
+`sparklyr.connect.packages` configuration setting, while connecting and specifying
+appropriate credentials might require using the `AWS_ACCESS_KEY_ID` and
+`AWS_SECRET_ACCESS_KEY` environment variables.
+```{r}
 Sys.setenv(AWS_ACCESS_KEY_ID = my_key_id)
 Sys.setenv(AWS_SECRET_ACCESS_KEY = my_secret_key)
 sc <- spark_connect(master = "local", version = "2.3", config = list(
 sparklyr.connect.packages = "org.apache.hadoop:hadoop-aws:2.7.7"))
 my_file <- spark_read_csv(sc, "my-file", path = "s3a://my-bucket/my-file.csv")
+```
 Accessing other file protocols requires loading different packages, although, in some
 cases, the vendor providing the Spark environment might load the package for you.
 Please refer to your vendor’s documentation to find out whether that is the case.
 File Systems | 149
-Storage Systems
+
+## Storage Systems
+
 A data lake and Spark usually go hand-in-hand, with optional access to storage sys‐
 tems like databases and data warehouses. Presenting all the different storage systems
 with appropriate examples would be quite time-consuming, so instead we present
@@ -4820,51 +4938,67 @@ and managing large datasets residing in distributed storage using SQL. In fact, 
 has components from Hive built directly into its sources. It is very common to have
 installations of Spark or Hive side-by-side, so we will start by presenting Hive, fol‐
 lowed by Cassandra, and then close by looking at JDBC connections.
-Hive
+
+### Hive
+
 In YARN managed clusters, Spark provides a deeper integration with Apache Hive.
 Hive tables are easily accessible after opening a Spark connection.
 You can access a Hive table’s data using DBI by referencing the table in a SQL
 statement:
+```{r}
 sc <- spark_connect(master = "local", version = "2.3")
 spark_read_csv(sc, "test", "data-csv/", memory = FALSE)
 DBI::dbGetQuery(sc, "SELECT * FROM test limit 10")
-Another way to reference a table is with `dplyr` using the tbl() function, which
+```
+Another way to reference a table is with `dplyr` using the `tbl()` function, which
 retrieves a reference to the table:
+```{r}
 dplyr::tbl(sc, "test")
-It is important to reiterate that no data is imported into R; the tbl() function only
-creates a reference. You then can pipe more `dplyr` verbs following the tbl()
+```
+It is important to reiterate that no data is imported into R; the `tbl()` function only
+creates a reference. You then can pipe more `dplyr` verbs following the `tbl()`
 command:
+```{r}
 dplyr::tbl(sc, "test") %>%
 dplyr::group_by(y) %>%
 dplyr::summarise(totals = sum(y))
+```
 Hive table references assume a default database source. Often, the needed table is in a
 different database within the metastore. To access it using SQL, prefix the database
 name to the table. Separate them using a period, as demonstrated here:
+```{r}
 DBI::dbSendQuery(sc, "SELECT * FROM databasename.table")
-In dplyr, the in_schema() function can be used. The function is used inside the
-tbl() call:
+```
+In dplyr, the `in_schema()` function can be used. The function is used inside the
+`tbl()` call:
+```{r}
 tbl(sc, dbplyr::in_schema("databasename", "table"))
-150 | Chapter 8: Data
-You can also use the tbl_change_db() function to set the current session’s default
-database. Any subsequent call via DBI or `dplyr` will use the selected name as the
+```
+You can also use the `tbl_change_db()` function to set the current session’s default
+database. Any subsequent call via `DBI` or `dplyr` will use the selected name as the
 default database:
+```{r}
 tbl_change_db(sc, "databasename")
+```
 The following examples require additional Spark packages and databases which
 might be difficult to follow unless you happen to have a JDBC driver or Cassandra
 database accessible to you.
 Next, we explore a less structured storage system, often referred to as a
 NoSQL database.
-Cassandra
+
+### Cassandra
+
 Apache Cassandra is a free and open source, distributed, wide-column store, NoSQL
 database management system designed to handle large amounts of data across many
 commodity servers. While there are many other database systems beyond Cassandra,
 taking a quick look at how Cassandra can be used from Spark will give you insight
 into how to make use of other database and storage systems like Solr, Redshift, Delta
 Lake, and others.
-The following example code shows how to use the datastax:spark-cassandra￾connector package to read from Cassandra. The key is to use the
-org.apache.spark.sql.cassandra library as the source argument. It provides the
+The following example code shows how to use the `datastax:spark-cassandra-connector` package to read from Cassandra. The key is to use the
+`org.apache.spark.sql.cassandra` library as the source argument. It provides the
 mapping Spark can use to make sense of the data source. Unless you have a Cassan‐
 dra database, skip executing the following statement:
+```{r}
 sc <- spark_connect(master = "local", version = "2.3", config = list(
 sparklyr.connect.packages = "datastax:spark-cassandra-connector:2.3.1-s_2.11"))
 spark_read_source(
@@ -4873,33 +5007,37 @@ name = "emp",
 source = "org.apache.spark.sql.cassandra",
 options = list(keyspace = "dev", table = "emp"),
 memory = FALSE)
+```
 One of the most useful features of Spark when dealing with external databases and
 data warehouses is that Spark can push down computation to the database, a feature
 known as pushdown predicates. In a nutshell, pushdown predicates improve perfor‐
 mance by asking remote databases smart questions. When you execute a query that
-contains the filter(age > 20) expression against a remote table referenced through
-spark_read_source() and not loaded in memory, rather than bringing the entire
+contains the `filter(age > 20)` expression against a remote table referenced through
+`spark_read_source()` and not loaded in memory, rather than bringing the entire
 table into Spark, it will be passed to the remote database and only a subset of the
 remote table is retrieved.
 Storage Systems | 151
 While it is ideal to find Spark packages that support the remote storage system, there
 will be times when a package is not available and you need to consider vendor JDBC
 drivers.
-JDBC
+
+### JDBC
+
 When a Spark package is not available to provide connectivity, you can consider a
 JDBC connection. JDBC is an interface for the programming language Java, which
 defines how a client can access a database.
-It is quite easy to connect to a remote database with spark_read_jdbc(), and
-spark_write_jdbc(); as long as you have access to the appropriate JDBC driver,
+It is quite easy to connect to a remote database with `spark_read_jdbc()`, and
+`spark_write_jdbc()`; as long as you have access to the appropriate JDBC driver,
 which at times is trivial and other times is quite an adventure. To keep this simple, we
 can briefly consider how a connection to a remote MySQL database could be
 accomplished.
 First, you would need to download the appropriate JDBC driver from MySQL’s devel‐
-oper portal and specify this additional driver as a `sparklyr`。shell.driver-class￾path connection option. Since JDBC drivers are Java-based, the code is contained
+oper portal and specify this additional driver as a `sparklyr.shell.driver-class-path` connection option. Since JDBC drivers are Java-based, the code is contained
 within a JAR (Java ARchive) file. As soon as you’re connected to Spark with the
 appropriate driver, you can use the jdbc:// protocol to access particular drivers and
 databases. Unless you are willing to download and configure MySQL on your own,
 skip executing the following statement:
+```{r}
 sc <- spark_connect(master = "local", version = "2.3", config = list(
 "sparklyr.shell.driver-class-path" =
 "~/Downloads/mysql-connector-java-5.1.41/mysql-connector-java-5.1.41-bin.jar"
@@ -4908,8 +5046,11 @@ spark_read_jdbc(sc, "person_jdbc", options = list(
 url = "jdbc:mysql://localhost:3306/sparklyr",
 user = "root", password = "<password>",
 dbtable = "person"))
-If you are a customer of particular database vendors, making use of the vendor￾provided resources is usually the best place to start looking for appropriate drivers.
-Recap
+```
+If you are a customer of particular database vendors, making use of the vendor-provided resources is usually the best place to start looking for appropriate drivers.
+
+## Recap
+
 This chapter expanded on how and why you should use Spark to connect and process
 a variety of data sources through a new data storage model known as data lakes—a
 storage pattern that provides more flexibility than standard ETL processes by ena‐
@@ -4928,6 +5069,7 @@ resource restrictions while reading and writing large datasets. To handle these 
 tions, Chapter 9 shows you how Spark manages tasks and data across multiple
 machines, which in turn allows you to further improve the performance of your
 analysis and modeling tasks.
+
 -------
 
 # Tuning
