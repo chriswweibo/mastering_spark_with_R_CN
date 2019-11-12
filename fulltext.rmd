@@ -5074,8 +5074,9 @@ analysis and modeling tasks.
 
 # Tuning
 
-Chaos isn’t a pit. Chaos is a ladder.
-—Petyr Baelish
+> Chaos isn’t a pit. Chaos is a ladder.
+> —Petyr Baelish
+
 In previous chapters, we’ve assumed that computation within a Spark cluster works
 efficiently. While this is true in some cases, it is often necessary to have some knowl‐
 edge of the operations Spark runs internally to fine-tune configuration settings that
@@ -5095,29 +5096,32 @@ Overview
 Spark performs distributed computation by configuring, partitioning, executing,
 shuffling, caching, and serializing data, tasks, and resources across multiple
 machines:
-• Configuring requests the cluster manager for resources: total machines, memory,
+
+* Configuring requests the cluster manager for resources: total machines, memory,
 and so on.
-155
-• Partitioning splits the data among various machines. Partitions can be either
+* Partitioning splits the data among various machines. Partitions can be either
 implicit or explicit.
-• Executing means running an arbitrary transformation over each partition.
-• Shuffling redistributes data to the correct machine.
-• Caching preserves data in memory across different computation cycles.
-• Serializing transforms data to be sent over the network to other workers or back
+* Executing means running an arbitrary transformation over each partition.
+* Shuffling redistributes data to the correct machine.
+* Caching preserves data in memory across different computation cycles.
+* Serializing transforms data to be sent over the network to other workers or back
 to the driver node.
+
 To illustrate each concept, let’s create three partitions with unordered integers and
-then sort them using arrange():
+then sort them using `arrange()`:
+```{r}
 data <- copy_to(sc,
 data.frame(id = c(4, 9, 1, 8, 2, 3, 5, 7, 6)),
 repartition = 3)
 data %>% arrange(id) %>% collect()
+```
 Figure 9-1 shows how this sorting job would conceptually work across a cluster of
 machines. First, Spark would configure the cluster to use three worker machines. In
 this example, the numbers 1 through 9 are partitioned across three storage instances.
 Since the data is already partitioned, each worker node loads this implicit partition;
 for instance, 4, 9, and 1 are loaded in the first worker node. Afterward, a task is dis‐
 tributed to each worker to apply a transformation to each data partition in each
-worker node; this task is denoted by f(x). In this example, f(x) executes a sorting
+worker node; this task is denoted by `f(x)`. In this example, `f(x)` executes a sorting
 operation within a partition. Since Spark is general, execution over a partition can be
 as simple or complex as needed.
 The result is then shuffled to the correct machine to finish the sorting operation
@@ -5130,16 +5134,19 @@ cluster machines, back to the driver node to print a preview of this sorting exa
 Notice that while图9-1 describes a sorting operation, a similar approach applies
 to filtering or joining datasets and analyzing and modeling data at scale. Spark pro‐
 vides support to perform custom partitions, custom shuffling, and so on, but most of
-these lower-level operations are not exposed in sparklyr; instead, `sparklyr` makes
+these lower-level operations are not exposed in `sparklyr`; instead, `sparklyr` makes
 those operations available through higher-level commands provided by data analysis
-tools like `dplyr` or DBI, modeling, and by using many extensions. For those few cases
+tools like `dplyr` or `DBI`, modeling, and by using many extensions. For those few cases
 in which you might need to implement low-level operations, you can always use
 Spark’s Scala API through `sparklyr` extensions or run custom distributed R code.
-156 | Chapter 9: Tuning
+
 To effectively tune Spark, we will start by getting familiar with Spark’s computation
 graph and Spark’s event timeline. Both are accessible through Spark’s web interface.
-Figure 9-1. Sorting distributed data with Apache Spark
-Graph
+
+![Figure 9-1. Sorting distributed data with Apache Spark](figures/9_1.png)
+
+### Graph
+
 Spark describes all computation steps using a Directed Acyclic Graph (DAG), which
 means that all computations in Spark move computation forward without repeating
 previous steps, which helps Spark optimize computations effectively.
@@ -5147,31 +5154,36 @@ The best way to understand Spark’s computation graph for a given operation—s
 ing for our example—is to open the last completed query on the SQL tab in Spark’s
 web interface.图9-2 shows the resulting graph for this sorting operation, which
 contains the following operations:
-WholeStageCodegen
-This block specifies that the operations it contains were used to generate com‐
+
+* WholeStageCodegen
+    This block specifies that the operations it contains were used to generate com‐
 puter code that was efficiently translated to byte code. There is usually a small
 cost associated with translating operations into byte code, but this is a worthwhile
 price to pay since the operations then can be executed much faster from Spark. In
 general, you can ignore this block and focus on the operations that it contains.
-Overview | 157
-InMemoryTableScan
-This means that the original dataset data was stored in memory and traversed
+* InMemoryTableScan
+    This means that the original dataset data was stored in memory and traversed
 row by row once.
-Exchange
-Partitions were exchanged—that is, shuffled—across executors in your cluster.
-Sort
-After the records arrived at the appropriate executor, they were sorted in this
+* Exchange
+    Partitions were exchanged—that is, shuffled—across executors in your cluster.
+* Sort
+    After the records arrived at the appropriate executor, they were sorted in this
 final stage.
-Figure 9-2. Spark graph for a sorting query
+
+![Figure 9-2. Spark graph for a sorting query](figures/9_2.png)
+
 From the query details, you then can open the last Spark job to arrive to the job
 details page, which you can expand by using “DAG Visualization” to create a graph
 similar to图9-3. This graph shows a few additional details and the stages in this
 job. Notice that there are no arrows pointing back to previous steps, since Spark
 makes use of acyclic graphs.
-Figure 9-3. Spark graph for a sorting job
-158 | Chapter 9: Tuning
+
+![Figure 9-3. Spark graph for a sorting job](figures/9_3.png)
+
 Next, we dive into a Spark stage and explore its event timeline.
-Timeline
+
+### Timeline
+
 The event timeline is a great summary of how Spark is spending computation cycles
 over each stage. Ideally, you want to see this timeline consisting of mostly CPU usage
 since other tasks can be considered overhead. You also want to see Spark using all the
@@ -5179,12 +5191,18 @@ CPUs across all the cluster nodes available to you.
 Select the first stage in the current job and expand the event timeline, which should
 look similar to图9-4. Notice that we explicitly requested three partitions, which
 are represented by three lanes in this visualization.
-Figure 9-4. Spark event timeline
+
+![Figure 9-4. Spark event timeline](figures/9_4.png)
+
 Since our machine is equipped with four CPUs, we can parallelize this computation
-even further by explicitly repartitioning data using sdf_repartition(), with the
+even further by explicitly repartitioning data using `sdf_repartition()`, with the
 result shown in图9-5:
+```{r}
 data %>% sdf_repartition(4) %>% arrange(id) %>% collect()
-Figure 9-5. Spark event timeline with additional partitions
+```
+
+![Figure 9-5. Spark event timeline with additional partitions](figures/9_5.png)
+
 Figure 9-5 now shows four execution lanes with most time spent under Executor
 Computing Time, which shows us that this particular operation is making better use
 of our compute resources. When you are working with clusters, requesting more
@@ -5194,23 +5212,28 @@ might not shorten time and might actually make everything slower. There is no co
 crete set of rules to follow to optimize a stage; however, as you gain experience under‐
 standing this timeline over multiple operations, you will develop insights as to how to
 properly optimize Spark operations.
-Overview | 159
-Configuring
+
+## Configuring
+
 When tuning a Spark application, the most common resources to configure are
 memory and cores, specifically:
-Memory in driver
-The amount of memory required in the driver node
-Memory per worker
-The amount of memory required in the worker nodes
-Cores per worker
-The number of CPUs required in the worker nodes
-Number of workers
-The number of workers required for this session
-It is recommended to request significantly more memory for the
+
+* Memory in driver
+    The amount of memory required in the driver node
+* Memory per worker
+    The amount of memory required in the worker nodes
+* Cores per worker
+    The number of CPUs required in the worker nodes
+* Number of workers
+    The number of workers required for this session
+    
+> It is recommended to request significantly more memory for the
 driver than the memory available over each worker node. In most
 cases, you will want to request one core per worker.
+
 In local mode there are no workers, but we can still configure memory and cores to
 use through the following:
+```{r}
 # Initialize configuration with defaults
 config <- spark_config()
 # Memory
@@ -5219,15 +5242,16 @@ config["sparklyr.shell.driver-memory"] <- "2g"
 config["sparklyr.connect.cores.local"] <- 2
 # Connect to local cluster with custom configuration
 sc <- spark_connect(master = "local", config = config)
+```
 When using the Spark Standalone and the Mesos cluster managers, all the available
 memory and cores are assigned by default; therefore, there are no additional configu‐
 ration changes required, unless you want to restrict resources to allow multiple users
-to share this cluster. In this case, you can use total-executor-cores to restrict the
+to share this cluster. In this case, you can use `total-executor-cores` to restrict the
 total executors requested. The Spark Standalone and Spark on Mesos guides provide
 additional information on sharing clusters.
 When running under YARN Client, you would configure memory and cores as
 follows:
-160 | Chapter 9: Tuning
+```{r}
 # Memory in driver
 config["sparklyr.shell.driver-memory"] <- "2g"
 # Memory per worker
@@ -5236,243 +5260,197 @@ config["sparklyr.shell.executor-memory"] <- "2g"
 config["sparklyr.shell.executor-cores"] <- 1
 # Number of workers
 config["sparklyr.shell.num-executors"] <- 3
-When using YARN in cluster mode you can use `sparklyr`。shell.driver-cores to
+```
+When using YARN in cluster mode you can use `sparklyr.shell.driver-cores` to
 configure total cores requested in the driver node. The Spark on YARN guide pro‐
 vides additional configuration settings that can benefit you.
 There are a few types of configuration settings:
-Connect
-These settings are set as parameters to spark_connect(). They are common set‐
-tings used while connecting.
-Submit
-These settings are set while `sparklyr` is being submitted to Spark through spark￾submit; some are dependent on the cluster manager being used.
-Runtime
-These settings configure Spark when the Spark session is created. They are inde‐
-pendent of the cluster manager and specific to Spark.
-sparklyr
-Use these to configure `sparklyr` behavior. These settings are independent of the
+
+* Connect
+    These settings are set as parameters to spark_connect(). They are common settings used while connecting.
+* Submit
+    These settings are set while `sparklyr` is being submitted to Spark through spark￾submit; some are dependent on the cluster manager being used.
+* Runtime
+    These settings configure Spark when the Spark session is created. They are independent of the cluster manager and specific to Spark.
+* sparklyr
+    Use these to configure `sparklyr` behavior. These settings are independent of the
 cluster manager and particular to R.
+
 The following subsections present extensive lists of all the available settings. It is not
 required that you fully understand them all while tuning Spark, but skimming
 through them could prove useful in the future for troubleshooting issues. If you pre‐
 fer, you can skip these subsections and use them instead as reference material as
 needed.
-Connect Settings
-You can use the parameters listed in Table 9-1 with spark_connect(). They configure
+
+### Connect Settings
+
+You can use the parameters listed in Table 9-1 with `spark_connect()`. They configure
 high-level settings that define the connection method, Spark’s installation path, and
 the version of Spark to use.
-Configuring | 161
+
 Table 9-1. Parameters used when connecting to Spark
-Name Value
-master Spark cluster URL to connect to. Use "local" to connect to a local instance of Spark installed via
-spark_install().
-SPARK_HOME The path to a Spark installation. Defaults to the path provided by the SPARK_HOME environment variable.
-If SPARK_HOME is defined, it will always be used unless the version parameter is specified to force the use
-of a locally installed version.
-method The method used to connect to Spark. Default connection method is "shell" to connect using spark￾submit. Use "livy" to perform remote connections using HTTP, or "databricks" when using a
-Databricks cluster, or "qubole" when using a Qubole cluster.
-app_name The application name to be used while running in the Spark cluster.
-version The version of Spark to use. This is applicable only to "local" and "livy" connections.
-config Custom configuration for the generated Spark connection. See spark_config for details.
+
+Name |Value
+-----|------
+master |Spark cluster URL to connect to. Use "local" to connect to a local instance of Spark installed via `spark_install()`.
+SPARK_HOME |The path to a Spark installation. Defaults to the path provided by the SPARK_HOME environment variable.If SPARK_HOME is defined, it will always be used unless the version parameter is specified to force the use of a locally installed version.
+method |The method used to connect to Spark. Default connection method is "shell" to connect using `spark-submit`. Use "livy" to perform remote connections using HTTP, or "databricks" when using a Databricks cluster, or "qubole" when using a Qubole cluster.
+app_name |The application name to be used while running in the Spark cluster.
+version| The version of Spark to use. This is applicable only to "local" and "livy" connections.
+config |Custom configuration for the generated Spark connection. See `spark_config` for details.
+
 You can configure additional settings by specifying a list in the config parameter.
 Let’s now take a look at what those settings can be.
-Submit Settings
+
+### Submit Settings
+
 Some settings must be specified when spark-submit (the terminal application that
-launches Spark) is run. For instance, since spark-submit launches a driver node that
+launches Spark) is run. For instance, since `spark-submit` launches a driver node that
 runs as a Java instance, how much memory is allocated needs to be specified as a
-parameter to spark-submit.
+parameter to `spark-submit`.
 You can list all the available spark-submit parameters by running the following:
+```{r}
 spark_home_dir() %>% file.path("bin", "spark-submit") %>% system2()
+```
 For readability, we’ve provided the output of this command in Table 9-2, replacing
-the spark-submit parameter with the appropriate spark_config() setting and
+the spark-submit parameter with the appropriate `spark_config()` setting and
 removing the parameters that are not applicable or already presented in this chapter.
+
 Table 9-2. Setting available to configure spark-submit
-Name Value
-sparklyr.shell.jars Specified as jars parameter in spark_connect().
-sparklyr.shell.packages Comma-separated list of Maven coordinates of JARs to include on the driver
-and executor classpaths. Will search the local Maven repo, then Maven Central
-and any additional remote repositories given by `sparklyr`。shell.repo
-sitories. The format for the coordinates should be groupId:artifac
-tId:version.
-sparklyr.shell.exclude￾packages
-Comma-separated list of groupId:artifactId, to exclude while
-resolving the dependencies provided in `sparklyr`。shell.packages to
-avoid dependency conflicts.
-162 | Chapter 9: Tuning
-Name Value
-sparklyr.shell.repositories Comma-separated list of additional remote repositories to search for the
-Maven coordinates given with `sparklyr`。shell.packages.
-sparklyr.shell.files Comma-separated list of files to be placed in the working directory of each
-executor. Filepaths of these files in executors can be accessed via Spark
-Files.get(fileName).
-sparklyr.shell.conf Arbitrary Spark configuration property set as PROP=VALUE.
-sparklyr.shell.properties￾file
-Path to a file from which to load extra properties. If not specified, this will look
-for conf/spark-defaults.conf.
-sparklyr.shell.driver-java￾options
-Extra Java options to pass to the driver.
-sparklyr.shell.driver￾library-path
-Extra library path entries to pass to the driver.
-sparklyr.shell.driver-class￾path
-Extra class path entries to pass to the driver. Note that JARs added with spar
-klyr.shell.jars are automatically included in the classpath.
-sparklyr.shell.proxy-user User to impersonate when submitting the application. This argument does not
-work with `sparklyr`。shell.principal/ `sparklyr`。shell.key
-tab.
-sparklyr.shell.verbose Print additional debug output.
+
+Name |Value
+-----|------
+`sparklyr.shell.jars` |Specified as jars parameter in `spark_connect()`.
+`sparklyr.shell.packages`| Comma-separated list of Maven coordinates of JARs to include on the driver and executor classpaths. Will search the local Maven repo, then Maven Central and any additional remote repositories given by `sparklyr.shell.repositories`. The format for the coordinates should be `groupId:artifactId:version`.
+`sparklyr.shell.exclude-packages`|Comma-separated list of groupId:artifactId, to exclude while resolving the dependencies provided in `sparklyr.shell.packages` to avoid dependency conflicts.
+`sparklyr.shell.repositories`| Comma-separated list of additional remote repositories to search for the Maven coordinates given with `sparklyr.shell.packages`.
+`sparklyr.shell.files` |Comma-separated list of files to be placed in the working directory of each executor. Filepaths of these files in executors can be accessed via Spark `Files.get(fileName)`.
+`sparklyr.shell.conf` |Arbitrary Spark configuration property set as `PROP=VALUE`.
+`sparklyr.shell.properties-file`|Path to a file from which to load extra properties. If not specified, this will look for conf/spark-defaults.conf.
+`sparklyr.shell.driver-java-options`|Extra Java options to pass to the driver.
+`sparklyr.shell.driver-library-path`|Extra library path entries to pass to the driver.
+`sparklyr.shell.driver-class-path`|Extra class path entries to pass to the driver. Note that JARs added with `sparklyr.shell.jars` are automatically included in the classpath.
+`sparklyr.shell.proxy-user` |User to impersonate when submitting the application. This argument does not work with `sparklyr.shell.principal/sparklyr.shell.key tab`.
+`sparklyr.shell.verbose`| Print additional debug output.
+
 The remaining settings, shown in Table 9-3, are specific to YARN.
+
 Table 9-3. Settings avalable to configure spark-submit when using YARN
-Name Value
-sparklyr.shell.queue The YARN queue to submit to (Default: “default”).
-sparklyr.shell.archives Comma-separated list of archives to be extracted into the working directory of each
-executor.
-sparklyr.shell.principal Principal to be used to log in to KDC while running on secure HDFS.
-sparklyr.shell.keytab The full path to the file that contains the keytab for the principal just specified. This
-keytab will be copied to the node running the Application Master via the Secure
-Distributed Cache, for renewing the login tickets and the delegation tokens
-periodically.
-In general, any spark-submit setting is configured through `sparklyr`。shell.X,
-where X is the name of the spark-submit parameter without the -- prefix.
-Runtime Settings
+
+Name |Value
+-----|-----
+`sparklyr.shell.queue` |The YARN queue to submit to (Default: “default”).
+`sparklyr.shell.archives` |Comma-separated list of archives to be extracted into the working directory of each executor.
+`sparklyr.shell.principal` |Principal to be used to log in to KDC while running on secure HDFS.
+`sparklyr.shell.keytab` |The full path to the file that contains the keytab for the principal just specified. This keytab will be copied to the node running the Application Master via the Secure Distributed Cache, for renewing the login tickets and the delegation tokens periodically.
+
+In general, any `spark-submit` setting is configured through `sparklyr.shell.X`,where X is the name of the `spark-submit` parameter without the -- prefix.
+
+### Runtime Settings
+
 As mentioned, some Spark settings configure the session runtime. The runtime set‐
 tings are a superset of the submit settings given that it is usually helpful to retrieve the
 current configuration even if a setting can’t be changed.
 To list the Spark settings set in your current Spark session, you can run the following:
-Configuring | 163
+```{r}
 spark_session_config(sc)
+```
 Table 9-4 describes the runtime settings.
+
 Table 9-4. Setting available to configure the Spark session
-Name Value
-spark.master local[4]
-spark.sql.shuffle.partitions 4
-spark.driver.port 62314
-spark.submit.deployMode client
-spark.executor.id driver
-spark.jars /Library/…/sparklyr/java/sparklyr-2.3-2.11.jar
-spark.app.id local-1545518234395
-spark.env.SPARK_LOCAL_IP 127.0.0.1
-spark.sql.catalogImplementation hive
-spark.spark.port.maxRetries 128
-spark.app.name sparklyr
-spark.home /Users/…/spark/spark-2.3.2-bin-hadoop2.7
-spark.driver.host localhost
+
+Name |Value
+------|-----
+`spark.master` |local[4]
+`spark.sql.shuffle.partitions` |4
+`spark.driver.port` |62314
+`spark.submit.deployMode` |`client`
+`spark.executor.id` |`driver`
+`spark.jars` |/Library/…/sparklyr/java/sparklyr-2.3-2.11.jar
+`spark.app.id` |local-1545518234395
+`spark.env.SPARK_LOCAL_IP` |127.0.0.1
+`spark.sql.catalogImplementation` |`hive`
+`spark.spark.port.maxRetries` |128
+`spark.app.name` |`sparklyr`
+`spark.home` |/Users/…/spark/spark-2.3.2-bin-hadoop2.7
+`spark.driver.host` |`localhost`
+
 However, there are many more configuration settings available in Spark, as described
 in the Spark Configuration guide. It’s beyond the scope of this book to describe them
 all, so, if possible, take some time to identify the ones that might be of interest to your
 particular use cases.
-sparklyr Settings
+
+### sparklyr Settings
+
 Apart from Spark settings, there are a few settings particular to `sparklyr`。 You usually
 don’t use these settings while tuning Spark; instead, they are helpful while trouble‐
-shooting Spark from R. For instance, you can use `sparklyr`。log.console = TRUE to
+shooting Spark from R. For instance, you can use `sparklyr.log.console = TRUE` to
 output the Spark logs into the R console; this is ideal while troubleshooting but too
 noisy otherwise. Here’s how to list the settings (results are presented in Table 9-5):
+```{r}
 spark_config_settings()
+```
 Table 9-5. Settings available to configure the `sparklyr` package
-Name Description
-sparklyr.apply.packages Configures default value for packages parameter in
-spark_apply().
-sparklyr.apply.rlang Experimental feature. Turns on improved serialization for
-spark_apply().
-164 | Chapter 9: Tuning
-Name Description
-sparklyr.apply.serializer Configures the version spark_apply() uses to serialize
-the closure.
-sparklyr.apply.schema.infer Number of rows collected to infer schema when column
-types specified in spark_apply().
-sparklyr.arrow Use Apache Arrow to serialize data?
-sparklyr.backend.interval Total seconds `sparklyr` will check on a backend
-operation.
-sparklyr.backend.timeout Total seconds before `sparklyr` will give up waiting for a
-backend operation to complete.
-sparklyr.collect.batch Total rows to collect when using batch collection; defaults
-to 100,000.
-sparklyr.cancellable Cancel Spark jobs when the R session is interrupted?
-sparklyr.connect.aftersubmit R function to call after spark-submit executes.
-sparklyr.connect.app.jar The path to the `sparklyr` JAR used in spark_con
-nect().
-sparklyr.connect.cores.local Number of cores to use in spark_connect(master 
-= "local"), defaults to parallel::detect
-Cores().
-sparklyr.connect.csv.embedded Regular expression to match against versions of Spark that
-require package extension to support CSVs.
-sparklyr.connect.csv.scala11 Use Scala 2.11 JARs when using embedded CSV JARS in
-Spark 1.6.X.
-sparklyr.connect.jars Additional JARs to include while submitting application to
-Spark.
-sparklyr.connect.master The cluster master as spark_connect() master
-parameter; note that the spark.master setting is
-usually preferred.
-sparklyr.connect.packages Spark packages to include when connecting to Spark.
-sparklyr.connect.ondisconnect R function to call after spark_disconnect().
-sparklyr.connect.sparksubmit Command executed instead of spark-submit when
-connecting.
-sparklyr.connect.timeout Total seconds before giving up connecting to the spar
-klyr gateway while initializing.
-sparklyr.dplyr.period.splits Should `dplyr` split column names into database and
-table?
-sparklyr.extensions.catalog Catalog PATH where extension JARs are located. Defaults
-to TRUE; FALSE to disable.
-sparklyr.gateway.address The address of the driver machine.
-sparklyr.gateway.config.retries Number of retries to retrieve port and address from config;
-useful when using functions to query port or address in
-Kubernetes.
-Configuring | 165
-Name Description
-sparklyr.gateway.interval Total of seconds sparkyr will check on a gateway
-connection.
-sparklyr.gateway.port The port the `sparklyr` gateway uses in the driver
-machine.
-sparklyr.gateway.remote Should the `sparklyr` gateway allow remote
-connections? This is required in YARN cluster, for example.
-sparklyr.gateway.routing Should the `sparklyr` gateway service route to other
-sessions? Consider disabling in Kubernetes.
-sparklyr.gateway.service Should the `sparklyr` gateway be run as a service
-without shutting down when the last connection
-disconnects?
-sparklyr.gateway.timeout Total seconds before giving up connecting to the spar
-klyr gateway after initialization.
-sparklyr.gateway.wait Total seconds to wait before retrying to contact the spar
-klyr gateway.
-sparklyr.livy.auth Authentication method for Livy connections.
-sparklyr.livy.headers Additional HTTP headers for Livy connections.
-sparklyr.livy.sources Should `sparklyr` sources be sourced when connecting?
-If false, manually register `sparklyr` JARs.
-sparklyr.log.invoke Should every call to invoke() be printed in the console?
-Can be set to callstack to log call stack.
-sparklyr.log.console Should driver logs be printed in the console?
-sparklyr.progress Should job progress be reported to RStudio?
-sparklyr.progress.interval Total of seconds to wait before attempting to retrieve job
-progress in Spark.
-sparklyr.sanitize.column.names Should partially unsupported column names be cleaned
-up?
-sparklyr.stream.collect.timeout Total seconds before stopping collecting a stream sample
-in sdf_collect_stream().
-sparklyr.stream.validate.timeout Total seconds before stopping to check if stream has errors
-while being created.
-sparklyr.verbose Use verbose logging across all `sparklyr` operations?
-sparklyr.verbose.na Use verbose logging when dealing with NAs?
-sparklyr.verbose.sanitize Use verbose logging while sanitizing columns and other
-objects?
-sparklyr.web.spark The URL to Spark’s web interface.
-sparklyr.web.yarn The URL to YARN’s web interface.
-sparklyr.worker.gateway.address The address of the worker machine, most likely local
-host.
-sparklyr.worker.gateway.port The port the `sparklyr` gateway uses in the driver
-machine.
-166 | Chapter 9: Tuning
-Name Description
-sparklyr.yarn.cluster.accepted.timeout Total seconds before giving up waiting for cluster resources
-in YARN cluster mode.
-sparklyr.yarn.cluster.hostaddress.timeout Total seconds before giving up waiting for the cluster to
-assign a host address in YARN cluster mode.
-sparklyr.yarn.cluster.lookup.byname Should the current username be used to filter YARN cluster
-jobs while searching for submitted one?
-sparklyr.yarn.cluster.lookup.prefix Application name prefix used to filter YARN cluster jobs
-while searching for submitted one.
-sparklyr.yarn.cluster.lookup.username The username used to filter YARN cluster jobs while
-searching for submitted one.
-sparklyr.yarn.cluster.start.timeout Total seconds before giving up waiting for YARN cluster
-application to get registered.
-Partitioning
+
+Name |Description
+-----|-----
+`sparklyr.apply.packages`|Configures default value for packages parameter in `spark_apply()`.
+`sparklyr.apply.rlang` |Experimental feature. Turns on improved serialization for `spark_apply()`.
+`sparklyr.apply.serializer` |Configures the version `spark_apply()` uses to serialize the closure.
+`sparklyr.apply.schema.infer` |Number of rows collected to infer schema when column types specified in `spark_apply()`.
+`sparklyr.arrow` |Use Apache Arrow to serialize data?
+`sparklyr.backend.interval` |Total seconds `sparklyr` will check on a backend operation.
+`sparklyr.backend.timeout` |Total seconds before `sparklyr` will give up waiting for a backend operation to complete.
+`sparklyr.collect.batch` |Total rows to collect when using batch collection; defaults to 100,000.
+`sparklyr.cancellable` |Cancel Spark jobs when the R session is interrupted?
+`sparklyr.connect.aftersubmit` |R function to call after `spark-submit` executes.
+`sparklyr.connect.app.jar` |The path to the `sparklyr JAR` used in `spark_connect()`.
+`sparklyr.connect.cores.local` |Number of cores to use in `spark_connect(master = "local")`, defaults to `parallel::detectCores()`.
+`sparklyr.connect.csv.embedded` |Regular expression to match against versions of Spark that require package extension to support CSVs.
+`sparklyr.connect.csv.scala11` |Use Scala 2.11 JARs when using embedded `CSV JARS` in Spark 1.6.X.
+`sparklyr.connect.jars` |Additional JARs to include while submitting application to Spark.
+`sparklyr.connect.master` |The cluster master as `spark_connect()` master parameter; note that the `spark.master` setting is usually preferred.
+`sparklyr.connect.packages` |Spark packages to include when connecting to Spark.
+`sparklyr.connect.ondisconnect` |R function to call after `spark_disconnect()`.
+`sparklyr.connect.sparksubmit` |Command executed instead of `spark-submit` when connecting.
+`sparklyr.connect.timeout` |Total seconds before giving up connecting to the `sparklyr` gateway while initializing.
+`sparklyr.dplyr.period.splits` |Should `dplyr` split column names into database and table?
+`sparklyr.extensions.catalog` |Catalog PATH where extension JARs are located. Defaults to `TRUE`; `FALSE` to disable.
+`sparklyr.gateway.address` |The address of the driver machine.
+`sparklyr.gateway.config.retries` |Number of retries to retrieve port and address from config; useful when using functions to query port or address in Kubernetes.
+`sparklyr.gateway.interval` |Total of seconds sparkyr will check on a gateway connection.
+`sparklyr.gateway.port` |The port the `sparklyr` gateway uses in the driver machine.
+`sparklyr.gateway.remote` |Should the `sparklyr` gateway allow remote connections? This is required in YARN cluster, for example.
+`sparklyr.gateway.routing` |Should the `sparklyr` gateway service route to other sessions? Consider disabling in Kubernetes.
+`sparklyr.gateway.service` |Should the `sparklyr` gateway be run as a service without shutting down when the last connection disconnects?
+`sparklyr.gateway.timeout` |Total seconds before giving up connecting to the `sparklyr` gateway after initialization.
+`sparklyr.gateway.wait` |Total seconds to wait before retrying to contact the `sparklyr` gateway.
+`sparklyr.livy.auth` |Authentication method for Livy connections.
+`sparklyr.livy.headers` |Additional HTTP headers for Livy connections.
+`sparklyr.livy.sources` |Should `sparklyr` sources be sourced when connecting? If false, manually register `sparklyr JARs`.
+`sparklyr.log.invoke` |Should every call to `invoke()` be printed in the console? Can be set to `callstack` to log call stack.
+`sparklyr.log.console` |Should driver logs be printed in the console?
+`sparklyr.progress` |Should job progress be reported to RStudio?
+`sparklyr.progress.interval` |Total of seconds to wait before attempting to retrieve job progress in Spark.
+`sparklyr.sanitize.column.names` |Should partially unsupported column names be cleaned up?
+`sparklyr.stream.collect.timeout` |Total seconds before stopping collecting a stream sample in `sdf_collect_stream()`.
+`sparklyr.stream.validate.timeout` |Total seconds before stopping to check if stream has errors while being created.
+`sparklyr.verbose` |Use verbose logging across all `sparklyr` operations?
+`sparklyr.verbose.na` |Use verbose logging when dealing with NAs?
+`sparklyr.verbose.sanitize` |Use verbose logging while sanitizing columns and other objects?
+`sparklyr.web.spark` |The URL to Spark’s web interface.
+`sparklyr.web.yarn` |The URL to YARN’s web interface.
+`sparklyr.worker.gateway.address`|The address of the worker machine, most likely `localhost`.
+`sparklyr.worker.gateway.port` |The port the `sparklyr` gateway uses in the driver machine.
+`sparklyr.yarn.cluster.accepted.timeout` |Total seconds before giving up waiting for cluster resources in YARN cluster mode.
+`sparklyr.yarn.cluster.hostaddress.timeout` |Total seconds before giving up waiting for the cluster to assign a host address in YARN cluster mode.
+`sparklyr.yarn.cluster.lookup.byname` |Should the current username be used to filter YARN cluster jobs while searching for submitted one?
+`sparklyr.yarn.cluster.lookup.prefix` |Application name prefix used to filter YARN cluster jobs while searching for submitted one.
+`sparklyr.yarn.cluster.lookup.username` |The username used to filter YARN cluster jobs while searching for submitted one.
+`sparklyr.yarn.cluster.start.timeout` |Total seconds before giving up waiting for YARN cluster application to get registered.
+
+## Partitioning
+
 As mentioned in Chapter 1, MapReduce and Spark were designed with the purpose
 of performing computations against data stored across many machines. The subset of
 the data available for computation over each compute instance is known as a
@@ -5481,38 +5459,49 @@ By default, Spark computes over each existing implicit partition since it’s mo
 tive to run computations where the data is already located. However, there are cases
 for which you will want to set an explicit partition to help Spark make more efficient
 use of your cluster resources.
-Implicit Partitions
+
+### Implicit Partitions
+
 As Chapter 8 explained, Spark can read data stored in many formats and different
 storage systems; however, since shuffling data is an expensive operation, Spark exe‐
 cutes tasks reusing the partitions in the storage system. Therefore, these partitions are
 implicit to Spark since they are already well defined and expensive to rearrange.
 There is always an implicit partition for every computation in Spark defined by the
 distributed storage system, even for operations which you wouldn’t expect that create
-partitions, like copy_to().
+partitions, like `copy_to()`.
 You can explore the number of partitions a computation will require by using
-sdf_num_partitions():
+`sdf_num_partitions()`:
+```{r}
 sdf_len(sc, 10) %>% sdf_num_partitions()
 [1] 2
+```
 While in most cases the default partitions work just fine, there are cases for which
 you will need to be explicit about the partitions you choose.
 Partitioning | 167
-Explicit Partitions
+
+### Explicit Partitions
+
 There will be times when you have many more or far fewer compute instances than
 data partitions. In both cases, it can help to repartition data to match your cluster
 resources.
-Various data functions, like spark_read_csv(), already support a repartition
+Various data functions, like `spark_read_csv()`, already support a repartition
 parameter to request that Spark repartition data appropriately. For instance, we can
 create a sequence of 10 numbers partitioned by 10 as follows:
+```{r}
 sdf_len(sc, 10, repartition = 10) %>% sdf_num_partitions()
 [1] 10
-For datasets that are already partitioned, we can also use sdf_repartition():
+```
+For datasets that are already partitioned, we can also use `sdf_repartition()`:
+```{r}
 sdf_len(sc, 10, repartition = 10) %>%
 sdf_repartition(4) %>%
 sdf_num_partitions()
 [1] 4
+```
 The number of partitions usually significantly changes the speed and resources being
 used; for instance, the following example calculates the mean over 10 million rows
 with different partition sizes:
+```{r}
 library(microbenchmark)
 library(ggplot2)
 microbenchmark(
@@ -5522,14 +5511,17 @@ summarise(mean(id)) %>% collect(),
 summarise(mean(id)) %>% collect(),
 times = 10
 ) %>% autoplot() + theme_light()
+```
 Figure 9-6 shows that sorting data with two partitions is almost twice as fast. This is
 because two CPUs can be used to execute this operation. However, it is not necessar‐
 ily the case that higher partitions produce faster computation; instead, partitioning
 data is particular to your computing cluster and the data analysis operations being
 performed.
-168 | Chapter 9: Tuning
-Figure 9-6. Computation speed with additional explicit partitions
-Caching
+
+![Figure 9-6. Computation speed with additional explicit partitions](figures/9_6.png)
+
+## Caching
+
 Recall from Chapter 1 that Spark was designed to be faster than its predecessors by
 using memory instead of disk to store data. This is formally known as a Spark resil‐
 ient distributed dataset (RDD). An RDD distributes copies of the same data across
@@ -5540,26 +5532,33 @@ likelihood of something failing is much higher. When a failure happens, it is pr
 ble to be fault tolerant to avoid losing the work of all the other machines. RDDs
 accomplish this by tracking data lineage information to rebuild lost data automati‐
 cally on failure.
-In sparklyr, you can control when an RDD is loaded or unloaded from memory
-using tbl_cache() and tbl_uncache().
+In `sparklyr`, you can control when an RDD is loaded or unloaded from memory
+using `tbl_cache()` and `tbl_uncache()`.
 Most `sparklyr` operations that retrieve a Spark DataFrame cache the results in mem‐
-ory. For instance, running spark_read_parquet() or copy_to() will provide a Spark
+ory. For instance, running `spark_read_parquet()` or `copy_to()` will provide a Spark
 DataFrame that is already cached in memory. As a Spark DataFrame, this object can
 be used in most `sparklyr` functions, including data analysis with `dplyr` or machine
 learning:
+```{r}
 library(sparklyr)
 sc <- spark_connect(master = "local")
 iris_tbl <- copy_to(sc, iris, overwrite = TRUE)
+```
 You can inspect which tables are cached by navigating to the Spark UI using
-spark_web(sc), clicking the Storage tab, and then clicking on a specific RDD, as illus‐
+`spark_web(sc)`, clicking the Storage tab, and then clicking on a specific RDD, as illus‐
 trated in图9-7.
-Caching | 169
-Figure 9-7. Cached RDD in the Spark web interface
+
+![Figure 9-7. Cached RDD in the Spark web interface](figures/9_7.png)
+
 Data loaded in memory will be released when the R session terminates, either explic‐
 itly or implicitly, with a restart or disconnection; however, to free up resources, you
-can use tbl_uncache():
+can use `tbl_uncache()`:
+```{r}
 tbl_uncache(sc, "iris")
-Checkpointing
+```
+
+### Checkpointing
+
 Checkpointing is a slightly different type of caching; while it also saves data, it will
 additionally break the graph computation lineage. For example, if a cached partition
 is lost, it can be computed from the computation graph, which is not possible with
@@ -5569,52 +5568,56 @@ make sense to checkpoint to save and break the computation lineage in order to h
 Spark reduce graph computation resources; otherwise, Spark might try to optimize a
 computation graph that is really not useful to optimize.
 You can checkpoint explicitly by saving to CSV, Parquet, and other file formats. Or,
-let Spark checkpoint this for you by using sdf_checkpoint() in sparklyr, as follows:
+let Spark checkpoint this for you by using `sdf_checkpoint()` in `sparklyr`, as follows:
+```{r}
 # set checkpoint path
 spark_set_checkpoint_dir(sc, getwd())
 # checkpoint the iris dataset
 iris_tbl %>% sdf_checkpoint()
+```
 Notice that checkpointing truncates the computation lineage graph, which can speed
 up performance if the same intermediate result is used multiple times.
-170 | Chapter 9: Tuning
-Memory
+
+### Memory
+
 Memory in Spark is categorized into reserved, user, execution, or storage:
-Reserved
-Reserved memory is the memory Spark needs to function and therefore is over‐
-head that is required and should not be configured. This value defaults to 300
-MB.
-User
-User memory is the memory used to execute custom code. `sparklyr` makes use
-of this memory only indirectly when executing `dplyr` expressions or modeling a
-dataset.
-Execution
-Execution memory is used to execute code by Spark, mostly to process the results
-from the partition and perform shuffling.
-Storage
-Storage memory is used to cache RDDs—for instance, when using compute() in
-sparklyr.
+
+* Reserved
+    Reserved memory is the memory Spark needs to function and therefore is overhead that is required and should not be configured. This value defaults to 300MB.
+* User
+    User memory is the memory used to execute custom code. `sparklyr` makes use of this memory only indirectly when executing `dplyr` expressions or modeling a dataset.
+* Execution
+    Execution memory is used to execute code by Spark, mostly to process the results from the partition and perform shuffling.
+* Storage
+    Storage memory is used to cache RDDs—for instance, when using `compute()` in `sparklyr`.
+
 As part of tuning execution, you can consider tweaking the amount of memory allo‐
 cated for user, execution, and storage by creating a Spark connection with different
 values than the defaults provided in Spark:
+```{r}
 config <- spark_config()
 # define memory available for storage and execution
 config$spark.memory.fraction <- 0.75
 # define memory available for storage
 config$spark.memory.storageFraction <- 0.5
+```
 For instance, if you want to use Spark to store large amounts of data in memory with
 the purpose of quickly filtering and retrieving subsets, you can expect Spark to use
 little execution or user memory. Therefore, to maximize storage memory, you can
 tune Spark as follows:
+```{r}
 config <- spark_config()
 # define memory available for storage and execution
 config$spark.memory.fraction <- 0.90
 # define memory available for storage
 config$spark.memory.storageFraction <- 0.90
-Caching | 171
+```
 However, note that Spark will borrow execution memory from storage and vice versa
 if needed and if possible; therefore, in practice, there should be little need to tune the
 memory settings.
-Shuffling
+
+## Shuffling
+
 Shuffling is the operation that redistributes data across machines; it is usually expen‐
 sive and therefore something you should try to minimize. You can easily identify
 whether significant time is being spent shuffling by looking at the event timeline. It is
@@ -5622,48 +5625,64 @@ possible to reduce shuffling by reframing data analysis questions or hinting Spa
 appropriately.
 This would be relevant, for instance, when joining DataFrames that differ in size sig‐
 nificantly; that is, one set is orders of magnitude smaller than the other one. You can
-consider using sdf_broadcast() to mark a DataFrame as small enough for use in
+consider using `sdf_broadcast()` to mark a DataFrame as small enough for use in
 broadcast joins, meaning it pushes one of the smaller DataFrames to each of the
 worker nodes to reduce shuffling the bigger DataFrame. Here’s one example for
-sdf_broadcast():
+`sdf_broadcast()`:
+```{r}
 sdf_len(sc, 10000) %>%
 sdf_broadcast() %>%
 left_join(sdf_len(sc, 100))
-Serialization
+```
+
+## Serialization
+
 Serialization is the process of translating data and tasks into a format that can be
 transmitted between machines and reconstructed on the receiving end.
 It is not that common to need to adjust serialization when tuning Spark; however, it is
 worth mentioning that there are alternative serialization modules like the Kryo Seri‐
 alizer that can provide performance improvements over the default Java Serializer.
 You can turn on the Kryo Serializer in `sparklyr` through the following:
+```{r}
 config <- spark_config()
 config$spark.serializer <- "org.apache.spark.serializer.KryoSerializer"
 sc <- spark_connect(master = "local", config = config)
-Configuration Files
-Configuring the spark_config() settings before connecting is the most common
+```
+
+## Configuration Files
+
+Configuring the `spark_config()` settings before connecting is the most common
 approach while tuning Spark. However, after you identify the parameters in your
 connection, you should consider switching to use a configuration file since it will
 remove the clutter in your connection code and also allow you to share the configu‐
 ration settings across projects and coworkers.
-172 | Chapter 9: Tuning
+
 For instance, instead of connecting to Spark like this:
+```{r}
 config <- spark_config()
 config["sparklyr.shell.driver-memory"] <- "2G"
 sc <- spark_connect(master = "local", config = config)
-you can define a config.yml file with the desired settings. This file should be located in
+```
+you can define a *config.yml* file with the desired settings. This file should be located in
 the current working directory or in parent directories. For example, you can create
-the following config.yml file to modify the default driver memory:
+the following *config.yml* file to modify the default driver memory:
+```{r}
 default:
 sparklyr.shell.driver-memory: 2G
+```
 Then, connecting with the same configuration settings becomes much cleaner by
 using instead:
+```{r}
 sc <- spark_connect(master = "local")
+```
 You can also specify an alternate configuration filename or location by setting the
-file parameter in spark_config(). One additional benefit from using configuration
+`file` parameter in `spark_config()`. One additional benefit from using configuration
 files is that a system administrator can change the default configuration by changing
-the value of the R_CONFIG_ACTIVE environment variable. See the GitHub rstudio/
+the value of the `R_CONFIG_ACTIVE` environment variable. See the GitHub rstudio/
 config repo for additional information.
-Recap
+
+## Recap
+
 This chapter provided a broad overview of Spark internals and detailed configuration
 settings to help you speed up computation and enable high computation loads. It pro‐
 vided the foundations to understand bottlenecks and guidance on common configu‐
@@ -5677,6 +5696,7 @@ cases and for readers with particular needs. For instance, they can process nest
 data, perform graph analysis, and use different modeling libraries like rsparkling
 from H20. In addition, the next few chapters introduce many advanced data analysis
 and modeling topics that are required to master large-scale computing in R.
+
 ------
 
 # Extensions
