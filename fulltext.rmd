@@ -8374,9 +8374,13 @@ hope it was worthy of your time—it has been an honor having you as our reader.
 
 Throughout the book we’ve included references to this appendix. Here we’ve included
 important content (and listed the sections where this material can be found).
-Preface
-Formatting
+
+## Preface
+
+### Formatting
+
 The following `ggplot2` theme was used to format all plots in this book:
+```{r}
 plot_style <- function() {
 font <- "Helvetica"
 ggplot2::theme_classic() +
@@ -8397,7 +8401,6 @@ size = 14, color="#666666"),
 axis.title.x = ggplot2::element_text(
 margin = ggplot2::margin(t = -2, r = 0, b = 0, l = 0),
 size = 14, color = "#666666"),
-249
 axis.text = ggplot2::element_text(
 family=font, size=14, color="#222222"),
 axis.text.x = ggplot2::element_text(
@@ -8410,11 +8413,18 @@ panel.grid.major.x = ggplot2::element_line(color = "#ebebeb"),
 panel.background = ggplot2::element_blank(),
 strip.background = ggplot2::element_rect(fill = "white"),
 strip.text = ggplot2::element_text(size = 20, hjust = 0) ) }
+```
 You can activate this with the following:
+```{r}
 ggplot2::theme_set(plot_style())
-Chapter 1
-The World’s Capacity to Store Information
+```
+
+## Chapter 1
+
+### The World’s Capacity to Store Information
+
 The following script was used to generate图1-1:
+```{r}
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -8430,8 +8440,12 @@ labels = scales::trans_format("log10", scales::math_format(10^x))
 ) +
 theme_light() +
 theme(legend.position = "bottom")
-Daily Downloads of CRAN Packages
+```
+
+### Daily Downloads of CRAN Packages
+
 Figure 1-6 was generated through the following code:
+```{r}
 downloads_csv <- "data/01-intro-r-cran-downloads.csv"
 if (!file.exists(downloads_csv)) {
 downloads <- cranlogs::cran_downloads(from = "2014-01-01", to = "2019-01-01")
@@ -8451,18 +8465,25 @@ limits = c(0, 3.5 * 10^6),
 breaks = c(0.5 * 10^6, 10^6, 1.5 * 10^6, 2 * 10^6, 2.5 * 10^6, 3 * 10^6,
 3.5 * 10^6),
 labels = c("", "1M", "", "2M", "", "3M", "") )
-Chapter 2
-Prerequisites
-Installing R
+```
+
+## Chapter 2
+
+### Prerequisites
+
+#### Installing R
+
 Download the R installer (see图A-1) and launch it for your Windows, Mac, or
 Linux platform.
 Supplemental Code References | 251
-Figure A-1. The R Project for Statistical Computing
-Installing Java
+![Figure A-1. The R Project for Statistical Computing](figures/A_2.png)
+
+#### Installing Java
+
 Download the Java installer (see图A-2) and launch it for your Windows, Mac, or
 Linux platform.
 252 | Appendix A: Supplemental Code References
-Figure A-2. Java download page
+![Figure A-2. Java download page](figures/A_2.png)
 Starting with Spark 2.1, Java 8 is required; however, previous versions of Spark sup‐
 port Java 7. Regardless, we recommend installing Java Runtime Engine 8 (JRE 8).
 If you’re an advanced reader who is already using the Java Develop‐
