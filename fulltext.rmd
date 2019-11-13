@@ -8532,7 +8532,7 @@ Name | Description
 `array_contains(Array, value)` |Returns TRUE if the array contains a value.
 `sort_array(Array)` |Sorts the input array in ascending order according to the natural ordering of the array elements and returns it.
 `binary(string or binary)` |Casts the parameter into a binary.
-`cast(expr as a given type)` |Converts the results of the expression expr to the given type.
+`cast(expr as a given type)` |Converts the results of the expression `expr` to the given type.
 `from_unixtime(bigint unixtime[, string format])`|Converts the number of seconds from Unix epoch (1970-01-01 00:00:00 UTC) to a string.
 `unix_timestamp()` |Gets current Unix timestamp in seconds.
 `unix_timestamp(string date)` |Converts a time string in the format yyyy-MM-dd HH:mm:ss to a Unix timestamp (in seconds).
@@ -8546,79 +8546,79 @@ Name | Description
 `second(string date)` |Returns the second of the timestamp.
 `weekofyear(string date)` |Returns the week number of a timestamp string.
 `extract(field FROM source)` |Retrieve fields such as days or hours from source. Source must be a date,timestamp, interval, or string that can be converted into either a date or timestamp.
-`datediff(string enddate, string startdate)`|Returns the number of days from startdate to enddate.
-`date_add(date/timestamp/string startdate, tinyint/smallint/int days)`|Adds a number of days to startdate.
-`date_sub(date/timestamp/string startdate, tinyint/smallint/int days)`|Subtracts a number of days to startdate.
+`datediff(string enddate, string startdate)`|Returns the number of days from `startdate` to `enddate`.
+`date_add(date/timestamp/string startdate, tinyint/smallint/int days)`|Adds a number of days to `startdate`.
+`date_sub(date/timestamp/string startdate, tinyint/smallint/int days)`|Subtracts a number of days to `startdate`.
 `from_utc_timestamp(\{any primitive type} ts, string timezone)`|Converts a timestamp in UTC to a given time zone.
 `to_utc_timestamp(\{any primitive type} ts, string timezone)`|Converts a timestamp in a given time zone to UTC.
 `current_date` |Returns the current date.
 `current_timestamp` |Returns the current timestamp.
-`add_months(string start_date, int num_months, output_date_format)`|Returns the date that is num_months after start_date.
+`add_months(string start_date, int num_months, output_date_format)`|Returns the date that is `num_months` after `start_date`.
 `last_day(string date)` |Returns the last day of the month to which the date belongs.
-`next_day(string start_date, string day_of_week)`|Returns the first date that is later than start_date and named as day_of_week.
+`next_day(string start_date, string day_of_week)`|Returns the first date that is later than `start_date` and named as `day_of_week`.
 `trunc(string date, string format)`|Returns date truncated to the unit specified by the format.
-`months_between(date1, date2)` |Returns number of months between dates date1 and date2.
-`date_format(date/timestamp/string ts, string fmt)`|Converts a date/timestamp/string to a value of string in the format specified by the date format fmt.
-`if(boolean testCondition, T valueTrue, T valueFalseOrNull)`|Returns valueTrue when testCondition is true; returns valueFalseOrNull otherwise.
-`isnull( a )` |Returns true if a is NULL and false otherwise.
-`isnotnull( a )` |Returns true if a is not NULL and false otherwise.
-`nvl(T value, T default_value)` |Returns default value if value is NULL; else returns value.
-`COALESCE(T v1, T v2, …)` |Returns the first v that is not NULL, or NULL if all vs are NULL.
-`CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END` |When a = b, returns c; when a = d, returns e; else returns f.
-`nullif( a, b )` |Returns NULL if a = b; otherwise returns a.
-`assert_true(boolean condition)`| Throw an exception if condition is not true; otherwise return NULL.
-`ascii(string str)` |Returns the numeric value of the first character of str.
+`months_between(date1, date2)` |Returns number of months between dates `date1` and `date2`.
+`date_format(date/timestamp/string ts, string fmt)`|Converts a date/timestamp/string to a value of `string` in the format specified by the date format `fmt`.
+`if(boolean testCondition, T valueTrue, T valueFalseOrNull)`|Returns valueTrue when `testCondition` is true; returns `valueFalseOrNull` otherwise.
+`isnull( a )` |Returns true if a is `NULL` and `false` otherwise.
+`isnotnull( a )` |Returns true if a is not `NULL` and `false` otherwise.
+`nvl(T value, T default_value)` |Returns default value if value is `NULL`; else returns `value`.
+`COALESCE(T v1, T v2, …)` |Returns the first v that is not `NULL`, or `NULL` if all vs are `NULL`.
+`CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END` |When `a = b`, returns `c`; when `a = d`, returns `e`; else returns `f`.
+`nullif( a, b )` |Returns `NULL` if `a = b`; otherwise returns `a.`
+`assert_true(boolean condition)`| Throw an exception if `condition` is not true; otherwise return `NULL`.
+`ascii(string str)` |Returns the numeric value of the first character of `str`.
 `base64(binary bin)`| Converts the argument from binary to a base64 string.
-`character_length(string str)` |Returns the number of UTF-8 characters contained in str.
+`character_length(string str)` |Returns the number of UTF-8 characters contained in `str`.
 `chr(bigint double A)`| 
-`concat(stringǀbinary A, stringǀbinary B…)`|Returns the string or bytes resulting from concatenating the strings or bytes passed in as parameters in order. For example, concat(foo, bar) results in foobar.
+`concat(stringǀbinary A, stringǀbinary B…)`|Returns the string or bytes resulting from concatenating the strings or bytes passed in as parameters in order. For example, `concat(foo, bar)` results in `foobar`.
 `context_ngrams(array<array>,array, int K, int pf)`|Returns the top-k contextual N-grams from a set of tokenized sentences.
-`concat_ws(string SEP, string A, string B…)`|Like concat(), but with custom separator SEP.
-`decode(binary bin, string charset)`|Decodes the first argument into a string using the provided character set (one of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, or UTF-16). If either argument is NULL, the result will also be NULL.
-`elt(N int,str1 string,str2 string,str3 string,…)`|Return string at index number; elt(2,hello,world) |Returns world.
+`concat_ws(string SEP, string A, string B…)`|Like `concat()`, but with custom separator `SEP`.
+`decode(binary bin, string charset)`|Decodes the first argument into a string using the provided character set (one of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, or UTF-16). If either argument is `NULL`, the result will also be `NULL`.
+`elt(N int,str1 string,str2 string,str3 string,…)`|Return string at index number; `elt(2,hello,world)` |Returns world.
 `encode(string src, string charset)`|Encodes the first argument into a BINARY using the provided character set (one of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16).
-`field(val T,val1 T,val2 T,val3 T,…)`|Returns the index of val in the val1,val2,val3,… list or 0 if not found.
-`find_in_set(string str, string strList)`|Returns the first occurance of str in strList where strList is a comma-delimited string.
-`format_number(number x, int d)`|Formats the number x to a format like '#,###,###.##', rounded to d decimal places, and returns the result as a string. If d is 0, the result has no decimal point or fractional part.
+`field(val T,val1 T,val2 T,val3 T,…)`|Returns the index of val in the `val1`,`val2`,`val3`,… list or 0 if not found.
+`find_in_set(string str, string strList)`|Returns the first occurance of `str` in `strList` where `strList` is a comma-delimited string.
+`format_number(number x, int d)`|Formats the number `x` to a format like '#,###,###.##', rounded to `d` decimal places, and returns the result `as a string`. If `d` is 0, the result has no decimal point or fractional part.
 `get_json_object(string json_string, string path)`|Extracts JSON object from a JSON string based on JSON path specified, and returns JSON string of the extracted JSON object.
-`in_file(string str, string filename)`|Returns true if the string str appears as an entire line in filename.
-`instr(string str, string substr)`|Returns the position of the first occurrence of substr in str.
+`in_file(string str, string filename)`|Returns `true` if the string `str` appears as an entire line in filename.
+`instr(string str, string substr)`|Returns the position of the first occurrence of `substr` in `str`.
 `length(string A)` |Returns the length of the string.
-`locate(string substr, string str[, int pos])`|Returns the position of the first occurrence of substr in str after position pos.
+`locate(string substr, string str[, int pos])`|Returns the position of the first occurrence of substr in `str` after position `pos`.
 `lower(string A) lcase(string A)`|Returns the string resulting from converting all characters of B to lowercase.
-`lpad(string str, int len, string pad)`|Returns str, left-padded with pad to a length of len. If str is longer than len, the return value is shortened to len characters.
+`lpad(string str, int len, string pad)`|Returns `str`, left-padded with pad to a length of `len`. If `str` is longer than `len`, the return value is shortened to `len` characters.
 `ltrim(string A)` |Returns the string resulting from trimming spaces from the beginning (left side) of A.
-`ngrams(array<array>, int N, int K, int pf)`|Returns the top-k N-grams from a set of tokenized sentences, such as those returned by the sentences() UDAF.
+`ngrams(array<array>, int N, int K, int pf)`|Returns the top-k N-grams from a set of tokenized sentences, such as those returned by the `sentences() UDAF`.
 `octet_length(string str)` |Returns the number of octets required to hold the string str in UTF-8 encoding.
-`parse_url(string urlString, string partToExtract [, string keyToExtract])`|Returns the specified part from the URL. Valid values for partToExtract include HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and USERINFO.
-`printf(String format, Obj… args)`|Returns the input formatted according do printf-style format strings.
+`parse_url(string urlString, string partToExtract [, string keyToExtract])`|Returns the specified part from the URL. Valid values for `partToExtract` include `HOST`, `PATH`, `QUERY`, `REF`, `PROTOCOL`, `AUTHORITY`, `FILE`, and `USERINFO`.
+`printf(String format, Obj… args)`|Returns the input formatted according do `printf`-style format strings.
 `regexp_extract(string subject, string pattern, int index)`|Returns the string extracted using the pattern.
-`regexp_replace(string INITIAL_STRING, string PATTERN, string REPLACEMENT)`|Returns the string resulting from replacing all substrings in INITIAL_STRING that match the Java regular expression syntax defined in PATTERN with instances of REPLACEMENT.
-`repeat(string str, int n)` |Repeats str n times.
-`replace(string A, string OLD, string NEW)`|Returns the string A with all non-overlapping occurrences of OLD replaced with NEW.
+`regexp_replace(string INITIAL_STRING, string PATTERN, string REPLACEMENT)`|Returns the string resulting from replacing all substrings in `INITIAL_STRING` that match the Java regular expression syntax defined in PATTERN with instances of `REPLACEMENT`.
+`repeat(string str, int n)` |Repeats `str` `n` times.
+`replace(string A, string OLD, string NEW)`|Returns the string A with all non-overlapping occurrences of `OLD` replaced with `NEW`.
 `reverse(string A)` |Returns the reversed string.
-`rpad(string str, int len, string pad)`|Returns str, right-padded with pad to a length of len.
+`rpad(string str, int len, string pad)`|Returns `str`, right-padded with `pad` to a length of `len`.
 `rtrim(string A)` |Returns the string resulting from trimming spaces from the end (right side) of A.
 `sentences(string str, string lang, string locale)`|Tokenizes a string of natural language text into words and sentences, where each sentence is broken at the appropriate sentence boundary and returned as an array of words.
 `space(int n)` |Returns a string of n spaces.
-`split(string str, string pat)`| Splits str around pat (pat is a regular expression).
-`str_to_map(text[, delimiter1, delimiter2])`|Splits text into key-value pairs using two delimiters. delimiter1 separates text into key-value pairs, and delimiter2 splits each key-value pair. Default delimiters are , for delimiter1 and : for delimiter2.
+`split(string str, string pat)`| Splits `str` around `pat` (`pat` is a regular expression).
+`str_to_map(text[, delimiter1, delimiter2])`|Splits text into key-value pairs using two delimiters. `delimiter1` separates text into key-value pairs, and `delimiter2` splits each key-value pair. Default delimiters are , for `delimiter1` and : for `delimiter2`.
 `substr(string binary A, int start)`|Returns the substring or slice of the byte array of A starting from start position till the end of string A.
-`substring_index(string A, string delim, int count)`|Returns the substring from string A before count occurrences of the delimiter delim.
+`substring_index(string A, string delim, int count)`|Returns the substring from string A before count occurrences of the delimiter `delim`.
 `translate(stringǀcharǀvarchar input, stringǀcharǀvarchar from, stringǀcharǀvarchar to)`|Translates the input string by replacing the characters present in the from string with the corresponding characters in the to string.
 `trim(string A)` |Returns the string resulting from trimming spaces from both ends of A.
-`unbase64(string str)`| Converts the argument from a base64 string to BINARY.
-`upper(string A) ucase(string A)`|Returns the string resulting from converting all characters of A to uppercase. For example, upper(fOoBaR) results in FOOBAR’/\.
+`unbase64(string str)`| Converts the argument from a `base64` string to `BINARY`.
+`upper(string A) ucase(string A)`|Returns the string resulting from converting all characters of A to uppercase. For example, `upper(fOoBaR)` results in `FOOBAR’\`.
 `initcap(string A)` |Returns string, with the first letter of each word in uppercase, and all other letters in lowercase. Words are delimited by whitespace.
 `levenshtein(string A, string B)`|Returns the Levenshtein distance between two strings.
-`soundex(string A)` |Returns soundex code of the string.
-`mask(string str[, string upper[, string lower[, string number]]])`|Returns a masked version of str.
-`mask_first_n(string str[, int n])`|Returns a masked version of str with the first n values masked.
+`soundex(string A)` |Returns `soundex` code of the string.
+`mask(string str[, string upper[, string lower[, string number]]])`|Returns a masked version of `str`.
+`mask_first_n(string str[, int n])`|Returns a masked version of `str` with the first n values masked.
 `mask_first_n("1234-5678-8765-4321", 4) `|Results in nnnn-5678-8765-4321.
-`mask_last_n(string str[, int n])`|Returns a masked version of str with the last n values masked.
-`mask_show_first_n(string str[, int n])`|Returns a masked version of str, showing the first n characters unmasked.
-`mask_show_last_n(string str[, int n])`|Returns a masked version of str, showing the last n characters unmasked.
-`mask_hash(stringǀcharǀvarchar str)`|Returns a hashed value based on str.
+`mask_last_n(string str[, int n])`|Returns a masked version of `str` with the last n values masked.
+`mask_show_first_n(string str[, int n])`|Returns a masked version of `str`, showing the first n characters unmasked.
+`mask_show_last_n(string str[, int n])`|Returns a masked version of `str`, showing the last n characters unmasked.
+`mask_hash(stringǀcharǀvarchar str)`|Returns a hashed value based on `str`.
 `java_method(class, method[, arg1[, arg2..]])`|Synonym for reflect.
 `reflect(class, method[, arg1[, arg2..]])`|Calls a Java method by matching the argument signature, using reflection.
 `hash(a1[, a2…])` |Returns a hash value of the arguments.
@@ -8646,26 +8646,26 @@ Name | Description
 `corr(col1, col2)` |Returns the Pearson coecient of correlation of a pair of a numeric columns in the group.
 `percentile(BIGINT col, p)` |Returns the exact _p_th percentile of a column in the group (does not work with floating-point types). p must be between 0 and 1.
 `percentile(BIGINT col, array(p1 [, p2]…))`|Returns the exact percentiles p1, p2, … of a column in the group. pi must be between 0 and 1.
-`percentile_approx(DOUBLE col, p [, B])`|Returns an approximate _p_th percentile of a numeric column (including floating point types) in the group. The B parameter controls approximation accuracy at the cost of memory. Higher values yield better approximations, and the default is 10,000. When the number of distinct values in col is smaller than B, this gives an exact percentile value.
+`percentile_approx(DOUBLE col, p [, B])`|Returns an approximate _p_th percentile of a numeric column (including floating point types) in the group. The B parameter controls approximation accuracy at the cost of memory. Higher values yield better approximations, and the default is 10,000. When the number of distinct values in `col` is smaller than B, this gives an exact percentile value.
 `percentile_approx(DOUBLE col, array(p1 [, p2]…) [, B])`|Same as previous, but accepts and returns an array of percentile values instead of a single one.
-`regr_avgx(independent, dependent)`|Equivalent to avg(dependent).
-`regr_avgy(independent, dependent)`|Equivalent to avg(independent).
+`regr_avgx(independent, dependent)`|Equivalent to `avg(dependent)`.
+`regr_avgy(independent, dependent)`|Equivalent to `avg(independent)`.
 `regr_count(independent, dependent)`|Returns the number of non-null pairs used to fit the linear regression line.
-`regr_intercept(independent, dependent)`|Returns the y-intercept of the linear regression line—that is, the value of b in the equation dependent = a * independent + b.
+`regr_intercept(independent, dependent)`|Returns the y-intercept of the linear regression line—that is, the value of b in the equation `dependent = a * independent + b`.
 `regr_r2(independent, dependent)`|Returns the coecient of determination for the regression.
-`regr_slope(independent, dependent)`|Returns the slope of the linear regression line—that is, the value of a in the equation dependent = a * independent + b.
-`regr_sxx(independent, dependent)`|Equivalent to regr_count(independent, dependent) * var_pop(dependent).
-`regr_sxy(independent, dependent)`|Equivalent to regr_count(independent, dependent) * 
-`covar_pop(independent, dependent) regr_syy(independent, dependent)`|Equivalent to regr_count(independent, dependent) * var_pop(independent).
+`regr_slope(independent, dependent)`|Returns the slope of the linear regression line—that is, the value of a in the equation `dependent = a * independent + b`.
+`regr_sxx(independent, dependent)`|Equivalent to `regr_count(independent, dependent) * var_pop(dependent)`.
+`regr_sxy(independent, dependent)`|Equivalent to `regr_count(independent, dependent) * covar_pop(independent, dependent)` 
+`regr_syy(independent, dependent)`|Equivalent to `regr_count(independent, dependent) * var_pop(independent)`.
 `histogram_numeric(col, b)`| Computes a histogram of a numeric column in the group using b non￾uniformly spaced bins. The output is an array of size b of double-valued (x,y) coordinates that represent the bin centers and heights.
 `collect_set(col)` |Returns a set of objects with duplicate elements eliminated.
 `collect_list(col)` |Returns a list of objects with duplicates.
 `ntile(INTEGER x)`| Divides an ordered partition into x groups called buckets and assigns a bucket number to each row in the partition. This allows easy calculation of tertiles, quartiles, deciles, percentiles, and other common summary statistics.
-`explode(ARRAY a)`| Explodes an array to multiple rows. Returns a row-set with a single column (col), one row for each element from the array.
-`explode(MAP<Tkey,Tvalue> m)`| Explodes a map to multiple rows. Returns a row-set with a two columns (key,value), one row for each key-value pair from the input map.
-`posexplode(ARRAY a)`|Explodes an array to multiple rows with additional positional column of int type (position of items in the original array, starting with 0). Returns a row￾set with two columns (pos,val), one row for each element from the array.
+`explode(ARRAY a)`| Explodes an array to multiple rows. Returns a row-set with a single column (`col`), one row for each element from the array.
+`explode(MAP<Tkey,Tvalue> m)`| Explodes a map to multiple rows. Returns a row-set with a two columns `(key,value)`, one row for each key-value pair from the input map.
+`posexplode(ARRAY a)`|Explodes an array to multiple rows with additional positional column of int type (position of items in the original array, starting with 0). Returns a row￾set with two columns (`pos,val`), one row for each element from the array.
 `inline(ARRAY<STRUCT<f1:T1,…,fn:Tn>> a)`|Explodes an array of structs to multiple rows. Returns a row-set with N columns (N = number of top-level elements in the struct), one row per struct from the array.
-`stack(int r,T1 V1,…,Tn/r Vn)`| Breaks up n values V1,…,Vn into r rows. Each row will have n/r columns. r must be constant.
+`stack(int r,T1 V1,…,Tn/r Vn)`| Breaks up n values V1,…,Vn into r rows. Each row will have `n/r` columns. `r` must be constant.
 `json_tuple(string jsonStr,string k1,…,string kn)`|Takes JSON string and a set of n keys, and returns a tuple of n values.
 `parse_url_tuple(string urlStr,string p1,…,string pn)`|Takes URL string and a set of n URL parts, and returns a tuple of n values.
 
@@ -8675,74 +8675,91 @@ Name | Description
 
 The following table exhibits the ML algorithms supported in sparklyr:
 Classification
-Algorithm Function
-Decision trees ml_decision_tree_classifier()
-Gradient-boosted trees ml_gbt_classifier()
-Linear support vector machines ml_linear_svc()
-Logistic regression ml_logistic_regression()
-Multilayer perceptron ml_multilayer_perceptron_classifier()
-Naive-Bayes ml_naive_bayes()
-One vs rest ml_one_vs_rest()
-Random forests ml_random_forest_classifier()
-Regression
-Algorithm Function
-Accelerated failure time survival regression ml_aft_survival_regression()
-Decision trees ml_decision_tree_regressor()
-Generalized linear regression ml_generalized_linear_regression()
-Gradient-boosted trees ml_gbt_regressor()
-Isotonic regression ml_isotonic_regression()
-Linear regression ml_linear_regression()
-Clustering
-Algorithm Function
-Bisecting k-means clustering ml_bisecting_kmeans()
-Gaussian mixture clustering ml_gaussian_mixture()
-k-means clustering ml_kmeans()
-Latent Dirichlet allocation ml_lda()
-262 | Appendix A: Supplemental Code References
-Recommendation
-Algorithm Function
-Alternating least squares factorization ml_als()
-Frequent Pattern Mining
-Algorithm Function
-FPGrowth ml_fpgrowth()
-Feature Transformers
-Transformer Function
-Binarizer ft_binarizer()
-Bucketizer ft_bucketizer()
-Chi-squared feature selector ft_chisq_selector()
-Vocabulary from document collections ft_count_vectorizer()
-Discrete cosine transform ft_discrete_cosine_transform()
-Transformation using `dplyr` ft_dplyr_transformer()
-Hadamard product ft_elementwise_product()
-Feature hasher ft_feature_hasher()
-Term frequencies using hashing export(ft_hashing_tf)
-Inverse document frequency ft_idf()
-Imputation for missing values export(ft_imputer)
-Index to string ft_index_to_string()
-Feature Interaction transform ft_interaction()
-Rescale to [–1, 1] range ft_max_abs_scaler()
-Rescale to [min, max] range ft_min_max_scaler()
-Locality sensitive hashing ft_minhash_lsh()
-Converts to n-grams ft_ngram()
-Normalize using the given P-norm ft_normalizer()
-One-hot encoding ft_one_hot_encoder()
-Feature expansion in polynomial space ft_polynomial_expansion()
-Maps to binned categorical features ft_quantile_discretizer()
-SQL transformation ft_sql_transformer()
-Standardizes features using corrected STD ft_standard_scaler()
-Filters out stop words ft_stop_words_remover()
-Map to label indices ft_string_indexer()
-Supplemental Code References | 263
-Transformer Function
-Splits by white spaces ft_tokenizer()
-Combine vectors to row vector ft_vector_assembler()
-Indexing categorical feature ft_vector_indexer()
-Subarray of the original feature ft_vector_slicer()
-Transform word into code ft_word2vec()
-Chapter 6
-Google Trends for On-Premises (Mainframes), Cloud Computing, and
-Kubernetes
+
+Algorithm |Function
+------|-------
+Decision trees| `ml_decision_tree_classifier()`
+Gradient-boosted trees |`ml_gbt_classifier()`
+Linear support vector machines |`ml_linear_svc()`
+Logistic regression |`ml_logistic_regression()`
+Multilayer perceptron |`ml_multilayer_perceptron_classifier()`
+Naive-Bayes |`ml_naive_bayes()`
+One vs rest |`ml_one_vs_rest()`
+Random forests |`ml_random_forest_classifier()`
+
+#### Regression
+
+Algorithm |Function
+------|-------
+Accelerated failure time survival regression |`ml_aft_survival_regression()`
+Decision trees |`ml_decision_tree_regressor()`
+Generalized linear regression |`ml_generalized_linear_regression()`
+Gradient-boosted trees |`ml_gbt_regressor()`
+Isotonic regression |`ml_isotonic_regression()`
+Linear regression |`ml_linear_regression()`
+
+#### Clustering
+
+Algorithm |Function
+------|-------
+Bisecting k-means clustering |`ml_bisecting_kmeans()`
+Gaussian mixture clustering |`ml_gaussian_mixture()`
+k-means clustering |`ml_kmeans()`
+Latent Dirichlet allocation |`ml_lda()`
+
+#### Recommendation
+
+Algorithm |Function
+------|-------
+Alternating least squares factorization |`ml_als()`
+
+#### Frequent Pattern Mining
+
+Algorithm |Function
+------|-------
+FPGrowth |`ml_fpgrowth()`
+
+#### Feature Transformers
+
+Transformer| Function
+------|-------
+Binarizer |`ft_binarizer()`
+Bucketizer |`ft_bucketizer()`
+Chi-squared feature selector |`ft_chisq_selector()`
+Vocabulary from document collections |`ft_count_vectorizer()`
+Discrete cosine transform |`ft_discrete_cosine_transform()`
+Transformation using `dplyr` |`ft_dplyr_transformer()`
+Hadamard product |`ft_elementwise_product()`
+Feature hasher |`ft_feature_hasher()`
+Term frequencies using hashing |`export(`ft_hashing_tf)
+Inverse document frequency |`ft_idf()`
+Imputation for missing values |`export(`ft_imputer)
+Index to string |`ft_index_to_string()`
+Feature Interaction transform |`ft_interaction()`
+Rescale to [–1, 1] range |`ft_max_abs_scaler()`
+Rescale to [min, max] range |`ft_min_max_scaler()`
+Locality sensitive hashing |`ft_minhash_lsh()`
+Converts to n-grams |`ft_ngram()`
+Normalize using the given P-norm |`ft_normalizer()`
+One-hot encoding |`ft_one_hot_encoder()`
+Feature expansion in polynomial space |`ft_polynomial_expansion()`
+Maps to binned categorical features |`ft_quantile_discretizer()`
+SQL transformation |`ft_sql_transformer()`
+Standardizes features using corrected STD |`ft_standard_scaler()`
+Filters out stop words |`ft_stop_words_remover()`
+Map to label indices |`ft_string_indexer()`
+Splits by white spaces |`ft_tokenizer()`
+Combine vectors to row vector |`ft_vector_assembler()`
+Indexing categorical feature |`ft_vector_indexer()`
+Subarray of the original feature |`ft_vector_slicer()`
+Transform word into code |`ft_word2vec()`
+
+## Chapter 6
+
+### Google Trends for On-Premises (Mainframes), Cloud Computing, and Kubernetes
+
 The data that created图6-1 can be downloaded from https://bit.ly/2YnHkNI.
+```{r}
 library(dplyr)
 read.csv("data/clusters-trends.csv", skip = 2) %>%
 mutate(year = as.Date(paste(Month, "-01", sep = ""))) %>%
@@ -8760,17 +8777,23 @@ subtitle = paste("Search popularity for on-premise (mainframe)",
 scale_color_grey(start = 0.6, end = 0.2) +
 geom_hline(yintercept = 0, size = 1, colour = "#333333") +
 theme(axis.title.x = element_blank())
-Chapter 12
-Stream Generator
+```
+
+## Chapter 12
+
+### Stream Generator
+
 The stream_generate_test() function presented in Chapter 12 creates a local test
 stream. This function works independently from a Spark connection. The following
 example will create five files in the source subfolder. Each file will be created 1 second
 after the previous file’s creation:
+```{r}
 library(sparklyr)
 stream_generate_test(iterations = 5, path = "source", interval = 1)
-264 | Appendix A: Supplemental Code References
+```
 After the function completes, all of the files should show up in the source folder.
 Notice that the file sizes vary: this is so that it simulates what a true stream would do:
+```{r}
 file.info(file.path("source", list.files("source")))[1]
 ## size
 ## source/stream_1.csv 44
@@ -8778,8 +8801,10 @@ file.info(file.path("source", list.files("source")))[1]
 ## source/stream_3.csv 540
 ## source/stream_4.csv 2370
 ## source/stream_5.csv 7236
+```
 The stream_generate_test() by default creates a single numeric variable Data‐
 Frame.
+```{r}
 readr::read_csv("source/stream_5.csv")
 ## # A tibble: 1,489 x 1
 ## x
@@ -8795,23 +8820,34 @@ readr::read_csv("source/stream_5.csv")
 ## 9 638
 ## 10 639
 ## # ... with 1,479 more rows
-Installing Kafka
+```
+
+### Installing Kafka
+
 These instructions were compiled using information from the current Quickstart
 page of the official Kafka site. (Newer versions of Kafka will undoubtedly be available
 not long after this book is published.) The idea here is to “timestamp” the versions
 used in the example in “Kafka” on page 233:
+
 1. Download Kafka.
+```
 wget http://apache.claz.org/kafka/2.2.0/kafka_2.12-2.2.0.tgz
+```
 2. Expand the tar file and enter the new folder.
+```
 tar -xzf kafka_2.12-2.2.0.tgz
 cd kafka_2.12-2.2.0
+```
 3. Start the Zookeeper service that comes with Kafka.
+```
 bin/zookeeper-server-start.sh config/zookeeper.properties
+```
 4. Start the Kafka service.
-Supplemental Code References | 265
+```
 bin/kafka-server-start.sh config/server.properties
+```
 Make sure to always start Zookeeper first, and then Kafka.
-266 | Appendix A: Supplemental Code References
+
 
 # Index
 
