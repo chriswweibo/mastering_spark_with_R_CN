@@ -8486,408 +8486,193 @@ Linux platform.
 ![Figure A-2. Java download page](figures/A_2.png)
 Starting with Spark 2.1, Java 8 is required; however, previous versions of Spark sup‐
 port Java 7. Regardless, we recommend installing Java Runtime Engine 8 (JRE 8).
-If you’re an advanced reader who is already using the Java Develop‐
+
+> If you’re an advanced reader who is already using the Java Develop‐
 ment Kit (JDK), note that JDK 9+ is currently unsupported. So you
 will need to downgrade to JDK 8 by uninstalling JDK 9+ or by set‐
 ting JAVA_HOME appropiately.
-Installing RStudio
+
+#### Installing RStudio
+
 While installing RStudio is not strictly required to work with Spark with R, it will
 make you much more productive and therefore, we recommend it. Download the
 RStudio installer (see图A-3), then launch it for your Windows, Mac, or Linux
 platform.
-Supplemental Code References | 253
-Figure A-3. RStudio download page
+
+![Figure A-3. RStudio download page](figures/A_3.png)
 After launching RStudio, you can use its console panel to execute the code provided
 in this chapter.
-Using RStudio
+
+#### Using RStudio
+
 If you’re unfamiliar with RStudio (see图A-4), you should make note of the fol‐
 lowing panes:
-Console
-You can use a standalone R console to execute all the code presented in this book.
-Packages
-This pane allows you to install `sparklyr` with ease, check its version, navigate to
+
+* Console
+    You can use a standalone R console to execute all the code presented in this book.
+* Packages
+    This pane allows you to install `sparklyr` with ease, check its version, navigate to
 the help contents, and more.
-Connections
-This pane allows you to connect to Spark, manage your active connection, and
+* Connections
+    This pane allows you to connect to Spark, manage your active connection, and
 view the available datasets.
-254 | Appendix A: Supplemental Code References
-Figure A-4. RStudio overview
-Chapter 3
-Hive Functions
-Name Description
-size(Map<K.V>) Returns the number of elements in the map type.
-size(Array) Returns the number of elements in the array type.
-map_keys(Map<K.V>) Returns an unordered array containing the keys of the input map.
-map_values(Map<K.V>) Returns an unordered array containing the values of the input map.
-array_contains(Array, value) Returns TRUE if the array contains a value.
-sort_array(Array) Sorts the input array in ascending order according to the natural ordering of
-the array elements and returns it.
-binary(string or binary) Casts the parameter into a binary.
-cast(expr as a given type) Converts the results of the expression expr to the given type.
-from_unixtime(bigint uni
-xtime[, string format])
-Converts the number of seconds from Unix epoch (1970-01-01 00:00:00 UTC)
-to a string.
-unix_timestamp() Gets current Unix timestamp in seconds.
-unix_timestamp(string date) Converts a time string in the format yyyy-MM-dd HH:mm:ss to a Unix
-timestamp (in seconds).
-to_date(string timestamp) Returns the date part of a timestamp string.
-Supplemental Code References | 255
-Name Description
-year(string date) Returns the year part of a date.
-quarter(date/timestamp/string) Returns the quarter of the year for a date.
-month(string date) Returns the month part of a date or a timestamp string.
-day(string date) dayof
-month(date)
-Returns the day part of a date or a timestamp string.
-hour(string date) Returns the hour of the timestamp.
-minute(string date) Returns the minute of the timestamp.
-second(string date) Returns the second of the timestamp.
-weekofyear(string date) Returns the week number of a timestamp string.
-extract(field FROM source) Retrieve fields such as days or hours from source. Source must be a date,
-timestamp, interval, or string that can be converted into either a date or
-timestamp.
-datediff(string enddate, 
-string startdate)
-Returns the number of days from startdate to enddate.
-date_add(date/timestamp/
-string startdate, tinyint/
-smallint/int days)
-Adds a number of days to startdate.
-date_sub(date/timestamp/
-string startdate, tinyint/
-smallint/int days)
-Subtracts a number of days to startdate.
-from_utc_timestamp(\{any primi
-tive type} ts, string time
-zone)
-Converts a timestamp in UTC to a given time zone.
-to_utc_timestamp(\{any primi
-tive type} ts, string time
-zone)
-Converts a timestamp in a given time zone to UTC.
-current_date Returns the current date.
-current_timestamp Returns the current timestamp.
-add_months(string start_date, 
-int num_months, out
-put_date_format)
-Returns the date that is num_months after start_date.
-last_day(string date) Returns the last day of the month to which the date belongs.
-next_day(string start_date, 
-string day_of_week)
-Returns the first date that is later than start_date and named as
-day_of_week.
-trunc(string date, string for
-mat)
-Returns date truncated to the unit specified by the format.
-months_between(date1, date2) Returns number of months between dates date1 and date2.
-date_format(date/timestamp/
-string ts, string fmt)
-Converts a date/timestamp/string to a value of string in the format
-specified by the date format fmt.
-256 | Appendix A: Supplemental Code References
-Name Description
-if(boolean testCondition, T 
-valueTrue, T valueFalseOr
-Null)
-Returns valueTrue when testCondition is true; returns valueFal
-seOrNull otherwise.
-isnull( a ) Returns true if a is NULL and false otherwise.
-isnotnull( a ) Returns true if a is not NULL and false otherwise.
-nvl(T value, T default_value) Returns default value if value is NULL; else returns value.
-COALESCE(T v1, T v2, …) Returns the first v that is not NULL, or NULL if all vs are NULL.
-CASE a WHEN b THEN c [WHEN d 
-THEN e]* [ELSE f] END
-When a = b, returns c; when a = d, returns e; else returns f.
-nullif( a, b ) Returns NULL if a = b; otherwise returns a.
-assert_true(boolean condition) Throw an exception if condition is not true; otherwise return NULL.
-ascii(string str) Returns the numeric value of the first character of str.
-base64(binary bin) Converts the argument from binary to a base64 string.
-character_length(string str) Returns the number of UTF-8 characters contained in str.
-chr(bigint double A)
-concat(stringǀbinary A, 
-stringǀbinary B…)
-Returns the string or bytes resulting from concatenating the strings or bytes
-passed in as parameters in order. For example, concat(foo, bar) results in
-foobar.
-context_ngrams(array<array>, 
-array, int K, int pf)
-Returns the top-k contextual N-grams from a set of tokenized sentences.
-concat_ws(string SEP, string 
-A, string B…)
-Like concat(), but with custom separator SEP.
-decode(binary bin, string 
-charset)
-Decodes the first argument into a string using the provided character set (one
-of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, or UTF-16). If either
-argument is NULL, the result will also be NULL.
-elt(N int,str1 string,str2 
-string,str3 string,…)
-Return string at index number; elt(2,hello,world) returns world.
-encode(string src, string 
-charset)
-Encodes the first argument into a BINARY using the provided character set
-(one of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16).
-field(val T,val1 T,val2 
-T,val3 T,…)
-Returns the index of val in the val1,val2,val3,… list or 0 if not
-found.
-find_in_set(string str, 
-string strList)
-Returns the first occurance of str in strList where strList is a
-comma-delimited string.
-format_number(number x, int 
-d)
-Formats the number x to a format like '#,###,###.##', rounded to d
-decimal places, and returns the result as a string. If d is 0, the result has no
-decimal point or fractional part.
-get_json_object(string 
-json_string, string path)
-Extracts JSON object from a JSON string based on JSON path specified, and
-returns JSON string of the extracted JSON object.
-in_file(string str, string 
-filename)
-Returns true if the string str appears as an entire line in filename.
-Supplemental Code References | 257
-Name Description
-instr(string str, string 
-substr)
-Returns the position of the first occurrence of substr in str.
-length(string A) Returns the length of the string.
-locate(string substr, string 
-str[, int pos])
-Returns the position of the first occurrence of substr in str after position
-pos.
-lower(string A) lcase(string 
-A)
-Returns the string resulting from converting all characters of B to lowercase.
-lpad(string str, int len, 
-string pad)
-Returns str, left-padded with pad to a length of len. If str is longer than
-len, the return value is shortened to len characters.
-ltrim(string A) Returns the string resulting from trimming spaces from the beginning (left
-side) of A.
-ngrams(array<array>, int N, 
-int K, int pf)
-Returns the top-k N-grams from a set of tokenized sentences, such as those
-returned by the sentences() UDAF.
-octet_length(string str) Returns the number of octets required to hold the string str in UTF-8
-encoding.
-parse_url(string urlString, 
-string partToExtract [, 
-string keyToExtract])
-Returns the specified part from the URL. Valid values for partToExtract
-include HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and
-USERINFO.
-printf(String format, Obj… 
-args)
-Returns the input formatted according do printf-style format strings.
-regexp_extract(string sub
-ject, string pattern, int 
-index)
-Returns the string extracted using the pattern.
-regexp_replace(string INI
-TIAL_STRING, string PATTERN, 
-string REPLACEMENT)
-Returns the string resulting from replacing all substrings in INI
-TIAL_STRING that match the Java regular expression syntax defined in
-PATTERN with instances of REPLACEMENT.
-repeat(string str, int n) Repeats str n times.
-replace(string A, string 
-OLD, string NEW)
-Returns the string A with all non-overlapping occurrences of OLD replaced
-with NEW.
-reverse(string A) Returns the reversed string.
-rpad(string str, int len, 
-string pad)
-Returns str, right-padded with pad to a length of len.
-rtrim(string A) Returns the string resulting from trimming spaces from the end (right side) of
-A.
-sentences(string str, string 
-lang, string locale)
-Tokenizes a string of natural language text into words and sentences, where
-each sentence is broken at the appropriate sentence boundary and returned
-as an array of words.
-space(int n) Returns a string of n spaces.
-split(string str, string pat) Splits str around pat (pat is a regular expression).
-str_to_map(text[, delimiter1, 
-delimiter2])
-Splits text into key-value pairs using two delimiters. delimiter1 separates
-text into key-value pairs, and delimiter2 splits each key-value pair.
-Default delimiters are , for delimiter1 and : for delimiter2.
-258 | Appendix A: Supplemental Code References
-Name Description
-substr(string binary A, int 
-start)
-Returns the substring or slice of the byte array of A starting from start
-position till the end of string A.
-substring_index(string A, 
-string delim, int count)
-Returns the substring from string A before count occurrences of the
-delimiter delim.
-translate(stringǀcharǀvarchar 
-input, stringǀcharǀvarchar 
-from, stringǀcharǀvarchar to)
-Translates the input string by replacing the characters present in the from
-string with the corresponding characters in the to string.
-trim(string A) Returns the string resulting from trimming spaces from both ends of A.
-unbase64(string str) Converts the argument from a base64 string to BINARY.
-upper(string A) ucase(string 
-A)
-Returns the string resulting from converting all characters of A to uppercase.
-For example, upper(fOoBaR) results in FOOBAR’\.
-initcap(string A) Returns string, with the first letter of each word in uppercase, and all other
-letters in lowercase. Words are delimited by whitespace.
-levenshtein(string A, string 
-B)
-Returns the Levenshtein distance between two strings.
-soundex(string A) Returns soundex code of the string.
-mask(string str[, string 
-upper[, string lower[, 
-string number]]])
-Returns a masked version of str.
-mask_first_n(string str[, 
-int n])
-Returns a masked version of str with the first n values masked.
-mask_first_n("1234-5678-8765-4321", 4) results in
-nnnn-5678-8765-4321.
-mask_last_n(string str[, int 
-n])
-Returns a masked version of str with the last n values masked.
-mask_show_first_n(string 
-str[, int n])
-Returns a masked version of str, showing the first n characters unmasked.
-mask_show_last_n(string str[, 
-int n])
-Returns a masked version of str, showing the last n characters unmasked.
-mask_hash(stringǀcharǀvarchar 
-str)
-Returns a hashed value based on str.
-java_method(class, method[, 
-arg1[, arg2..]])
-Synonym for reflect.
-reflect(class, method[, 
-arg1[, arg2..]])
-Calls a Java method by matching the argument signature, using reflection.
-hash(a1[, a2…]) Returns a hash value of the arguments.
-current_user() Returns current username from the configured authenticator manager.
-logged_in_user() Returns current username from the session state.
-current_database() Returns current database name.
-md5(string/binary) Calculates an MD5 128-bit checksum for the string or binary.
-sha1(string/binary) 
-sha(string/binary)
-Calculates the SHA-1 digest for string or binary and returns the value as a hex
-string.
-Supplemental Code References | 259
-Name Description
-crc32(string/binary) Computes a cyclic redundancy check value for string or binary argument and
-returns bigint value.
-sha2(string/binary, int) Calculates the SHA-2 family of hash functions (SHA-224, SHA-256, SHA-384,
-and SHA-512).
-aes_encrypt(input string/
-binary, key string/binary)
-Encrypt input using AES.
-aes_decrypt(input binary, 
-key string/binary)
-Decrypt input using AES.
-version() Returns the Hive version.
-count(expr) Returns the total number of retrieved rows.
-sum(col), sum(DISTINCT col) Returns the sum of the elements in the group or the sum of the distinct
-values of the column in the group.
-avg(col), avg(DISTINCT col) Returns the average of the elements in the group or the average of the
-distinct values of the column in the group.
-min(col) Returns the minimum value of the column in the group.
-max(col) Returns the maximum value of the column in the group.
-variance(col), var_pop(col) Returns the variance of a numeric column in the group.
-var_samp(col) Returns the unbiased sample variance of a numeric column in the group.
-stddev_pop(col) Returns the standard deviation of a numeric column in the group.
-stddev_samp(col) Returns the unbiased sample standard deviation of a numeric column in the
-group.
-covar_pop(col1, col2) Returns the population covariance of a pair of numeric columns in the group.
-covar_samp(col1, col2) Returns the sample covariance of a pair of a numeric columns in the group.
-corr(col1, col2) Returns the Pearson coecient of correlation of a pair of a numeric columns
-in the group.
-percentile(BIGINT col, p) Returns the exact _p_th percentile of a column in the group (does not work
-with floating-point types). p must be between 0 and 1.
-percentile(BIGINT col, 
-array(p1 [, p2]…))
-Returns the exact percentiles p1, p2, … of a column in the group. pi must
-be between 0 and 1.
-percentile_approx(DOUBLE col, 
-p [, B])
-Returns an approximate _p_th percentile of a numeric column (including
-floating point types) in the group. The B parameter controls approximation
-accuracy at the cost of memory. Higher values yield better approximations,
-and the default is 10,000. When the number of distinct values in col is
-smaller than B, this gives an exact percentile value.
-percentile_approx(DOUBLE col, 
-array(p1 [, p2]…) [, B])
-Same as previous, but accepts and returns an array of percentile values
-instead of a single one.
-regr_avgx(independent, depen
-dent)
-Equivalent to avg(dependent).
-regr_avgy(independent, depen
-dent)
-Equivalent to avg(independent).
-260 | Appendix A: Supplemental Code References
-Name Description
-regr_count(independent, depen
-dent)
-Returns the number of non-null pairs used to fit the linear regression line.
-regr_intercept(independent, 
-dependent)
-Returns the y-intercept of the linear regression line—that is, the value of b
-in the equation dependent = a * independent + b.
-regr_r2(independent, depen
-dent)
-Returns the coecient of determination for the regression.
-regr_slope(independent, depen
-dent)
-Returns the slope of the linear regression line—that is, the value of a in the
-equation dependent = a * independent + b.
-regr_sxx(independent, depen
-dent)
-Equivalent to regr_count(independent, dependent) * 
-var_pop(dependent).
-regr_sxy(independent, depen
-dent)
-Equivalent to regr_count(independent, dependent) * 
-covar_pop(independent, dependent).
-regr_syy(independent, depen
-dent)
-Equivalent to regr_count(independent, dependent) * 
-var_pop(independent).
-histogram_numeric(col, b) Computes a histogram of a numeric column in the group using b non￾uniformly spaced bins. The output is an array of size b of double-valued (x,y)
-coordinates that represent the bin centers and heights.
-collect_set(col) Returns a set of objects with duplicate elements eliminated.
-collect_list(col) Returns a list of objects with duplicates.
-ntile(INTEGER x) Divides an ordered partition into x groups called buckets and assigns a bucket
-number to each row in the partition. This allows easy calculation of tertiles,
-quartiles, deciles, percentiles, and other common summary statistics.
-explode(ARRAY a) Explodes an array to multiple rows. Returns a row-set with a single column
-(col), one row for each element from the array.
-explode(MAP<Tkey,Tvalue> m) Explodes a map to multiple rows. Returns a row-set with a two columns
-(key,value), one row for each key-value pair from the input map.
-posexplode(ARRAY a) Explodes an array to multiple rows with additional positional column of int
-type (position of items in the original array, starting with 0). Returns a row￾set with two columns (pos,val), one row for each element from the array.
-inline(ARRAY<STRUCT<f1:T1,
-…,fn:Tn>> a)
-Explodes an array of structs to multiple rows. Returns a row-set with N
-columns (N = number of top-level elements in the struct), one row per struct
-from the array.
-stack(int r,T1 V1,…,Tn/r Vn) Breaks up n values V1,…,Vn into r rows. Each row will have n/r columns.
-r must be constant.
-json_tuple(string 
-jsonStr,string k1,…,string 
-kn)
-Takes JSON string and a set of n keys, and returns a tuple of n values.
-parse_url_tuple(string 
-urlStr,string p1,…,string pn)
-Takes URL string and a set of n URL parts, and returns a tuple of n values.
-Supplemental Code References | 261
-Chapter 4
-MLlib Functions
+
+![Figure A-4. RStudio overview](figures/A_4.png)
+
+## Chapter 3
+
+### Hive Functions
+
+Name | Description
+-------|----------
+`size(Map<K.V>)` |Returns the number of elements in the map type.
+`size(Array)` |Returns the number of elements in the array type.
+`map_keys(Map<K.V>)` |Returns an unordered array containing the keys of the input map.
+`map_values(Map<K.V>)` |Returns an unordered array containing the values of the input map.
+`array_contains(Array, value)` |Returns TRUE if the array contains a value.
+`sort_array(Array)` |Sorts the input array in ascending order according to the natural ordering of the array elements and returns it.
+`binary(string or binary)` |Casts the parameter into a binary.
+`cast(expr as a given type)` |Converts the results of the expression expr to the given type.
+`from_unixtime(bigint unixtime[, string format])`|Converts the number of seconds from Unix epoch (1970-01-01 00:00:00 UTC) to a string.
+`unix_timestamp()` |Gets current Unix timestamp in seconds.
+`unix_timestamp(string date)` |Converts a time string in the format yyyy-MM-dd HH:mm:ss to a Unix timestamp (in seconds).
+`to_date(string timestamp)` |Returns the date part of a timestamp string.
+`year(string date)` |Returns the year part of a date.
+`quarter(date/timestamp/string)` |Returns the quarter of the year for a date.
+`month(string date)` |Returns the month part of a date or a timestamp string.
+`day(string date) dayofmonth(date)`|Returns the day part of a date or a timestamp string.
+`hour(string date)` |Returns the hour of the timestamp.
+`minute(string date)` |Returns the minute of the timestamp.
+`second(string date)` |Returns the second of the timestamp.
+`weekofyear(string date)` |Returns the week number of a timestamp string.
+`extract(field FROM source)` |Retrieve fields such as days or hours from source. Source must be a date,timestamp, interval, or string that can be converted into either a date or timestamp.
+`datediff(string enddate, string startdate)`|Returns the number of days from startdate to enddate.
+`date_add(date/timestamp/string startdate, tinyint/smallint/int days)`|Adds a number of days to startdate.
+`date_sub(date/timestamp/string startdate, tinyint/smallint/int days)`|Subtracts a number of days to startdate.
+`from_utc_timestamp(\{any primitive type} ts, string timezone)`|Converts a timestamp in UTC to a given time zone.
+`to_utc_timestamp(\{any primitive type} ts, string timezone)`|Converts a timestamp in a given time zone to UTC.
+`current_date` |Returns the current date.
+`current_timestamp` |Returns the current timestamp.
+`add_months(string start_date, int num_months, output_date_format)`|Returns the date that is num_months after start_date.
+`last_day(string date)` |Returns the last day of the month to which the date belongs.
+`next_day(string start_date, string day_of_week)`|Returns the first date that is later than start_date and named as day_of_week.
+`trunc(string date, string format)`|Returns date truncated to the unit specified by the format.
+`months_between(date1, date2)` |Returns number of months between dates date1 and date2.
+`date_format(date/timestamp/string ts, string fmt)`|Converts a date/timestamp/string to a value of string in the format specified by the date format fmt.
+`if(boolean testCondition, T valueTrue, T valueFalseOrNull)`|Returns valueTrue when testCondition is true; returns valueFalseOrNull otherwise.
+`isnull( a )` |Returns true if a is NULL and false otherwise.
+`isnotnull( a )` |Returns true if a is not NULL and false otherwise.
+`nvl(T value, T default_value)` |Returns default value if value is NULL; else returns value.
+`COALESCE(T v1, T v2, …)` |Returns the first v that is not NULL, or NULL if all vs are NULL.
+`CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END` |When a = b, returns c; when a = d, returns e; else returns f.
+`nullif( a, b )` |Returns NULL if a = b; otherwise returns a.
+`assert_true(boolean condition)`| Throw an exception if condition is not true; otherwise return NULL.
+`ascii(string str)` |Returns the numeric value of the first character of str.
+`base64(binary bin)`| Converts the argument from binary to a base64 string.
+`character_length(string str)` |Returns the number of UTF-8 characters contained in str.
+`chr(bigint double A)`| 
+`concat(stringǀbinary A, stringǀbinary B…)`|Returns the string or bytes resulting from concatenating the strings or bytes passed in as parameters in order. For example, concat(foo, bar) results in foobar.
+`context_ngrams(array<array>,array, int K, int pf)`|Returns the top-k contextual N-grams from a set of tokenized sentences.
+`concat_ws(string SEP, string A, string B…)`|Like concat(), but with custom separator SEP.
+`decode(binary bin, string charset)`|Decodes the first argument into a string using the provided character set (one of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, or UTF-16). If either argument is NULL, the result will also be NULL.
+`elt(N int,str1 string,str2 string,str3 string,…)`|Return string at index number; elt(2,hello,world) |Returns world.
+`encode(string src, string charset)`|Encodes the first argument into a BINARY using the provided character set (one of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16).
+`field(val T,val1 T,val2 T,val3 T,…)`|Returns the index of val in the val1,val2,val3,… list or 0 if not found.
+`find_in_set(string str, string strList)`|Returns the first occurance of str in strList where strList is a comma-delimited string.
+`format_number(number x, int d)`|Formats the number x to a format like '#,###,###.##', rounded to d decimal places, and returns the result as a string. If d is 0, the result has no decimal point or fractional part.
+`get_json_object(string json_string, string path)`|Extracts JSON object from a JSON string based on JSON path specified, and returns JSON string of the extracted JSON object.
+`in_file(string str, string filename)`|Returns true if the string str appears as an entire line in filename.
+`instr(string str, string substr)`|Returns the position of the first occurrence of substr in str.
+`length(string A)` |Returns the length of the string.
+`locate(string substr, string str[, int pos])`|Returns the position of the first occurrence of substr in str after position pos.
+`lower(string A) lcase(string A)`|Returns the string resulting from converting all characters of B to lowercase.
+`lpad(string str, int len, string pad)`|Returns str, left-padded with pad to a length of len. If str is longer than len, the return value is shortened to len characters.
+`ltrim(string A)` |Returns the string resulting from trimming spaces from the beginning (left side) of A.
+`ngrams(array<array>, int N, int K, int pf)`|Returns the top-k N-grams from a set of tokenized sentences, such as those returned by the sentences() UDAF.
+`octet_length(string str)` |Returns the number of octets required to hold the string str in UTF-8 encoding.
+`parse_url(string urlString, string partToExtract [, string keyToExtract])`|Returns the specified part from the URL. Valid values for partToExtract include HOST, PATH, QUERY, REF, PROTOCOL, AUTHORITY, FILE, and USERINFO.
+`printf(String format, Obj… args)`|Returns the input formatted according do printf-style format strings.
+`regexp_extract(string subject, string pattern, int index)`|Returns the string extracted using the pattern.
+`regexp_replace(string INITIAL_STRING, string PATTERN, string REPLACEMENT)`|Returns the string resulting from replacing all substrings in INITIAL_STRING that match the Java regular expression syntax defined in PATTERN with instances of REPLACEMENT.
+`repeat(string str, int n)` |Repeats str n times.
+`replace(string A, string OLD, string NEW)`|Returns the string A with all non-overlapping occurrences of OLD replaced with NEW.
+`reverse(string A)` |Returns the reversed string.
+`rpad(string str, int len, string pad)`|Returns str, right-padded with pad to a length of len.
+`rtrim(string A)` |Returns the string resulting from trimming spaces from the end (right side) of A.
+`sentences(string str, string lang, string locale)`|Tokenizes a string of natural language text into words and sentences, where each sentence is broken at the appropriate sentence boundary and returned as an array of words.
+`space(int n)` |Returns a string of n spaces.
+`split(string str, string pat)`| Splits str around pat (pat is a regular expression).
+`str_to_map(text[, delimiter1, delimiter2])`|Splits text into key-value pairs using two delimiters. delimiter1 separates text into key-value pairs, and delimiter2 splits each key-value pair. Default delimiters are , for delimiter1 and : for delimiter2.
+`substr(string binary A, int start)`|Returns the substring or slice of the byte array of A starting from start position till the end of string A.
+`substring_index(string A, string delim, int count)`|Returns the substring from string A before count occurrences of the delimiter delim.
+`translate(stringǀcharǀvarchar input, stringǀcharǀvarchar from, stringǀcharǀvarchar to)`|Translates the input string by replacing the characters present in the from string with the corresponding characters in the to string.
+`trim(string A)` |Returns the string resulting from trimming spaces from both ends of A.
+`unbase64(string str)`| Converts the argument from a base64 string to BINARY.
+`upper(string A) ucase(string A)`|Returns the string resulting from converting all characters of A to uppercase. For example, upper(fOoBaR) results in FOOBAR’/\.
+`initcap(string A)` |Returns string, with the first letter of each word in uppercase, and all other letters in lowercase. Words are delimited by whitespace.
+`levenshtein(string A, string B)`|Returns the Levenshtein distance between two strings.
+`soundex(string A)` |Returns soundex code of the string.
+`mask(string str[, string upper[, string lower[, string number]]])`|Returns a masked version of str.
+`mask_first_n(string str[, int n])`|Returns a masked version of str with the first n values masked.
+`mask_first_n("1234-5678-8765-4321", 4) `|Results in nnnn-5678-8765-4321.
+`mask_last_n(string str[, int n])`|Returns a masked version of str with the last n values masked.
+`mask_show_first_n(string str[, int n])`|Returns a masked version of str, showing the first n characters unmasked.
+`mask_show_last_n(string str[, int n])`|Returns a masked version of str, showing the last n characters unmasked.
+`mask_hash(stringǀcharǀvarchar str)`|Returns a hashed value based on str.
+`java_method(class, method[, arg1[, arg2..]])`|Synonym for reflect.
+`reflect(class, method[, arg1[, arg2..]])`|Calls a Java method by matching the argument signature, using reflection.
+`hash(a1[, a2…])` |Returns a hash value of the arguments.
+`current_user()` |Returns current username from the configured authenticator manager.
+`logged_in_user()` |Returns current username from the session state.
+`current_database()` |Returns current database name.
+`md5(string/binary)`| Calculates an MD5 128-bit checksum for the string or binary.
+`sha1(string/binary) sha(string/binary)`|Calculates the SHA-1 digest for string or binary and returns the value as a hex string.
+`crc32(string/binary)`| Computes a cyclic redundancy check value for string or binary argument and returns bigint value.
+`sha2(string/binary, int)`| Calculates the SHA-2 family of hash functions (SHA-224, SHA-256, SHA-384, and SHA-512).
+`aes_encrypt(input string/binary, key string/binary)`|Encrypt input using AES.
+`aes_decrypt(input binary, key string/binary)`|Decrypt input using AES.
+`version()` |Returns the Hive version.
+`count(expr)` |Returns the total number of retrieved rows.
+`sum(col), sum(DISTINCT col)` |Returns the sum of the elements in the group or the sum of the distinct values of the column in the group.
+`avg(col), avg(DISTINCT col)` |Returns the average of the elements in the group or the average of the distinct values of the column in the group.
+`min(col)` |Returns the minimum value of the column in the group.
+`max(col)` |Returns the maximum value of the column in the group.
+`variance(col), var_pop(col)` |Returns the variance of a numeric column in the group.
+`var_samp(col)` |Returns the unbiased sample variance of a numeric column in the group.
+`stddev_pop(col)` |Returns the standard deviation of a numeric column in the group.
+`stddev_samp(col)` |Returns the unbiased sample standard deviation of a numeric column in the group.
+`covar_pop(col1, col2)` |Returns the population covariance of a pair of numeric columns in the group.
+`covar_samp(col1, col2)` |Returns the sample covariance of a pair of a numeric columns in the group.
+`corr(col1, col2)` |Returns the Pearson coecient of correlation of a pair of a numeric columns in the group.
+`percentile(BIGINT col, p)` |Returns the exact _p_th percentile of a column in the group (does not work with floating-point types). p must be between 0 and 1.
+`percentile(BIGINT col, array(p1 [, p2]…))`|Returns the exact percentiles p1, p2, … of a column in the group. pi must be between 0 and 1.
+`percentile_approx(DOUBLE col, p [, B])`|Returns an approximate _p_th percentile of a numeric column (including floating point types) in the group. The B parameter controls approximation accuracy at the cost of memory. Higher values yield better approximations, and the default is 10,000. When the number of distinct values in col is smaller than B, this gives an exact percentile value.
+`percentile_approx(DOUBLE col, array(p1 [, p2]…) [, B])`|Same as previous, but accepts and returns an array of percentile values instead of a single one.
+`regr_avgx(independent, dependent)`|Equivalent to avg(dependent).
+`regr_avgy(independent, dependent)`|Equivalent to avg(independent).
+`regr_count(independent, dependent)`|Returns the number of non-null pairs used to fit the linear regression line.
+`regr_intercept(independent, dependent)`|Returns the y-intercept of the linear regression line—that is, the value of b in the equation dependent = a * independent + b.
+`regr_r2(independent, dependent)`|Returns the coecient of determination for the regression.
+`regr_slope(independent, dependent)`|Returns the slope of the linear regression line—that is, the value of a in the equation dependent = a * independent + b.
+`regr_sxx(independent, dependent)`|Equivalent to regr_count(independent, dependent) * var_pop(dependent).
+`regr_sxy(independent, dependent)`|Equivalent to regr_count(independent, dependent) * 
+`covar_pop(independent, dependent) regr_syy(independent, dependent)`|Equivalent to regr_count(independent, dependent) * var_pop(independent).
+`histogram_numeric(col, b)`| Computes a histogram of a numeric column in the group using b non￾uniformly spaced bins. The output is an array of size b of double-valued (x,y) coordinates that represent the bin centers and heights.
+`collect_set(col)` |Returns a set of objects with duplicate elements eliminated.
+`collect_list(col)` |Returns a list of objects with duplicates.
+`ntile(INTEGER x)`| Divides an ordered partition into x groups called buckets and assigns a bucket number to each row in the partition. This allows easy calculation of tertiles, quartiles, deciles, percentiles, and other common summary statistics.
+`explode(ARRAY a)`| Explodes an array to multiple rows. Returns a row-set with a single column (col), one row for each element from the array.
+`explode(MAP<Tkey,Tvalue> m)`| Explodes a map to multiple rows. Returns a row-set with a two columns (key,value), one row for each key-value pair from the input map.
+`posexplode(ARRAY a)`|Explodes an array to multiple rows with additional positional column of int type (position of items in the original array, starting with 0). Returns a row￾set with two columns (pos,val), one row for each element from the array.
+`inline(ARRAY<STRUCT<f1:T1,…,fn:Tn>> a)`|Explodes an array of structs to multiple rows. Returns a row-set with N columns (N = number of top-level elements in the struct), one row per struct from the array.
+`stack(int r,T1 V1,…,Tn/r Vn)`| Breaks up n values V1,…,Vn into r rows. Each row will have n/r columns. r must be constant.
+`json_tuple(string jsonStr,string k1,…,string kn)`|Takes JSON string and a set of n keys, and returns a tuple of n values.
+`parse_url_tuple(string urlStr,string p1,…,string pn)`|Takes URL string and a set of n URL parts, and returns a tuple of n values.
+
+## Chapter 4
+
+### MLlib Functions
+
 The following table exhibits the ML algorithms supported in sparklyr:
 Classification
 Algorithm Function
