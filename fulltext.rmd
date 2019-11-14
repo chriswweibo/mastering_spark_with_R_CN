@@ -1069,9 +1069,7 @@ summarise(cars, mpg_percentile = percentile(mpg, array(0.25, 0.5, 0.75)))
  <list>
 1 <list [3]>
 ```
-You can use the explode() function to separate Spark’s array value results into their
-own record. To do this, use `explode()` within a `mutate()` command, and pass the
-variable containing the results of the percentile operation:
+你可以使用`explode()`函数分割Spark的数组，存到对应的记录中。可以在`mutate()`命令中使用`explode()`，并把包含分位数操作的变量传递出去：
 ```{r}
 summarise(cars, mpg_percentile = percentile(mpg, array(0.25, 0.5, 0.75))) %>%
 mutate(mpg_percentile = explode(mpg_percentile))
@@ -1083,16 +1081,11 @@ Wrangle | 39
 2 19.2
 3 22.8
 ```
-We have included a comprehensive list of all the Hive functions in the section “Hive
-Functions” on page 255. Glance over them to get a sense of the wide range of opera‐
-tions that you can accomplish with them.
+我们在“Hive函数”的章节中罗列了所有的Hive函数。简单浏览一下，就可以感受到Hive函数的强大运算能力。
 
-### Correlations
+### 相关性
 
-A very common exploration technique is to calculate and visualize correlations,
-which we often calculate to find out what kind of statistical relationship exists
-between paired sets of variables. Spark provides functions to calculate correlations
-across the entire dataset and returns the results to R as a DataFrame object:
+计算和可视化相关性是非常常见的数据探查技术。我们经常计算后找到哪些成对的变量存在着何种统计关系。Spark提供了在整个数据集上计算相关性的函数，并返回给R，存在数据框对象中：
 ```{r}
 ml_corr(cars)
 # A tibble: 11 x 11
@@ -1112,11 +1105,7 @@ ml_corr(cars)
 # ... with 4 more variables: vs <dbl>, am <dbl>,
 # gear <dbl>, carb <dbl>
 ```
-The corrr R package specializes in correlations. It contains friendly functions to pre‐
-pare and visualize the results. Included inside the package is a backend for Spark, so
-when a Spark object is used in `corrr`, the actual computation also happens in Spark.
-In the background, the `correlate()` function runs `sparklyr::ml_corr()`, so there is
-no need to collect any data into R prior to running the command:
+`corrr`程序包专门进行相关性计算。它包含友好的准备和可视化结果的函数。程序包还包括连接Spark的后端，所以`corrr`中有Spark对象时，实际的计算发生在Spark中。后台计算中的`correlate()`函数执行`sparklyr::ml_corr()`，所以运行命令前，不需要给R准备任何数据：
 ```{r}
 library(corrr)
 correlate(cars, use = "pairwise.complete.obs", method = "pearson")
@@ -1138,27 +1127,20 @@ correlate(cars, use = "pairwise.complete.obs", method = "pearson")
 # ... with 5 more variables: qsec <dbl>, vs <dbl>,
 # am <dbl>, gear <dbl>, carb <dbl>
 ```
-We can pipe the results to other `corrr` functions. For example, the `shave()` function
-turns all of the duplicated results into NAs. Again, while this feels like standard R code
-using existing R packages, Spark is being used under the hood to perform the
-correlation.
-Additionally, as shown in图3-6, the results can be easily visualized using the
-`rplot()` function, as shown here:
+我们可以把结果输送给其它`corrr`函数。例如，`shave()`函数可以把所有重复值变成NA。而且，尽管这感觉很像标准的R代码，而事实上Spark确实在后端运行相关性计算。
+
+另外，如图3-6所示，结果很容易使用`rplot()`可视化，如下所示:
 ```{r}
 correlate(cars, use = "pairwise.complete.obs", method = "pearson") %>%
 shave() %>%
 rplot()
 ```
 
-![图3-6. Using `rplot()` to visualize correlations](figures/3_6.png)
+![图3-6. 使用`rplot()`可视化相关性](figures/3_6.png)
 
-It is much easier to see which relationships are positive or negative: positive relation‐
-ships are in gray, and negative relationships are black. The size of the circle indicates
-how significant their relationship is. The power of visualizing data is in how much
-easier it makes it for us to understand results. The next section expands on this step
-of the process.
+很容易看到哪些关系是正向的，哪些是负向的。正向关系是灰色的，负向关系是黑色的。圆圈的大小表示关系的显著程度。可视化数据的作用在于它可以让我们更加容易的理解结果。下一节会介绍这方面的内容。
 
-## Visualize
+## 可视化
 
 Visualizations are a vital tool to help us find patterns in the data. It is easier for us to
 identify outliers in a dataset of 1,000 observations when plotted in a graph, as
