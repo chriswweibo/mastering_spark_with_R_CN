@@ -1001,12 +1001,9 @@ cars <- copy_to(sc, mtcars)
 
 完成数据清洗，你还需要理解数据内容的基本情况。其他转换诸如聚合，可以帮助我们完成这个任务。例如，所有客户的平均余额结果会返回一个数据表。值是所有客户的平均值。当我们观察单个客户或群体客户的余额时，这些信息会提供一些背景知识。
 
-The main goal is to write the data transformations using R syntax as much as possi‐
-ble. This saves us from the cognitive cost of having to switch between multiple com‐
-puter technologies to accomplish a single task. In this case, it is better to take
-advantage of `dplyr` instead of writing Spark SQL statements for data exploration.
-In the R environment, cars can be treated as if it were a local DataFrame, so you can
-use `dplyr` verbs. For instance, we can find out the mean of all columns by using `summarise_all()`:
+尽可能使用R语言来编写数据转换的代码，这才是主要目的。这样可以节省单个任务中多个计算机技术之间来回切换的认知成本。这种情况下，最好使用`dplyr`，而不要编写Spark的SQL语句，完成 数据转换。
+
+在R环境中，`cars`可以按照本地数据框处理，所以你可以使用`dplyr`语句。例如，我们可以使用`summarise_all()`找出所有列的平均值：
 ```{r}
 summarise_all(cars, mean)
 # Source: spark<?> [?? x 11]
@@ -1015,15 +1012,7 @@ summarise_all(cars, mean)
 1 20.1 6.19 231. 147. 3.60 3.22 17.8 0.438 0.406 3.69 2.81
 ```
  
-While this code is exactly the same as the code you would run when using dplyr
-without Spark, a lot is happening under the hood. The data is not being imported into
-Wrangle | 37
-R; instead, `dplyr` converts this task into SQL statements that are then sent to Spark.
-The show_query() command makes it possible to peer into the SQL statement that
-sparklyr and `dplyr` created and sent to Spark. We can also use this time to introduce
-the pipe operator (%>%), a custom operator from the magrittr package that pipes a
-computation into the first argument of the next function, making your data analysis
-much easier to read:
+虽然这些代码与非Spark环境下使用`dplyr`的代码相同，其内部还是做了很多运算。数据并*没有*导入到R中，相反，`dplyr`把这个任务变成SQL语句发送给Spark。`show_query()`命令允许查看由`sparklyr`和`dplyr`创建发送的SQL语句的细节。我们也可以使用管道操作符（`%>%`），一种来自`magrittr`程序包的定制操作符，可以把计算结果当中下一个函数的第一个参数，进而让数据分析更加已读：
 ```{r}
 summarise_all(cars, mean) %>%
 show_query()
@@ -1034,11 +1023,7 @@ SELECT AVG(`mpg`) AS `mpg`, AVG(`cyl`) AS `cyl`, AVG(`disp`) AS `disp`,
  AVG(`gear`) AS `gear`, AVG(`carb`) AS `carb`
 FROM `mtcars`
 ```
-As is evident, `dplyr` is much more concise than SQL, but rest assured, you will not
-need to see or understand SQL when using `dplyr`。 Your focus can remain on obtain‐
-ing insights from the data, as opposed to figuring out how to express a given set of
-transformations in SQL. Here is another example that groups the cars dataset by
-transmission type:
+可以看到，`dplyr`比SQL语句简洁，但是请放心，使用`dplyr`的时候不需要关心和理解SQL。 你个关注点一直在数据理解上，而不是给出SQL下的一系列数据转换语句。下面是另一个例子，对`cars`数据集按照`transmission`类型分组：
 ```{r}
 cars %>%
 mutate(transmission = ifelse(am == 0, "automatic", "manual")) %>%
@@ -1050,29 +1035,17 @@ summarise_all(mean)
 1 automatic 17.1 6.95 290. 160. 3.29 3.77 18.2 0.368 0 3.21 2.74
 2 manmual 24.4 5.08 144. 127. 4.05 2.41 17.4 0.538 1 4.38 2.92
 ```
-Most of the data transformation operations made available by `dplyr` to work with
-local DataFrames are also available to use with a Spark connection. This means that
-you can focus on learning `dplyr` first and then reuse that skill when working with
-Spark. Chapter 5 from the book R for Data Science by Hadley Wickham and Garrett
-Grolemund (O’Reilly) is a great resource to learn `dplyr` in depth. If proficiency with
-dplyr is not an issue for you, we recommend that you take some time to experiment
-with different `dplyr` functions against the cars table.
-Sometimes, we might need to perform an operation not yet available through dplyr
-and `sparklyr`。 Instead of downloading the data into R, there is usually a Hive func‐
-tion within Spark to accomplish what we need. The next section covers this scenario.
-38 | Chapter 3: Analysis
 
-### Built-in Functions
+`dplyr`支持的大部分本地数据的转换操作也同样支持由Spark连接实现。这意味着，你可以首先关注学习`dplyr`，然后在Spark操作中复用。 由Hadley Wickham和Garrett Grolemund（O’Reilly）编写的 《R语言数据科学》第五章是深入学习`dplyr`的良好资源。如果你已经熟练掌握`dplyr`，我们建议你花些时间，用不同的`dplyr`函数在`cars`数据表上做做实验。
 
-Spark SQL is based on Hive’s SQL conventions and functions, and it is possible to call
-all these functions using `dplyr` as well. This means that we can use any Spark SQL
-functions to accomplish operations that might not be available via `dplyr`。 We can
-access the functions by calling them as if they were R functions. Instead of failing,
-dplyr passes functions it does not recognize as is to the query engine. This gives us a
-lot of flexibility on the functions we can use.
-For instance, the percentile() function returns the exact percentile of a column in a
-group. The function expects a column name, and either a single percentile value or an
-array of percentile values. We can use this Spark SQL function from dplyr, as follows:
+有时，我们可能需要一些`dplyr`和`sparklyr`并不支持的操作。不要把数据加载到R中，而是找到一个Spark中的Hive函数完成所需的任务，下一节会介绍这个话题。
+
+### 内置函数
+
+Spark SQL基于Hive SQL的风格习惯和函数，并且可以使用`dplyr`调用所有的函数。这允许我们是任何一个Spark SQL函数来完成`dplyr`无法支持的数据操作。我们可以向R中的函数一样调用它们。
+`dplyr`可以把不曾认识的函数传递给查询引擎，给我们提供了使用函数的极大便利。
+
+例如，`percentile()`函数返回组内一列的确切分位数。这个函数发返回列名，以及一个分位数或一系列分位数。我们可以通过`dplyr`使用这个Spark SQL函数，如下所示:
 ```{r}
 summarise(cars, mpg_percentile = percentile(mpg, 0.25))
 # Source: spark<?> [?? x 1]
@@ -1080,7 +1053,7 @@ summarise(cars, mpg_percentile = percentile(mpg, 0.25))
  <dbl>
 1 15.4
 ```
-There is no percentile() function in R, so `dplyr` passes that portion of the code as￾is to the resulting SQL query:
+R中并没有`percentile()`函数，所以`dplyr`把它原封不动的传给了SQL查询中：
 ```{r}
 summarise(cars, mpg_percentile = percentile(mpg, 0.25)) %>%
 show_query()
@@ -1088,10 +1061,7 @@ show_query()
 SELECT percentile(`mpg`, 0.25) AS `mpg_percentile`
 FROM `mtcars_remote`
 ```
-To pass multiple values to percentile(), we can call another Hive function called
-array(). In this case, array() would work similarly to R’s list() function. We can
-pass multiple values separated by commas. The output from Spark is an array vari‐
-able, which is imported into R as a list variable column:
+要给`percentile()`传递多个值，我们可以调用另一个Hive函数`array()`。在这个例子中，`array()`类似于R中的`list()`函数。我们可以按照逗号分割，传递多个值Spark的结果是一个数组变量，会一列表变量的形式导入到R中：
 ```{r}
 summarise(cars, mpg_percentile = percentile(mpg, array(0.25, 0.5, 0.75)))
 # Source: spark<?> [?? x 1]
@@ -6533,7 +6503,7 @@ tion using R code, as we describe in Chapter 11.
 
 ------
 
-# 第12章 Distributed R
+# 第11章 Distributed R
 
 > Not like this. Not like this. Not like this.
 > —Cersei Lannister
