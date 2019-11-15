@@ -8428,7 +8428,7 @@ labels = c("", "1M", "", "2M", "", "3M", "") )
 Download the R installer (see图A-1) and launch it for your Windows, Mac, or
 Linux platform.
 Supplemental Code References | 251
-![Figure A-1. The R Project for Statistical Computing](figures/A_2.png)
+![Figure A-1. The R Project for Statistical Computing](figures/A_1.png)
 
 #### Installing Java
 
