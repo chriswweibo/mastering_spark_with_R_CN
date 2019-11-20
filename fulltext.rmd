@@ -1238,22 +1238,15 @@ While visualizations are indispensable, you can complement data analysis using s
 istical models to gain even deeper insights into our data. The next section describes
 how we can prepare data for modeling with Spark.
 
-## Model
+## 建模
 
-The next two chapters focus entirely on modeling, so rather than introducing model‐
-ing in too much detail in this chapter, we want to cover how to interact with models
-while doing data analysis.
-First, an analysis project goes through many transformations and models to find the
-answer. That’s why the first data analysis diagram we introduced in图3-2 illus‐
-trates a cycle of: visualizing, wrangling, and modeling—we know you don’t end with
-modeling, not in R, nor when using Spark.
-Therefore, the ideal data analysis language enables you to quickly adjust over each
-wrangle-visualize-model iteration. Fortunately, this is the case when using Spark and
-R.
-To illustrate how easy it is to iterate over wrangling and modeling in Spark, consider
-the following example. We will start by performing a linear regression against all fea‐
-tures and predict miles per gallon:
-46 | Chapter 3: Analysis
+下面两章完全关注建模。本章不会过多地介绍建模的细节，而是介绍如何在做数据分析的时候与模型交互。
+
+首先，一个分析项目经过很多数据转换和模型才能找出答案。这也是为什么图3-2中的第一个数据分析图展示了一个周期，包括：可视化，数据操作和建模。我们清楚，不管是在R环境中还是使用Spark的过程中，你都不会止步于建模。
+
+所以，理想的数据分析语言可以让你快速的在“数据操作-可视化-建模”的迭代中切换。幸运的是，这就是使用Spark和R的场景。
+
+为了说明在Spark中迭代数据操作和建模多么简单，可以考虑下面的例子。首先我们会在所有的特征上做一个线性回归，并且预测每加仑的英里数：
 ```{r}
 cars %>%
 ml_linear_regression(mpg ~ .) %>%
@@ -1269,9 +1262,7 @@ Coefficients:
 R-Squared: 0.869
 Root Mean Squared Error: 2.147
 ```
-At this point, it is very easy to experiment with different features, we can simply
-change the R formula from `mpg ~ .` to, say, `mpg ~ hp + cyl` to only use horsepower
-and cylinders as features:
+现在，很容易使用不同的特征做实验。我们可以简单的改变R中的公式，把`mpg ~ .`改成`mpg ~ hp + cyl`，以便只使用马力和气缸作为特征：
 ```{r}
 cars %>%
 ml_linear_regression(mpg ~ hp + cyl) %>%
@@ -1285,8 +1276,7 @@ Coefficients:
 R-Squared: 0.7407
 Root Mean Squared Error: 3.021
 ```
-Additionally, it is also very easy to iterate with other kinds of models. The following
-one replaces the linear model with a generalized linear model:
+另外，在不同的模型上迭代也非常容易。下面的例子把线性模型换成了广义线性模型：
 ```{r}
 cars %>%
 ml_generalized_linear_regression(mpg ~ hp + cyl) %>%
@@ -1299,24 +1289,16 @@ Coefficients:
  36.9083305 -0.0191217 -2.2646936
 (Dispersion parameter for gaussian family taken to be 10.06809)
  Null deviance: 1126.05 on 31 degress of freedom
-Model | 47
 Residual deviance: 291.975 on 29 degrees of freedom
 AIC: 169.56
 ```
-Usually, before fitting a model you would need to use multiple `dplyr` transformations
-to get it ready to be consumed by a model. To make sure the model can be fitted as
-efficiently as possible, you should cache your dataset before fitting it, as described
-next.
+通常，在拟合模型之前，你需要使用多个`dplyr`转换来让数据适合作为模型输入。要保证模型可以尽可能的高效拟合，你应该在拟合之前，把数据集缓存起来。我们会在下面的章节看到。
 
-### Caching
+### 缓存
 
-The examples in this chapter are built using a very small dataset. In real-life scenarios,
-large amounts of data are used for models. If the data needs to be transformed first,
-the volume of the data could exact a heavy toll on the Spark session. Before fitting the
-models, it is a good idea to save the results of all the transformations in a new table
-loaded in Spark memory.
-The `compute()` command can take the end of a `dplyr` command and save the results
-to Spark memory:
+本节的例子使用非常小的数据集。在实际场景中，模型会使用大规模数据集。如果数据需要预先转换，其规模会消耗Spark大量的进程开销。拟合模型之前，最好把所有转换的结果保存到一个Spark内存的新表中。
+
+`compute()`命令会接棒一个`dplyr`命令把结果保存到Spark内存中：
 ```{r}
 cached_cars <- cars %>%
 mutate(cyl = paste0("cyl_", cyl)) %>%
@@ -1335,14 +1317,9 @@ Coefficients:
 R-Squared: 0.8816
 Root Mean Squared Error: 2.041
 ```
-As more insights are gained from the data, more questions might be raised. That is
-why we expect to iterate through the data wrangle, visualize, and model cycle multi‐
-ple times. Each iteration should provide incremental insights into what the data is
-“telling us.” There will be a point when we reach a satisfactory level of understanding.
-It is at this point that we will be ready to share the results of the analysis. This is the
-topic of the next section.
+由于数据可以提炼出更多的理解，更多的问题也会随之提出来。这也是为什么我们希望通过数据操作，可视化和建模，来多次迭代。每次迭代应该增量的提供数据给我们传递的含义。我们会有一个时间点， 来达到一个满意的理解水准。在这个点上，我们就可以分享分析的结果。这就是下一章节的主题。
 
-## Communicate
+## 沟通
 
 It is important to clearly communicate the analysis results—as important as the
 analysis work itself! The public, colleagues, or stakeholders need to understand what
