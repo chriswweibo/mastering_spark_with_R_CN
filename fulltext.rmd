@@ -1321,46 +1321,23 @@ Root Mean Squared Error: 2.041
 
 ## 沟通
 
-It is important to clearly communicate the analysis results—as important as the
-analysis work itself! The public, colleagues, or stakeholders need to understand what
-you found out and how.
-To communicate effectively, we need to use artifacts such as reports and presenta‐
-tions; these are common output formats that we can create in R, using R Markdown.
-R Markdown documents allow you to weave narrative text and code together. The
-variety of output formats provides a very compelling reason to learn and use R Mark‐
-down. There are many available output formats like HTML, PDF, PowerPoint, Word,
-web slides, websites, books, and so on.
-Most of these outputs are available in the core R packages of R Markdown: knitr and
-rmarkdown. You can extend R Markdown with other R packages. For example, this
-book was written using R Markdown thanks to an extension provided by the book
-down package. The best resource to delve deeper into R Markdown is the official
-book.1
-In R Markdown, one singular artifact could potentially be rendered in different for‐
-mats. For example, you could render the same report in HTML or as a PDF file by
-changing a setting within the report itself. Conversely, multiple types of artifacts
-could be rendered as the same output. For example, a presentation deck and a report
-could be rendered in HTML.
-Creating a new R Markdown report that uses Spark as a computer engine is easy. At
-the top, R Markdown expects a YAML header. The first and last lines are three con‐
-secutive dashes (---). The content in between the dashes varies depending on the
-type of document. The only required field in the YAML header is the output value. R
-Markdown needs to know what kind of output it needs to render your report into.
-This YAML header is called frontmatter. Following the frontmatter are sections of
-code, called code chunks. These code chunks can be interlaced with the narratives.
-There is nothing particularly interesting to note when using Spark with R Markdown;
-it is just business as usual.
-Since an R Markdown document is self-contained and meant to be reproducible,
-before rendering documents, we should first disconnect from Spark to free resources:
+清楚的沟通分析结果非常重要，甚至和分析工作本身一样重要？公众，同事或者利益相关者需要知道你发现了什么信息，以及发现的方法。
+
+为了有效的沟通，我们需要使用一些途径，例如报告或者展示：这些都是可以使用R环境中的*R markdown*创建的常见输出格式。R Markdown文档可以让你一起编写介绍性的文字和代码。不同的输出格式让R markdown的学习和使用变得很迫切。有很多可用的输出格式，例如HTML，PDF，PowerPoint，Word，网页幻灯片，网站，书籍等等。
+
+大部分输出可以通过R markdown的核心程序包生成，例如`knitr`和`rmarkdown`。你可以使用其他程序包扩展R Markdown。例如，本书就是用R Markdown编写的，基于`bookdown`程序包提供的扩展而完成。深度了解R Markdown的最优资源是官方书籍[^13]。
+
+[^13]: Xie Allaire G (2018). R Markdown: The Definite Guide, 1st edition. CRC Press.
+
+在R Markdown中，一个文档可以被渲染成不同的格式。例如，你可以渲染同一份报告，通过在报告中设置不同的参数得到HTML或PDF文件。相反，许多不同类型的文档也可以渲染成同样的输出格式。例如，一个展示平台和一个报告都可以渲染成HTML格式。
+
+使用Spark作为计算引擎，创建一个新的R Markdown报告并不难。在文件头部，R Markdown需要一个YAML标头。第一行和最后一行是三个连续短横线（`---`）。短横线之间的内容可以根据文档类型不同而变化。YAML标头中唯一必需的字段是`output`值。R Markdown需要知道它要把报告渲染成哪种类型的输出。这个YAML标头叫做*前辅文（frontmatter）*。前辅文后面是各种的代码，叫做*代码块（code chunks）*。这些代码块可以和介绍性文件交叉在一起。在Spark中使用R Markdown也并没有什么特别不同的地方：只是和平时的工作一样。
+
+由于R Markdown文档是自含的并且是可以复现的，在润色文档之前，我们首先从Spark断开连接：
 ```{r}
 spark_disconnect(sc)
 ```
-The following example shows how easy it is to create a fully reproducible report that
-uses Spark to process large-scale datasets. The narrative, code, and, most important,
-1 Xie Allaire G (2018). R Markdown: The Definite Guide, 1st edition. CRC Press.
-Communicate | 49
-the output of the code is recorded in the resulting HTML file. You can copy and paste
-the following code in a file. Save the file with a .Rmd extension, and choose whatever
-name you would like:
+下面的例子展示了创建一个完全可复现的有关Spark处理大规模数据集的报告是多么的容易。介绍性文字，代码，以及最重要的代码输出都记录在最后的HTML文件中。你可以把下面的代码复制粘贴到一个文件中，并用*.Rmd*后缀保存起来，确定一个喜欢的文件名字：
 ```
 ---
 title: "mtcars analysis"
@@ -1369,84 +1346,79 @@ output:
  fig_width: 6
  fig_height: 3
 ---
-\```{r, setup, include = FALSE}
+```
+```{r, setup, include = FALSE}`r ''`
 library(sparklyr)
 library(dplyr)
 sc <- spark_connect(master = "local", version = "2.3")
 cars <- copy_to(sc, mtcars)
 ```
+
+```
 ## Visualize
 Aggregate data in Spark, visualize in R.
-\```{r fig.align='center', warning=FALSE}
+```
+
+```{r fig.align='center', warning=FALSE}`r ''`
 library(ggplot2)
 cars %>%
  group_by(cyl) %>% summarise(mpg = mean(mpg)) %>%
  ggplot(aes(cyl, mpg)) + geom_bar(stat="identity")
 ```
+
+```
 ## Model
 The selected model was a simple linear regression that
 uses the weight as the predictor of MPG
-\```{r}
+```
+
+```{r}`r ''`
 cars %>%
  ml_linear_regression(wt ~ mpg) %>%
  summary()
-\```
-\```{r, include = FALSE}
-spark_disconnect(sc)
-\```
 ```
-To knit this report, save the file with a .Rmd extension such as report.Rmd, and run
-render() from R. The output should look like that shown in图3-13.
+
+```{r, include = FALSE}`r ''`
+spark_disconnect(sc)
+```
+
+
+要生成这个报告，用.Rmd扩展名保存，例如report.Rmd，并且运行R中的`render()`。输出结果应该和图3-13类似。
 ```{r}
 rmarkdown::render("report.Rmd")
 ```
 
-![图3-13. R Markdown HTML output](figures/3_13.png)
-You can now easily share this report, and viewers of won’t need Spark or R to read
-and consume its contents; it’s just a self-contained HTML file, trivial to open in any
-browser.
-It is also common to distill insights of a report into many other output formats.
-Switching is quite easy: in the top frontmatter, change the output option to power
-point_presentation, pdf_document, word_document, or the like. Or you can even
-produce multiple output formats from the same report:
+![图3-13. R Markdown HTML输出](figures/3_13.png)
+
+你可以轻松的分享这个报告，并不会消耗阅读者的Spark或R资源。它是一份自含的HTML文件，任何网络浏览器都可以打开。
+
+从一个报告中提炼出各种观点并生成不同的输出格式也很常见。格式的转换也很容易，只需改变输出选项为
+`point_presentation`，`pdf_document`，`word_document`或类似的。你甚至可以从一份报告中生成多个输出格式：
+
 ```
 ---
 title: "mtcars analysis"
 output:
  word_document: default
  pdf_document: default
-Communicate | 51
  powerpoint_presentation: default
 ---
 ```
-The result will be a PowerPoint presentation, a Word document, and a PDF. All of the
-same information that was displayed in the original HTML report is computed in
-Spark and rendered in R. You’ll likely need to edit the PowerPoint template or the
-output of the code chunks.
-This minimal example shows how easy it is to go from one format to another. Of
-course, it will take some more editing on the R user’s side to make sure the slides con‐
-tain only the pertinent information. The main point is that it does not require that
-you learn a different markup or code conventions to switch from one artifact to
-another.
+
+最终结果是一个PowerPoint展示文档，一个Word文档和一个PDF。在原始HTML报告中展示的所有相同的信息都是通过Spark计算得出，并在R中渲染。你可能需要编辑PowerPoint模板，或者代码块的输出。
+
+这个最小例子展示了从一种格式换成另一种格式是非常简单的。当然，R用户需要做更多的编辑工作，来保证幻灯片只包含相关信息。关键要记住，它不需要你为了从一个文档换成另一个文档，学习不同的标记语言或者代码风格。
 
 ## 小结
 
-This chapter presented a solid introduction to data analysis with R and Spark. Many
-of the techniques presented looked quite similar to using just R and no Spark, which,
-while anticlimactic, is the right design to help users already familiar with R to easily
-transition to Spark. For users unfamiliar with R, this chapter also served as a very
-brief introduction to some of the most popular (and useful!) packages available in R.
-It should now be quite obvious that, together, R and Spark are a powerful combina‐
-tion—a large-scale computing platform, along with an incredibly robust ecosystem of
-R packages, makes for an ideal analysis platform.
-While doing analysis in Spark with R, remember to push computation to Spark and
-focus on collecting results in R. This paradigm should set up a successful approach to
-data manipulation, visualization and communication through sharing your results in
-a variety of outputs.
-Chapter 4 will dive deeper into how to build statistical models in Spark using a much
-more interesting dataset (what’s more interesting than dating datasets?). You will also
-learn many more techniques that we did not even mention in the brief modeling sec‐
-tion from this chapter.
+本章对R和Spark的数据分析进行了扎实的介绍。提出的许多技术看起来与只使用R而不使用Spark非常相似。这并非虎头蛇尾，而是要让已经熟悉R的用户简单的过渡到Spark的正确设计。对于不熟悉R的用户，本章还非常简要介绍R中一些最流行的（有用的）程序包。现在应该很清楚，R和Spark是一个强大的组合，一个大型计算平台，以及一个异常强大的R程序包生态系统，成为了理想的分析平台。
+
+在使用R和Spark分析时，请记住将计算推送到Spark，并在R中收集结果。这种范式应该建立一个成功的途径，以各种输出格式分享结果，实现数据操作、可视化和沟通。
+各种输出。
+
+第4章将深入探讨如何使用大量更有趣的数据集（还有什么比约会数据集更有趣？）。你还将学习更多的技术，这些技术甚至没有在本章建模部分提及。
+
+
 -------
 
 # 第四章 建模
