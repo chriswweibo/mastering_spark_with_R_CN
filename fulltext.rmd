@@ -1338,7 +1338,8 @@ Root Mean Squared Error: 2.041
 spark_disconnect(sc)
 ```
 下面的例子展示了创建一个完全可复现的有关Spark处理大规模数据集的报告是多么的容易。介绍性文字，代码，以及最重要的代码输出都记录在最后的HTML文件中。你可以把下面的代码复制粘贴到一个文件中，并用*.Rmd*后缀保存起来，确定一个喜欢的文件名字：
-```
+
+```{rmarkdown, eval=F,echo=T}
 ---
 title: "mtcars analysis"
 output:
@@ -1346,44 +1347,40 @@ output:
  fig_width: 6
  fig_height: 3
 ---
-```
-```{r, setup, include = FALSE}`r ''`
+
+```{r, setup, include = FALSE}
 library(sparklyr)
 library(dplyr)
 sc <- spark_connect(master = "local", version = "2.3")
 cars <- copy_to(sc, mtcars)
-```
 
-```
 ## Visualize
 Aggregate data in Spark, visualize in R.
-```
 
-```{r fig.align='center', warning=FALSE}`r ''`
+```{r fig.align='center', warning=FALSE}
 library(ggplot2)
 cars %>%
  group_by(cyl) %>% summarise(mpg = mean(mpg)) %>%
  ggplot(aes(cyl, mpg)) + geom_bar(stat="identity")
-```
 
-```
+
 ## Model
 The selected model was a simple linear regression that
 uses the weight as the predictor of MPG
-```
 
-```{r}`r ''`
+```{r}
 cars %>%
  ml_linear_regression(wt ~ mpg) %>%
  summary()
-```
 
-```{r, include = FALSE}`r ''`
+
+```{r, include = FALSE}
 spark_disconnect(sc)
+
+
 ```
 
-
-要生成这个报告，用.Rmd扩展名保存，例如report.Rmd，并且运行R中的`render()`。输出结果应该和图3-13类似。
+要生成这个报告，用*.Rmd*扩展名保存，例如*report.Rmd*，并且运行R中的`render()`。输出结果应该和图3-13类似。
 ```{r}
 rmarkdown::render("report.Rmd")
 ```
@@ -1426,20 +1423,10 @@ output:
 > I’ve trusted in your visions, in your prophecies, for years.
 > —Stannis Baratheon
 
-In Chapter 3 you learned how to scale up data analysis to large datasets using Spark.
-In this chapter, we detail the steps required to build prediction models in Spark. We
-explore MLlib, the component of Spark that allows you to write high-level code to
-perform predictive modeling on distributed data, and use data wrangling in the con‐
-text of feature engineering and exploratory data analysis.
-We will start this chapter by introducing modeling in the context of Spark and the
-dataset you will use throughout the chapter. We then demonstrate a supervised learn‐
-ing workflow that includes exploratory data analysis, feature engineering, and model
-building. Then we move on to an unsupervised topic modeling example using
-unstructured text data. Keep in mind that our goal is to show various techniques of
-executing data science tasks on large data rather than conducting a rigorous and
-coherent analysis. There are also many other models available in Spark that won’t be
-covered in this chapter, but by the end of the chapter, you will have the right tools to
-experiment with additional ones on your own.
+在第3章中，你学到了如果在大规模数据集上利用Spark进行数据分析。在本章中，我们会详细介绍使用Spark构建预测模型的步骤。我们会研究`MLlib`，Spark中支持编写高层级代码在分布式数据上进行预测建模的模块，并在特征工程和探索性数据分析的背景下使用数据操作。
+
+我们首先结合Spark的背景以及贯穿全章的数据集，介绍建模。然后我们会展示一个有监督的学习流程，包括探索性数据分析，特征工程，和模型构建。接着，我们会使用非结构化的文本数据继续介绍无监督的主题建模示例。切记，我们的目标是介绍大规模数据集上执行数据科学任务的各种技术，而不是指导严谨一致的分析。Spark中海油许多其他的模型并不会在本章中介绍。，但是在本章的末尾，你会看到一些不错的工具，可以试试用自己的模型做实验。
+
 While predicting datasets manually is often a reasonable approach (by “manually,” we
 mean someone imports a dataset into Spark and uses the fitted model to enrich or
 predict values), it does beg the question, could we automate this process into systems
