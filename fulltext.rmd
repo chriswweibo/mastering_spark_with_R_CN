@@ -1427,59 +1427,24 @@ output:
 
 我们首先结合Spark的背景以及贯穿全章的数据集，介绍建模。然后我们会展示一个有监督的学习流程，包括探索性数据分析，特征工程，和模型构建。接着，我们会使用非结构化的文本数据继续介绍无监督的主题建模示例。切记，我们的目标是介绍大规模数据集上执行数据科学任务的各种技术，而不是指导严谨一致的分析。Spark中海油许多其他的模型并不会在本章中介绍。，但是在本章的末尾，你会看到一些不错的工具，可以试试用自己的模型做实验。
 
-While predicting datasets manually is often a reasonable approach (by “manually,” we
-mean someone imports a dataset into Spark and uses the fitted model to enrich or
-predict values), it does beg the question, could we automate this process into systems
-that anyone can use? For instance, how can we build a system that automatically
-identifies an email as spam without having to manually analyze each email account?
-Chapter 5 presents the tools to automate data analysis and modeling with pipelines,
-but to get there, we need to first understand how to train models “by hand.”
-53
+手动预测数据集通常是一个合理的手段（“手动”是指人们给Spark导入数据集，使用拟合好的模型来丰富或预测取值）。这引出一个问题，我们可以把这个过程自动化为任何人都可以使用的系统吗？例如，我们如何构建一个系统可以自动的识别垃圾邮件，而不用手动分析每一个邮箱账户？第5章会介绍自动化数据分析和建模流程的工具。但是在这之前，我们首先需要知道如何“亲手”训练模型。
 
 ## 概述
 
-The R interface to Spark provides modeling algorithms that should be familiar to R
-users. For instance, we’ve already used `ml_linear_regression(cars, mpg ~ .)`, but
-we could just as easily run `ml_logistic_regression(cars, am ~ .)`.
-Take a moment to look at the long list of MLlib functions included in the appendix of
-this book; a quick glance at this list shows that Spark supports Decision Trees,
-Gradient-Boosted Trees, Accelerated Failure Time Survival Regression, Isotonic
-Regression, K-Means Clustering, Gaussian Mixture Clustering, and more.
-As you can see, Spark provides a wide range of algorithms and feature transformers,
-and here we touch on a representative portion of the functionality. A complete treat‐
-ment of predictive modeling concepts is beyond the scope of this book, so we recom‐
-mend complementing this discussion with R for Data Science by Hadley Wickham
-and Garrett Grolemund G (O’Reilly) and Feature Engineering and Selection: A Practi‐
-cal Approach for Predictive Models,1
- from which we adopted (sometimes verbatim)
-some of the examples and visualizations in this chapter.
-This chapter focuses on predictive modeling, since Spark aims to enable machine
-learning as opposed to statistical inference. Machine learning is often more con‐
-cerned about forecasting the future rather than inferring the process by which our
-data is generated,2
- which is then used to create automated systems. Machine learning
-can be categorized into supervised learning (predictive modeling) and unsupervised
-learning. In supervised learning, we try to learn a function that will map from X to Y,
-from a dataset of (x, y) examples. In unsupervised learning, we just have X and not
-the Y labels, so instead we try to learn something about the structure of X. Some
-practical use cases for supervised learning include forecasting tomorrow’s weather,
-determining whether a credit card transaction is fraudulent, and coming up with a
-quote for your car insurance policy. With unsupervised learning, examples include
-automated grouping of photos of individuals, segmenting customers based on their
-purchase history, and clustering of documents.
-The ML interface in `sparklyr` has been designed to minimize the cognitive effort for
-moving from a local, in-memory, native-R workflow to the cluster, and back. While
-the Spark ecosystem is very rich, there is still a tremendous number of packages from
-CRAN, with some implementing functionality that you might require for a project.
-Also, you might want to leverage your skills and experience working in R to maintain
-productivity. What we learned in Chapter 3 also applies here—it is important to keep
+R中的Spark接口提供了R用户熟悉的建模算法。例如，我们已经用过`ml_linear_regression(cars, mpg ~ .)`，但是我们可以只用简单的运行`ml_logistic_regression(cars, am ~ .)`。
 
-[^]: Kuhn M, Johnson K (2019). Feature Engineering and Selection: A Practical Approach for Predictive Models.
-(CRC PRess.)
-[^]: We acknowledge that the terms here might mean different things to different people and that there is a continuum between the two approaches; however, they are defined.
+花些时间看看本书附录中长长的`MLlib`函数列表。简单浏览可以发现Spark支持决策树，梯度加速树，加速失效时间生产回归，保序回归，K-Means聚类，高斯混合聚类Clustering等等。
 
-track of where you are performing computations and move between the cluster and
-your R session as appropriate.
+可以看到，Spark提供了大量的算法和特征转换函数。这里我们只涉及具有代表性的一些功能。完整 的预测模型概念讲解已经超出了本书的范畴，所以我们推荐阅读Hadley Wickham和Garrett Grolemund G (O’Reilly)的*《R语言数据科学》*，以及*Feature Engineering and Selection: A Practical Approach for Predictive Models*[^14]。本章中的一些例子和可视化也是从这些材料中引用过来（有时候会原封不动的引用）。
+
+[^14]: Kuhn M, Johnson K (2019). Feature Engineering and Selection: A Practical Approach for Predictive Models. (CRC PRess.)
+
+本章关注预测建模，Spark力求推动机器学习而非统计推断。通常机器学习更多关注预测未来而不是推断数据生产的过程[^15]，进而用来创建自动化系统。机器学习可以分成*监督式学习*（预测建模）和*非监督式学习*。在监督式学习中，通过数据集（X，Y）实例，我们试着学习一个函数可以把X映射到Y。在非监督式学习中，我们只有X，而没有Y标记。所以我们会试着学习X的结构。一些实际的监督式学习的用例包括预测明天的天气，确定信用卡交易是否虚假，制度汽车保险报价。使用非监督式学习，例子包括个人照片的自动聚类，根据购买历史划分顾客，文档聚类。
+
+`sparklyr`中的机器学习接口设计的初衷是为了最小化认知的成本，可以轻松的从本地的，基于内存的原生R工作流转向集群计算，也包括反向的转变。然而Spark生态非常丰富，CRAN上依然有大量的程序包，帮助实现一个项目中所需要的功能。而且，你也会希望利用你在R中的技能和经验保持一定的生产力。我们在第3章中也用到了这一点。记录执行计算的位置，以及集群和R进程之间的合适转换，这很重要。
+
+[^15]: 我们也承认，这里的术语对于不同的人意味着不同的理解，二者之间也是统一的。但是，本书有一定的定义。
+
 The examples in this chapter utilize the OkCupid dataset.3 The dataset consists of user
 profile data from an online dating site and contains a diverse set of features, including
 biographical characteristics such as gender and profession, as well as free text fields
