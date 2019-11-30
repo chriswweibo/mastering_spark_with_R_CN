@@ -1640,11 +1640,9 @@ geom_hline(yintercept = sum(prop_data$prop * prop_data$count) /
 sum(prop_data$count))
 ```
 
-![图4-2. Proportion of individuals not currently employed, by religion](figures/4_2.png)
+![图4-2. 当期失业人群按地区占比](figures/4_2.png)
 
-Next, we take a look at the relationship between a couple of predictors: alcohol use
-and drug use. We would expect there to be some correlation between them. You can
-compute a contingency table via `sdf_crosstab()`:
+然后，我们看一下两个预测变量之间的关系：饮酒和毒品。我们希望它们之间有某种相关性。你可以通过`sdf_crosstab()`计算出一个列联表：
 ```{r}
 contingency_tbl <- okc_train %>%
 sdf_crosstab("drinks", "drugs") %>%
@@ -1658,12 +1656,11 @@ contingency_tbl
 3 not at all 146 2371 15 109
 4 desperately 72 89 23 74
 5 often 1049 1718 69 1271
-60 | Chapter 4: Modeling
 6 missing 1121 1226 10 59
 7 rarely 613 3689 35 445
 ```
 
-We can visualize this contingency table using a mosaic plot (see图4-3):
+我们可以使用一个马赛克图，可视化这个列联表（见图4-3）： 
 ```{r}
 library(ggmosaic)
 library(forcats)
@@ -1682,19 +1679,18 @@ geom_mosaic(aes(x = product(drinks, drugs), fill = drinks,
 weight = count))
 ```
 
-![图4-3. Mosaic plot of drug and alcohol use](figures/4_3.png)
+![图4-3. 毒品和酒精使用的马赛克图](figures/4_3.png)
 
-To further explore the relationship between these two variables, we can perform correspondence analysis4
- using the `FactoMineR` package. This technique enables us to
-summarize the relationship between the high-dimensional factor levels by mapping
-each level to a point on the plane. We first obtain the mapping using `FactoMineR::CA()` as follows:
-4 Greenacre M (2017). Correspondence analysis in practice. Chapman and Hall/CRC.
+要进一步探索这两个变量之间的关系，我们可以使用`FactoMineR`程序包进行对应分析[^17]。这项技术可以通过把每个因子映射到平面上的一个点，让我们刻画高维因子水平之间的关系。首先，我们使用`FactoMineR::CA()`获取映射，代码如下：
+
+[^17]: Greenacre M (2017). Correspondence analysis in practice. Chapman and Hall/CRC.
+
 ```{r}
 dd_obj <- contingency_tbl %>%
 tibble::column_to_rownames(var = "drinks_drugs") %>%
 FactoMineR::CA(graph = FALSE)
 ```
-We can then plot the results using `ggplot`, which you can see in图4-4:
+然后，我们使用`ggplot`绘制结果，如图4-4所示：
 ```{r}
 dd_drugs <-
 dd_obj$row$coord %>%
@@ -1719,28 +1715,18 @@ geom_text(aes(label = label)) +
 coord_equal()
 ```
 
-![图4-4. Correspondence analysis principal coordinates for drug and alcohol use](figures/4_4.png)
+![图4-4. 毒品和酒精使用的对应分析主坐标](figures/4_4.png)
 
-62 | Chapter 4: Modeling
-In图4-4, we see that the correspondence analysis procedure has transformed the
-factors into variables called principal coordinates, which correspond to the axes in the
-plot and represent how much information in the contingency table they contain. We
-can, for example, interpret the proximity of “drinking often” and “using drugs very
-often” as indicating association.
-This concludes our discussion on EDA. Let’s proceed to feature engineering.
+在图4-4中，我们看到对应分析流程把因子转换成名为*主坐标*的变量，它对应因子的坐标轴并表示列联表包含了多少信息。例如，我们可以把“drinking often”和“using drugs very
+often”之间的距离看成是指示性关联。
+
+这是有关EDA的全部介绍。下面让我们介绍特征工程。
 
 ## 特征工程
 
-The feature engineering exercise comprises transforming the data to increase the per‐
-formance of the model. This can include things like centering and scaling numerical
-values and performing string manipulation to extract meaningful variables. It also
-often includes variable selection—the process of selecting which predictors are used
-in the model.
-In图4-1 we see that the age variable has a range from 18 to over 60. Some algo‐
-rithms, especially neural networks, train faster if we normalize our inputs so that they
-are of the same magnitude. Let’s now normalize the age variable by removing the
-mean and scaling to unit variance, beginning by calculating its mean and standard
-deviation:
+特征工程实践包括数据转换，以便增加模型性能。这些实践具体指，数值的中心化和缩放，字符的操作以便获取有意义的变量等。它也包括变量选取——选择哪些预测因素用到模型中。
+
+在图4-1中，我们看到`age`变量的取值范围是18到60以上。一些算法，特别是神经网络在归一化输入，维持相同的数据规模情况下训练的更快。现在让我们通过移除平均值和缩放单位方差，归一化`age`变量。首先计算平均值和标准差：
 ```{r}
 scale_values <- okc_train %>%
 summarise(
@@ -1753,25 +1739,19 @@ scale_values
  <dbl> <dbl>
 1 32.3 9.44
 ```
-We can then use these to transform the dataset:
+然后，我们使用这些信息转换数据集：
 ```{r}
 okc_train <- okc_train %>%
 mutate(scaled_age = (age - !!scale_values$mean_age) /
 !!scale_values$sd_age)
 dbplot_histogram(okc_train, scaled_age)
 ```
-In图4-5, we see that the scaled age variable has values that are closer to zero. We
-now move on to discussing other types of transformations, but during your feature
-engineering workflow you might want to perform the normalization for all numeric
-variables that you want to include in the model.
+在图4-5中，我们看到缩放后的`age`变量取值位于零附近。下面我们讨论其他类型的转换，但是在做特征工程的时候，你可能会希望对所有模型中用到的数值变量进行归一化。
 Feature Engineering | 63
 
-![图4-5. Distribution of scaled age](figures/4_5.png)
+![图4-5. 缩放后`age`变量的分布](figures/4_5.png)
 
-Since some of the profile features are multiple-select—in other words, a person can
-choose to associate multiple options for a variable—we need to process them before
-we can build meaningful models. If we take a look at the ethnicity column, for exam‐
-ple, we see that there are many different combinations:
+由于一些特征会被多次选取，换句话说，一个人可能对一个变量关联多个选择，我们需要在构建有意义的模型前做些处理。例如，如果我们看一下`ethnicity`列，可以发现有许多组合：
 ```{r}
 okc_train %>%
 group_by(ethnicity) %>%
@@ -1791,15 +1771,11 @@ tally()
 10 indian, hispanic / latin 5
 # … with more rows
 ```
-One way to proceed would be to treat each combination of races as a separate level,
-but that would lead to a very large number of levels, which becomes problematic in
-many algorithms. To better encode this information, we can create dummy variables
-for each race, as follows:
+一种处理方式是把种族的每一种组合都看成是一个独立的水平，但是这会导致生成大量的水平，这会给许多算法带来问题。为了更好的编码这些信息，我们可以为每个种族创建哑变量，代码如下：
 ```{r}
 ethnicities <- c("asian", "middle eastern", "black", "native american", "indian",
 "pacific islander", "hispanic / latin", "white", "other")
 ethnicity_vars <- ethnicities %>%
-64 | Chapter 4: Modeling
 purrr::map(~ expr(ifelse(like(ethnicity, !!.x), 1, 0))) %>%
 purrr::set_names(paste0("ethnicity_", gsub("\\s|/", "", ethnicities)))
 okc_train <- mutate(okc_train, !!!ethnicity_vars)
@@ -1819,8 +1795,7 @@ $ ethnicity_hispaniclatin <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
 $ ethnicity_white <dbl> 1, 0, 1, 0, 1, 1, 1, 0, 1, 0…
 $ ethnicity_other <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
 ```
-For the free text fields, a straightforward way to extract features is counting the total
-number of characters. We will store the train dataset in Spark’s memory with `compute()` to speed up computation.
+对于自由文本字段，一个直接的获取特征的方法是计算字符数量。我们会把训练集存在Spark的内存中，使用`compute()`计算。
 ```{r}
 okc_train <- okc_train %>%
 mutate(
@@ -1828,44 +1803,23 @@ essay_length = char_length(paste(!!!syms(paste0("essay", 0:9))))
 ) %>% compute()
 dbplot_histogram(okc_train, essay_length, bins = 100)
 ```
-We can see the distribution of the `essay_length` variable in图4-6.
+我们可以看到`essay_length`变量的分布，如图4-6所示。
 
-![图4-6. Distribution of essay length](figures/4_6.png)
+![图4-6. 文章长度分布](figures/4_6.png)
 
-Feature Engineering | 65
-We use this dataset in Chapter 5, so let’s save it first as a Parquet file—an efficient file
-format ideal for numeric data:
+我们会在第5章中使用这个数据集，所以让我们先存成一个Parquet文件，一种数值型数据的高效文件格式：
 ```{r}
 spark_write_parquet(okc_train, "data/okc-train.parquet")
 ```
-Now that we have a few more features to work with, we can begin running some
-unsupervised learning algorithms.
+现在我们有了一些可用的特征，可以进行一些监督式的学习算法。
 
 ## 监督式学习
 
-Once we have a good grasp on our dataset, we can start building some models. Before
-we do so, however, we need to come up with a plan to tune and validate the “candi‐
-date” models—in modeling projects, we often try different types of models and ways
-to fit them to see which ones perform the best. Since we are dealing with a binary
-classification problem, the metrics we can use include accuracy, precision, sensitivity,
-and area under the receiver operating characteristic curve (ROC AUC), among oth‐
-ers. The metric you optimize depends on your specific business problem, but for this
-exercise, we will focus on the ROC AUC.
-It is important that we don’t peek at the testing holdout set until the very end, because
-any information we obtain could influence our modeling decisions, which would in
-turn make our estimates of model performance less credible. For tuning and valida‐
-tion, we perform 10-fold cross-validation, which is a standard approach for model
-tuning. The scheme works as follows: we first divide our dataset into 10 approxi‐
-mately equal-sized subsets. We take the 2nd to 10th sets together as the training set
-for an algorithm and validate the resulting model on the 1st set. Next, we reserve the
-2nd set as the validation set and train the algorithm on the 1st and 3rd to 10th sets. In
-total, we train 10 models and average the performance. If time and resources allow,
-you can also perform this procedure multiple times with different random partitions
-of the data. In our case, we will demonstrate how to perform the cross-validation
-once. Hereinafter, we refer to the training set associated with each split as the analysis
-data, and the validation set as assessment data.
-Using the `sdf_random_split()` function, we can create a list of subsets from our
-`okc_train` table:
+一旦我们有了数据集，我们就可以开始构建一些模型。在我们开始之前，需要制定一个计划来调整和验证备选模型。在建模项目中，我们经常尝试不同类型的模型和方法来进行拟合，看看哪一个表现最好。因为我们处理的是一个二分类问题，可用的指标包括准确度，精确度，灵敏度，以及接受者操作特性曲线（ROC AUC）下的面积，以及其他度量方法。要优化的指标取决于特定业务问题，但是在本次练习中，我们将重点放在ROC AUC上。
+
+很重要的一点是，我们在最终结束前不要偷看测试集，因为我们获得的任何信息都可能影响我们的建模决策，这会反过来让模型性能估计不够可信。为了调试验证，我们进行10折交叉验证，这是模型的标准调试方法。具体方案如下：首先将数据集划分为10个大致相同的子集。我们把第2到第10组作为训练集，而在第一个集合上验证模型结果。然后，我们把第2组作为验证集，并在第1，第3到第10组上训练算法。最终，我们培训了10个模型，并对性能进行平均。如果时间和资源允许，你还可以使用不同的随机分区多次执行此过程。在我们的例子中，我们进行一次交叉验证。从现在开始，我们把与每个分割相关的训练集称为分析数据，并将验证集作为评估数据。
+
+使用`sdf_random_split()`函数，我们可以构建一系列`okc_train`数据表的子集：
 ```{r}
 vfolds <- sdf_random_split(
 okc_train,
@@ -1873,16 +1827,13 @@ weights = purrr::set_names(rep(0.1, 10), paste0("fold", 1:10)),
 seed = 42
 )
 ```
-We then create our first analysis/assessment split as follows:
+然后，我们创建第一次分析/评估数据集分割，代码如下：
 ```{r}
 analysis_set <- do.call(rbind, vfolds[2:10])
 assessment_set <- vfolds[[1]]
 ```
-One item we need to carefully treat here is the scaling of variables. We need to make
-sure that we do not leak any information from the assessment set to the analysis set,
-so we calculate the mean and standard deviation on the analysis set only and apply
-the same transformation to both sets. Here is how we would handle this for the age
-variable:
+
+这里我们需要仔细处理的一个问题是变量的缩放。我们需要确保不要把评估集的任何信息泄漏给分析集，所以我们只在分析集上计算平均值和标准差，并对两个集合做相同的转换。以下是我们对`age`变量所做的操作：
 ```{r}
 make_scale_age <- function(analysis_data) {
 scale_values <- analysis_data %>%
@@ -1898,12 +1849,11 @@ scale_age <- make_scale_age(analysis_set)
 train_set <- scale_age(analysis_set)
 validation_set <- scale_age(assessment_set)
 ```
-For brevity, here we show only how to transform the age variable. In practice, how‐
-ever, you would want to normalize each one of your continuous predictors, such as
-the `essay_length` variable we derived in the previous section.
-Logistic regression is often a reasonable starting point for binary classification prob‐
-lems, so let’s give it a try. Suppose also that our domain knowledge provides us with
-an initial set of predictors. We can then fit a model by using the Formula interface:
+
+为了简洁起见，这里我们只展示如何转换`age`变量。但是在实践中，你可能希望归一化每一个连续预测变量，例如前一节中导出的`essay_length` 变量。
+
+逻辑回归通常是二分类问题的合理起点，所以让我们试试看。假设我们的领域知识给我们提供了一组初始预测变量。然后，我们可以使用`Formula`接口拟合模型：
+
 ```{r}
 lr <- ml_logistic_regression(
 analysis_set, not_working ~ scaled_age + sex + drinks + drugs + essay_length
