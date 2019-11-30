@@ -1870,12 +1870,11 @@ drinks_very often drugs_never drugs_missing drugs_sometimes
  essay_length
  3.664964e-05
 ```
-To obtain a summary of performance metrics on the assessment set, we can use the
-`ml_evaluate()` function:
+要获取评估集的性能度量信息，我们可以使用`ml_evaluate()`函数：
 ```{r}
 validation_summary <- ml_evaluate(lr, assessment_set)
 ```
-You can print `validation_summary` to see the available metrics:
+你可以打印`validation_summary`，查看可用的度量：
 ```{r}
 validation_summary
 BinaryLogisticRegressionSummaryImpl
@@ -1904,36 +1903,27 @@ BinaryLogisticRegressionSummaryImpl
  - weighted_recall()
  - weighted_true_positive_rate()
 ```
-We can plot the ROC curve by collecting the output of `validation_summary$roc()`
-and using `ggplot2`:
+我们可以使用`validation_summary$roc()`的输出和`ggplot2`，绘制ROC曲线：
 ```{r}
 roc <- validation_summary$roc() %>%
 collect()
 ggplot(roc, aes(x = FPR, y = TPR)) +
 geom_line() + geom_abline(lty = "dashed")
 ```
-Figure 4-7 shows the results of the plot.
-The ROC curve plots the true positive rate (sensitivity) against the false positive rate
-(1–specificity) for varying values of the classification threshold. In practice, the busi‐
-ness problem helps to determine where on the curve one sets the threshold for classi‐
-fication. The AUC is a summary measure for determining the quality of a model, and
-we can compute it by calling the `area_under_roc()` function.
+图4-7展示了绘制结果。
 
-![图4-7. ROC curve for the logistic regression model](figures/4_7.png)
+ROC曲线绘制了真阳性率（敏感性）与假阳性率（1-特异性）之间的关系，以便反映分类阈值的变化。在实践中，业务问题有助于确定曲线上设置分类阈值的位置。AUC是一种用于确定模型质量的汇总度量，我们可以通过调用`area_under_roc()`函数来计算它。
+
+![图4-7. 逻辑回归模型的ROC曲线](figures/4_7.png)
 
 ```{r}
 validation_summary$area_under_roc()
 [1] 0.7872754
 ```
 
-> Spark provides evaluation methods for only generalized
-linear models (including linear models and logistic regression).
-For other algorithms, you can use the evaluator functions (e.g.,
-`ml_binary_classification_evaluator()` on the prediction Data‐
-Frame) or compute your own metrics.
+> Spark只为广义线性模型（包括线性模型和逻辑回归）提供了评估方法。对于其他算法，你可以使用评估函数（例如，数据框的`ml_binary_classification_evaluator()` ，或者是自己的度量算法。
 
-Now, we can easily repeat the logic we already have and apply it to each analysis/
-assessment split:
+现在，我们可以轻松的重复这个已经用在分割分析/评估数据集上的逻辑：
 ```{r}
 cv_results <- purrr::map_df(1:10, function(v) {
 analysis_set <- do.call(rbind, vfolds[setdiff(1:10, v)]) %>% compute()
@@ -1955,17 +1945,17 @@ auc = auc
 )
 })
 ```
-This gives us 10 ROC curves:
+这会返回10条ROC曲线：
 ```{r}
 unnest(cv_results, roc_df) %>%
 ggplot(aes(x = FPR, y = TPR, color = Resample)) +
 geom_line() + geom_abline(lty = "dashed")
 ```
-Figure 4-8 shows the results of the plot.
+图4-8展示了绘图结果：
 
-![图4-8. Cross-validated ROC curves for the logistic regression model](figures/4_8.png)
+![图4-8. 逻辑回归模型的交叉验证ROC曲线](figures/4_8.png)
 
-And we can obtain the average AUC metric:
+我们可以获取AUC度量的平均值：
 ```{r}
 mean(cv_results$auc)
 [1] 0.7715102
@@ -1973,10 +1963,7 @@ mean(cv_results$auc)
 
 ### 广义线性回归
 
-If you are interested in generalized linear model (GLM) diagnostics,you can also fit a
-logistic regression via the generalized linear regression interface by specifying `family= "binomial"`. Because the result is a regression model, the `ml_predict()` method
-does not give class probabilities. However, it includes confidence intervals for coeffi‐
-cient estimates:
+如果你对广义线性模型（generalized linear model，GLM）诊断感兴趣，你也可以通过广义线性回归接口，给定`family= "binomial"`，拟合一个逻辑回归模型。因为结果是一个回归模型，`ml_predict()`方法不会给出类别概率。但是它包含了置信区间，可以进行系数估计：
 ```{r}
 glr <- ml_generalized_linear_regression(
 analysis_set,
@@ -1985,9 +1972,7 @@ family = "binomial"
 )
 tidy_glr <- tidy(glr)
 ```
-We can extract the coefficient estimates into a tidy DataFrame, which we can then
-process further—for example, to create a coefficient plot, which you can see in
-Figure 4-9:
+我们可以把置信估计存到一个整齐的数据框中，以便进一步处理。例如，创建一个系数绘图，如图4-9所示：
 ```{r}
 tidy_glr %>%
 ggplot(aes(x = term, y = estimate)) +
@@ -1999,67 +1984,45 @@ coord_flip() +
 geom_hline(yintercept = 0, linetype = "dashed")
 ```
 
-![图4-9. Coefficient estimates with 95% confidence intervals](figures/4_9.png)
+![图4-9. 95%置信区间的系数估计](figures/4_9.png)
 
-> Both `ml_logistic_regression()` and `ml_linear_regression()`
-support elastic net regularization5
-through the `reg_param` and `elastic_net_param` parameters. `reg_param` corresponds to λ, whereas
-`elastic_net_param` corresponds to α. `ml_generalized_linear_regression()` supports only `reg_param`. 
+> `ml_logistic_regression()`和`ml_linear_regression()`都支持通过`reg_param`和`elastic_net_param`参数，实现弹性网正则化[^19]。`reg_param`对应$\lambda$，而`elastic_net_param`对应$\alpha$。`ml_generalized_linear_regression()`只支持`reg_param`。 
 
-5 Zou H, Hastie T (2005). “Regularization and variable selection via the elastic net.” Journal of the royal statisti‐
-cal society: series B (statistical methodology), 67(2), 301–320.
-Supervised Learning | 71
+[^19]: Zou H, Hastie T (2005). “Regularization and variable selection via the elastic net.” Journal of the royal statistical society: series B (statistical methodology), 67(2), 301–320.
+
 
 ### 其它模型
 
-Spark supports many of the standard modeling algorithms and it’s easy to apply these
-models and hyperparameters (values that control the model-fitting process) for your
-particular problem. You can find a list of supported ML-related functions in the
-appendix. The interfaces to access these functionalities are largely identical, so it is
-easy to experiment with them. For example, to fit a neural network model we can run
-the following:
+Spark支持许多标准的建模算法，很容易为特定问题应用这些模型和超参数（控制模型拟合过程的值）。你可以在附录中找到支持ML相关函数的列表。访问这些功能的接口大部分是相同的，因此很容易进行实验。例如，为了拟合神经网络模型，我们可以运行以下命令：
+
 ```{r}
 nn <- ml_multilayer_perceptron_classifier(
 analysis_set,
 not_working ~ scaled_age + sex + drinks + drugs + essay_length,
 layers = c(12, 64, 64, 2) )
 ```
-This gives us a feedforward neural network model with two hidden layers of 64 nodes
-each. Note that you have to specify the correct values for the input and output layers
-in the layers argument. We can obtain predictions on a validation set using
-`ml_predict()`:
+
+这返回一个前馈神经网络模型，它有两个隐藏层，每层64个节点。注意，必须在`layers`参数中为输入和输出层指定正确的值。我们可以使用`ml_predict()`在验证集上获取预测值：
 ```{r}
 predictions <- ml_predict(nn, assessment_set)
 ```
-Then, we can compute the AUC via `ml_binary_classification_evaluator()`:
+然后，我们可以通过`ml_binary_classification_evaluator()`计算AUC：
 ```{r}
 ml_binary_classification_evaluator(predictions)
 [1] 0.7812709
 ```
-Up until now, we have not looked into the unstructured text in the essay fields apart
-from doing simple character counts. In the next section, we explore the textual data
-in more depth.
+到目前为止，我们还没有查看文章字段中的非结构化文本，只是做了一些简单的字符计数。在下一节中，我们会具体探索文本数据。
 
 ## 非监督式学习
 
-Along with speech, images, and videos, textual data is one of the components of the
-big data explosion. Prior to modern text-mining techniques and the computational
-resources to support them, companies had little use for freeform text fields. Today,
-text is considered a rich source of insights that can be found anywhere from physi‐
-cian’s notes to customer complaints. In this section, we show some basic text analysis
-capabilities of `sparklyr`。 If you would like more background on text-mining techni‐
-ques, we recommend reading Text Mining with R by David Robinson and Julie Silge
-(O’Reilly).
-In this section, we show how to perform a basic topic-modeling task on the essay data
-in the OKCupid dataset. Our plan is to concatenate the essay fields (of which there are
-10) of each profile and regard each profile as a document, then attempt to discover
-topics (we define these soon) using Latent Dirichlet Allocation (LDA).
+除了语音、图像和视频之外，文本数据也是大数据爆炸的表现之一。在现代文本挖掘技术和计算资源之前，公司很少使用自由格式的文本字段。今天，文本被认为是一个丰富的无处不在的信息来源，从医生的笔记到客户的投诉。在本节中，我们将展示一些`sparklyr`基本的文本分析能力。如果想了解文本挖掘技术的更多背景知识，我们建议阅读David Robinson和Julie Silge的《R文本挖掘》（O’Reilly）。
+
+在本节中，我们将展示如何对OKCupid数据集中的文章数据进行基本的主题建模任务。我们的计划是连接每个用户的文章字段（其中有10个），并将每个用户看成为一个文档，然后尝试使用隐狄利克雷分布（Latent Dirichlet Allocation ，LDA）来发现主题（我们很快会定义这些主题）。
 
 ### 数据准备
 
-As always, before analyzing a dataset (or a subset of one), we want to take a quick
-look at it to orient ourselves. In this case, we are interested in the freeform text that
-the users entered into their dating profiles.
+和往常一样，在分析一个数据集（或其中的一个子集）之前，我们希望快速地查看它以便确定自己的方向。在这种情况下，我们关注用户在约会档案中输入的自由格式文本。
+
 ```{r}
 essay_cols <- paste0("essay", 0:9)
 essays <- okc %>%
@@ -2080,21 +2043,15 @@ $ essay7 <chr> "trying to find someone to hang out with. i am down …
 $ essay8 <chr> "i am new to california and looking for someone to w…
 $ essay9 <chr> "you want to be swept off your feet!<br />\nyou are …
 ```
-Just from this output, we see the following:
+从这些输出，我们看到：
 
-* The text contains HTML tags
-* The text contains the newline (\n) character
-* There are missing values in the data
+* 文本包含HTML标签。
+* 文本包含换行符（\\n）。
+* 数据中有缺失值。
 
-The HTML tags and special characters pollute the data since they are not directly
-input by the user and do not provide interesting information. Similarly, since we have
-encoded missing character fields with the missing string, we need to remove it. (Note
-that by doing this we are also removing instances of the word “missing” written by
-the users, but the information lost from this removal is likely to be small.)
-As you analyze your own text data, you will quickly come across and become familiar
-with the peculiarities of the specific dataset. As with tabular numerical data, prepro‐
-cessing text data is an iterative process, and after a few tries we have the following
-transformations:
+HTML标记和特殊字符会污染数据，因为它们不是用户直接输入的，也不提供有意义的信息。类似地，由于我们已经用*missing*字符串对丢失的字符字段进行了编码，所以需要删除它。（注意，这样还将删除用户编写的单词“missing”的实例，但删除过程中丢失的信息可能很小。）
+
+当你分析自己的文本数据时，你会很快发现并熟悉特定数据集的独有性质。与表格数值数据一样，预处理文本数据是一个迭代的过程。经过几次尝试之后，我们得到以下转换结果：
 ```{r}
 essays <- essays %>%
 # Replace `missing` with empty string.
@@ -2105,20 +2062,13 @@ mutate(essay = paste(!!!syms(essay_cols))) %>%
 mutate(words = regexp_replace(essay, "\\n|&nbsp;|<[^>]*>|[^A-Za-z|']", " "))
 ```
 
-Note here we are using `regex_replace()`, which is a Spark SQL function. Next, we
-discuss LDA and how to apply it to our cleaned dataset.
+这里注意我们使用`regex_replace()`，它是一个Spark的SQL函数。下面，我们讨论LDA以及如何应用到干净的数据集上。
 
 ### 主题建模
 
-LDA is a type of topic model for identifying abstract “topics” in a set of documents. It
-is an unsupervised algorithm in that we do not provide any labels, or topics, for the
-input documents. LDA posits that each document is a mixture of topics, and each
-topic is a mixture of words. During training, it attempts to estimate both of these
-simultaneously. A typical use case for topic models involves categorizing many docu‐
-ments, for which the large number of documents renders manual approaches infeasi‐
-ble. The application domains range from GitHub issues to legal documents.
-After we have a reasonably clean dataset following the workflow in the previous sec‐
-tion, we can fit an LDA model with `ml_lda()`:
+LDA是一种主题模型，用于识别一组文档中的抽象“主题”。它是一种无监督的算法，因为我们不给输入文档提供任何标签或主题。LDA假设每个文档都是主题的混合体，并且主题是词的混合体。在训练阶段，它试图同时估计这两个变量。主题模型的典型用例包括对许多文档进行分类，这些文档由于量大使得手动方法不可行。应用领域从GitHub问题到法律文档。
+
+在我们遵循上一节的工作流，得到一个非常干净的数据集之后，可以用`ml_lda()`来拟合LDA模型：
 ```{r}
 stop_words <- ml_default_stop_words(sc) %>%
 c(
@@ -2128,10 +2078,8 @@ c(
 lda_model <- ml_lda(essays, ~ words, k = 6, max_iter = 1, min_token_length = 4,
 stop_words = stop_words, min_df = 5)
 ```
-We are also including a stop_words vector, consisting of commonly used English
-words and common words in our dataset, that instructs the algorithm to ignore them.
-After the model is fit, we can use the `tidy()` function to extract the associated betas,
-which are the per-topic-per-word probabilities, from the model.
+
+我们还需要一个`stop_words`向量，由常用的英语单词和我们数据集中常见的单词组成，它会告诉算法忽略它们。在模型拟合之后，我们可以使用`tidy()`函数从模型中提取相关的`beta`，即每个主题中每个单词的概率。
 ```{r}
 betas <- tidy(lda_model)
 betas
@@ -2150,13 +2098,8 @@ betas
 10 0 much 272.
 # … with 256,982 more rows
 ```
-We can then visualize this output by looking at word probabilities by topic. In
-Figure 4-10 and图4-11, we show the results at 1 iteration and 100 iterations. The
-74 | Chapter 4: Modeling
-code that generates图4-10 follows; to generate图4-11, you would need to
-set `max_iter = 100` when running `ml_lda()`, but beware that this can take a really
-long time in a single machine—this is the kind of big-compute problem that a proper
-Spark cluster would be able to easily tackle.
+然后，我们可以按主题查看单词概率来可视化输出。在图4-10和图4-11中，我们显示了1次迭代和100次迭代的结果。下面是生成图4-10的代码；要生成图4-11，您需要在运行`ml_lda()`时设置`max_iter = 100`，但要注意在单机上这可能需要长时间——这是一个大计算问题，而一个合适Spark集群可以很容易地解决。
+
 ```{r}
 betas %>%
 group_by(topic) %>%
@@ -2170,43 +2113,25 @@ facet_wrap(~ topic, scales = "free") +
 coord_flip()
 ```
 
-![图4-10. The most common terms per topic in the first iteration](figures/4_10.png)
+![图4-10. 第1次迭代后，每个主题最常用的词语](figures/4_10.png)
 
-At 100 iterations, we can see “topics” starting to emerge. This could be interesting
-information in its own right if you were digging into a large collection of documents
-with which you aren’t familiar. The learned topics can also serve as features in a
-downstream supervised learning task; for example, we could consider using the topic
-number as a predictor in our model to predict employment status in our predictive
-modeling example.
+在100次迭代中，我们可以看到“主题”开始出现。如果你正在挖掘大量不熟悉的文档，这本身就是一个有趣的信息。学到的主题也可以作为下游监督学习任务的特征；例如，我们可以考虑在模型中使用主题编号作为预测变量，在我们的预测建模例子
 
-![图4-11. The most common terms per topic after 100 iterations](figures/4_11.png)
+![图4-11. 第100次迭代后，每个主题最常用的词语](figures/4_11.png)
 
-Finally, to conclude this chapter you should disconnect from Spark. Chapter 5 also
-makes use of the `OKCupid` dataset, but we provide instructions to reload it from
-scratch:
+最后，要结束本章，你应该断开Spark连接。第5章也会使用`OKCupid`数据集，但是我们会从零开始，介绍如何重新加载它：
 ```{r}
 spark_disconnect(sc)
 ```
 
 ## 小结
 
-In this chapter, we covered the basics of building predictive models in Spark with R
-by presenting the topics of EDA, feature engineering, and building supervised mod‐
-els, in which we explored using logistic regression and neural networks—just to pick
-a few from dozens of models available in Spark through MLlib.
-We then explored how to use unsupervised learning to process raw text, in which you
-created a topic model that automatically grouped the profiles into six categories. We
-demonstrated that building the topic model can take a significant amount of time
-using a single machine, which is a nearly perfect segue to introduce full-sized com‐
-puting clusters! But hold that thought: we first need to consider how to automate data
-science workflows.
-As we mentioned when introducing this chapter, emphasis was placed on predictive
-modeling. Spark can help with data science at scale, but it can also assist in productio‐
-nizing data science workflows into automated processes, known by many as machine
-learning. Chapter 5 presents the tools we will need to take our predictive models, and
-even our entire training workflows, into automated environments that can run con‐
-tinuously or be exported and consumed in web applications, mobile applications, and
-more.
+在本章中，我们介绍了用R在Spark中构建预测模型的基础知识，包括EDA、特征工程和构建监督式模型，我们探索了逻辑回归和神经网络，模型。这只是Spark中通过`MLlib`提供的几十种模型中的一小部分。
+
+然后我们探索了如何使用无监督式学习来处理原始文本。我们创建了一个主题模型，该模型自动将文档分为六个类别。我们介绍了使用一台机器构建主题模型会需要花费大量的时间。这几乎是引入全功能计算集群的完美理由。但要注意：我们首先需要考虑如何自动化数据科学工作流程。
+
+正如我们在介绍本章时提到的，本章重点是预测建模。Spark可以助力大规模数据科学项目，也可以产品化数据科学工作流程，使之可以自动化，也就是我们熟知的机器学习。第5章介绍工具，让预测模型，以及整个训练流程，融合到自动化环境中，可以持续的运行，或者导出到web应用程序、移动应用程序和其他环境中。
+
 ----------
 
 # 第五章 Pipelines
