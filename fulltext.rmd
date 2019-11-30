@@ -1479,7 +1479,6 @@ install.packages("FactoMineR")
   对是否有人还在上班进行预测。也就是说，没有退休，不是学生，也不是失业的状态。
   
 下面我们探索这个数据集。
-3 
 
 ## 探索性数据分析
 
@@ -1511,7 +1510,7 @@ mutate(drinks = ifelse(is.na(drinks), "missing", drinks)) %>%
 mutate(drugs = ifelse(is.na(drugs), "missing", drugs)) %>%
 mutate(job = ifelse(is.na(job), "missing", job))
 ```
-我们给定`escape = "\""`和`options = list(multiline = TRUE)`，接受字段中自带的引号和换行符。我们把`height`和`income`列的属性转换成数值类型，并a按字符型记录缺失值。需要注意，最好尝试几次给定不同的参数，保证数据的输入是正确的。有时，即使在获取数据更多数据理解的建模阶段，你也需要回头看看这些步骤。
+我们给定`escape = "\""`和`options = list(multiline = TRUE)`，接受字段中自带的引号和换行符。我们把`height`和`income`列的属性转换成数值类型，并按字符型记录缺失值。需要注意，最好尝试几次给定不同的参数，保证数据的输入是正确的。有时，即使在获取数据更多数据理解的建模阶段，你也需要回头看看这些步骤。
 
 现在我们可以使用`glimpse()`快速查看一下数据：
 
@@ -1552,7 +1551,7 @@ $ smokes <chr> "sometimes", "no", "no", "no", "no", "no",…
 $ speaks <chr> "english", "english (fluently), spanish (p…
 $ status <chr> "single", "single", "available", "single",…
 ```
-我们添加一个响应变量作为一列，查看它的分：
+我们添加一个响应变量作为一列，查看它的分布：
 ```{r}
 okc <- okc %>%
 mutate(
@@ -1567,21 +1566,13 @@ tally()
 2 1 5405
 ```
 
-Before we proceed further, let’s perform an initial split of our data into a training set
-and a testing set and put away the latter. In practice, this is a crucial step because we
-would like to have a holdout set that we set aside at the end of the modeling process
-to evaluate model performance. If we were to include the entire dataset during EDA,
-information from the testing set could “leak” into the visualizations and summary
-statistics and bias our model-building process even though the data is not used
-directly in a learning algorithm. This would undermine the credibility of our perfor‐
-mance metrics. We can easily split the data by using the `sdf_random_split()`
-function:
+继续讲解之前，让我们先把数据分成训练集和测试集，并把测试集放在一边。事实上，这是很关键的一步，因为我们希望有一个例外的集合，可以在建模过程结束的时候用来评估模型性能。如果我们在EDA阶段囊括了所有的数据，测试集中的信息会“泄露”到可视化和汇总统计中,让我们的模型构建带有某种偏置。即便一个学习算法没有直接使用这个数据，也会发生这种情况。这会降低性能评估的可信度。我们可以简单的使用`sdf_random_split()`函数分割数据集：
 ```{r}
 data_splits <- sdf_random_split(okc, training = 0.8, testing = 0.2, seed = 42)
 okc_train <- data_splits$training
 okc_test <- data_splits$testing
 ```
-We can quickly look at the distribution of our response variable:
+我们可以快速的查看响应变量的分布：
 ```{r}
 okc_train %>%
 group_by(not_working) %>%
@@ -1593,8 +1584,7 @@ mutate(frac = n / sum(n))
 1 0 43785 0.910
 2 1 4317 0.0897
 ```
-Using the `sdf_describe()` function, we can obtain numerical summaries of specific
-columns:
+使用`sdf_describe()`函数，我们可以获取具体列的数值统计信息：
 ```{r}
 sdf_describe(okc_train, cols = c("age", "income"))
 # Source: spark<?> [?? x 3]
@@ -1606,20 +1596,14 @@ sdf_describe(okc_train, cols = c("age", "income"))
 4 min 18 20000.0
 5 max 110 1000000.0
 ```
-Like we saw in Chapter 3, we can also utilize the `dbplot` package to plot distributions
-of these variables. In图4-1 we show a histogram of the distribution of the age
-variable, which is the result of the following code:
+正如我们在第3章看到的，我们也可以使用`dbplot`程序包绘制这些变量的分布。在图4-1中，我们展示了一个年龄变量的分布直方图，其通过以下代码生成： 
 ```{r}
 dbplot_histogram(okc_train, age)
 ```
 
-![图4-1. Distribution of age](figures/4_1.png)
+![图4-1. 年龄分布](figures/4_1.png)
 
-A common EDA exercise is to look at the relationships between the response and the
-individual predictors. Often, you might have prior business knowledge of what these
-relationships should be, so this can serve as a data quality check. Also, unexpected
-trends can inform variable interactions that you might want to include in the model.
-As an example, we can explore the religion variable:
+一般的EDA操作是要查看响应变量个各个预测变量之间的关系。通常，你可能有些先验知识理解这些关系的含义，所以这些知识可以用在数据质量的检查。而且，一些异常的趋势可以展示变量的交互，你也可能把这些交互信息建模到模型中。作为一个例子，我们可以探索`religion`变量：
 ```{r}
 prop_data <- okc_train %>%
 mutate(religion = regexp_extract(religion, "^\\\\w+", 0)) %>%
@@ -1643,13 +1627,10 @@ prop_data
  6 agnosticism 7078 0.0958 0.00346
  7 other 6240 0.0841 0.00346
  8 missing 16152 0.0719 0.002
-Exploratory Data Analysis | 59
  9 buddhism 1575 0.0851 0.007
 10 catholicism 3769 0.0886 0.00458
 ```
-Note that prop_data is a small DataFrame that has been collected into memory in
-our R session, we can take advantage of `ggplot2` to create an informative visualiza‐
-tion (see图4-2):
+注意`prop_data`是一个小型的数据框，它通过R进程导入到内存中，我们可以利用`ggplot2`创建一个丰富的可视化结果（见图4-2）：
 ```{r}
 prop_data %>%
 ggplot(aes(x = religion, y = prop)) + geom_point(size = 2) +
