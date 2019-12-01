@@ -2134,40 +2134,22 @@ spark_disconnect(sc)
 
 ----------
 
-# 第五章 Pipelines
+# 第五章 管道操作
 
 > You will never walk again, but you will fly!
 > —Three-Eyed Raven
 
-In Chapter 4, you learned how to build predictive models using the high-level func‐
-tions Spark provides and well-known R packages that work well together with Spark.
-You learned about supervised methods first and finished the chapter with an unsu‐
-pervised method over raw text.
-In this chapter, we dive into Spark Pipelines, which is the engine that powers the fea‐
-tures we demonstrated in Chapter 4. So, for instance, when you invoke an MLlib
-function via the formula interface in R—for example, `ml_logistic_regression(cars, am ~ .)`—a pipeline is constructed for you under the hood. Therefore,
-Pipelines also allow you to make use of advanced data processing and modeling
-workflows. In addition, a pipeline also facilitates collaboration across data science
-and engineering teams by allowing you to deploy pipelines into production systems,
-web applications, mobile applications, and so on.
-This chapter also happens to be the last chapter that encourages using your local
-computer as a Spark cluster. You are just one chapter away from getting properly
-introduced to cluster computing and beginning to perform data science or machine
-learning that can scale to the most demanding computation problems.
+在第4章中，你学习了如何使用Spark提供的高级函数以及与Spark协同工作的著名R包，来构建预测模型。你首先学习了监督式算法，最后学习了原始文本上的非监督式算法。
 
-## Overview
+在本章中，我们将深入学习Spark管道操作，这是第四章中介绍的特征工程的动力。例如，当通过R中的公式接口调用`MLlib`函数时，例如`ml_logistic_regression(cars, am ~ .)`，一个*管道*就在背后构建完成了。因此，管道允许使用高级数据处理和建模流程。此外，管道还允许将其*部署*到生产系统，web应用程序、移动应用程序等,促进了跨数据科学和工程团队的协作。
 
-The building blocks of pipelines are objects called transformers and estimators, which
-are collectively referred to as pipeline stages. A transformer can be used to apply trans‐
-formations to a DataFrame and return another DataFrame; the resulting DataFrame
-often comprises the original DataFrame with new columns appended to it. An esti‐
-mator, on the other hand, can be used to create a transformer giving some training
-77
-data. Consider the following example to illustrate this relationship: a “center and
-scale” estimator can learn the mean and standard deviation of some data and store
-the statistics in a resulting transformer object; this transformer can then be used to
-normalize the data that it was trained on and also any new, yet unseen, data.
-Here is an example of how to define an estimator:
+本章也是鼓励使用本地计算机作为Spark集群的最后一章。你离真正的集群计算，以及数据科学或机器学习只有一章之遥，它们可以扩展到最苛刻的计算问题上。
+
+## 概述
+
+管道的构件是称为*转换器*和*评估器*的对象，它们统称为*管道阶段*。转换器可将转换操作应用于数据框并返回另一个数据框；生成的数据框通常包含原始数据框及其追加的新列。另一方面，估计器可以用来创建一个提供训练数据的转换器。考虑下面的例子来说明这种关系：一个“中心和扩展“估计器可以学习一些数据的平均值和标准差，并将统计信息存储在最后的转换器对象中；然后，可以使用这个转换器来归一化它所训练的数据以及任何新的、但看不见的数据。
+
+这里是定义一个评估器的过程：
 ```{r}
 library(sparklyr)
 library(dplyr)
@@ -2187,8 +2169,7 @@ StandardScaler (Estimator)
  with_mean: TRUE
  with_std: TRUE
 ```
-We can now create some data (for which we know the mean and standard deviation)
-and then fit our scaling model to it using the `ml_fit()` function:
+现在我们可以创建一些数据（我们已经知道平均值和标准差），然后使用`ml_fit()`函数拟合扩展模型：
 ```{r}
 df <- copy_to(sc, data.frame(value = rnorm(100000))) %>%
 ft_vector_assembler(input_cols = "value", output_col = "features")
@@ -2203,13 +2184,10 @@ StandardScalerModel (Transformer)
  mean: num 0.00421
  std: num 0.999
 ```
-In Spark ML, many algorithms and feature transformers require
-that the input be a vector column. The function `ft_vector_assembler()` performs this task. You can also use the function to initial‐
-ize a transformer to be used in a pipeline.
 
-We see that the mean and standard deviation are very close to 0 and 1, respectively,
-which is what we expect. We then can use the transformer to transform a DataFrame,
-using the `ml_transform()` function:
+> 在Spark ML中，许多算法和特征变换都要求输入为矢量列。函数`ft_vector_assembler()`执行此任务。你还可以使用该函数初始化要在管道中使用的转换器。
+
+我们看到，平均值和标准差分别非常接近0和1，这正是我们期望的。借助`ml_transform()`函数，我们可以使用转换器来转换数据框：
 ```{r}
 scaler_model %>%
 ml_transform(df) %>%
@@ -2221,17 +2199,15 @@ $ value <dbl> 0.75373300, -0.84207731, 0.59365113, -…
 $ features <list> [0.753733, -0.8420773, 0.5936511, -0.…
 $ features_scaled <list> [0.7502211, -0.8470762, 0.58999, -0.4…
 ```
-Now that you’ve seen basic examples of estimators and transformers, we can move on
-to pipelines.
+既然你已经有了基本的评估器和转换器例子。我们继续介绍管道。
 
-## Creation
+## 创建工作
 
-A pipeline is simply a sequence of transformers and estimators, and a pipeline model is
-a pipeline that has been trained on data so all of its components have been converted
-to transformers.
-There are a couple of ways to construct a pipeline in `sparklyr`, both of which use the
-`ml_pipeline()` function.
-We can initialize an empty pipeline with `ml_pipeline(sc)` and append stages to it:
+一个*管道*是一系列转换器和评估器，一个*管道模型*是在数据上完成训练的一个管道。因此，所有部件都变成了转换器。
+
+在`sparklyr`中，有两种方法构建管道，二者都使用`ml_pipeline()`函数。
+
+我们可以使用`ml_pipeline(sc)`初始化空管道，并追加一些阶段：
 ```{r}
 ml_pipeline(sc) %>%
 ft_standard_scaler(
@@ -2250,11 +2226,11 @@ Pipeline (Estimator) with 1 stage
  | with_mean: TRUE
  | with_std: TRUE
 ```
-Alternatively, we can pass stages directly to `ml_pipeline()`:
+或者，我们也可以直接把阶段传给`ml_pipeline()`：
 ```{r}
 pipeline <- ml_pipeline(scaler)
 ```
-We fit a pipeline as we would fit an estimator:
+我们按照拟合评估器的方式，拟合一个管道：
 ```{r}
 pipeline_model <- ml_fit(pipeline, df)
 pipeline_model
@@ -2272,25 +2248,18 @@ PipelineModel (Transformer) with 1 stage
 pipeline
 ```
 
-> As a result of the design of Spark ML, pipelines are always estimator objects, even if they comprise only transformers. This means
-that if you have a pipeline with only transformers, you still need to
-call `ml_fit()` on it to obtain a transformer. The “fitting” procedure
-in this case wouldn’t actually modify any of the transformers.
+> 由于Spark ML的设计，即使管道只包含转换器，它也始终看成是评估器对象。这意味着，如果有一个只有转换器的管道，你仍然需要对其调用`ml_fit()`，以获得一个转换器。本例中的“拟合”过程实际上不会修改任何转换器。
 
 ## 用例
 
-Now that you have an understanding of the rudimentary concepts for ML Pipelines,
-let’s apply them to the predictive modeling problem from the previous chapter in
-which we are trying to predict whether people are currently employed by looking at
-their profiles. Our starting point is the okc_train DataFrame with the relevant
-columns.
+既然你已经了解了ML管道的基本概念，那么让我们把它们用到上一章中的预测建模问题。在上一章中，我们试图通过查看人们的画像来预测他们目前是否有工作。我们从带有相关列的`okc_train`数据框开始。
+
 ```{r}
 okc_train <- spark_read_parquet(sc, "data/okc-train.parquet")
 okc_train <- okc_train %>%
 select(not_working, age, sex, drinks, drugs, essay1:essay9, essay_length)
 ```
-We first exhibit the pipeline, which includes feature engineering and modeling steps,
-and then walk through it:
+首先，我们展示管道，包括特征工程和建模步骤，然后逐步走通：
 ```{r}
 pipeline <- ml_pipeline(sc) %>%
 ft_string_indexer(input_col = "sex", output_col = "sex_indexed") %>%
@@ -2308,20 +2277,11 @@ with_mean = TRUE) %>%
 ml_logistic_regression(features_col = "features_scaled",
 label_col = "not_working")
 ```
-The first three stages index the sex, drinks, and drugs columns, which are charac‐
-ters, into numeric indices via `ft_string_indexer()`. This is necessary for the
-`ft_one_hot_encoder_estimator()` that comes next, which requires numeric column
-inputs. When all of our predictor variables are of numeric type (recall that age is
-numeric already), we can create our features vector using `ft_vector_assembler()`,
-which concatenates all of its inputs together into one column of vectors. We can then
-use `ft_standard_scaler()` to normalize all elements of the features column (includ‐
-ing the one-hot-encoded 0/1 values of the categorical variables), and finally apply a
-logistic regression via `ml_logistic_regression()`.
-During prototyping, you might want to execute these transformations eagerly on a
-small subset of the data, by passing the DataFrame to the `ft_` and `ml_` functions, and
-inspecting the transformed DataFrame. The immediate feedback allows for rapid iter‐
-ation of ideas; when you have arrived at the desired processing steps, you can roll
-them up into a pipeline. For example, you can do the following:
+
+前三个阶段通过`ft_string_indexer()`为`sex`、`drinks`和`drugs`字符型列建立数值索引。这对于接下来的`ft_one_hot_encoder_estimator()`是必要的，因为它需要数值列输入。当我们所有的预测变量都是数值类型时（回想一下，`age`已经是数值类型），我们可以使用`ft_vector_assembler()`创建特征向量，它将其所有输入拼接成一个列向量中。然后我们可以使`ft_standard_scaler()`归一化特征列的所有元素（包括类别型变量独热编码的0/1值），最后通过`ml_logistic_regression()`使用逻辑回归。
+
+在原型设计期间，你可能将数据框传递给`ft_`和`ml_`函数并检查转换后的数据框，以此*急切地*在数据的一小部分上执行这些转换。即时的反馈方便快速迭代想法；当你获得所需的处理步骤时，你可以将它们打包成一个管道。例如，你可以执行以下操作：
+
 ```{r}
 okc_train %>%
 ft_string_indexer("sex", "sex_indexed") %>%
@@ -2341,18 +2301,13 @@ select(sex_indexed)
 10 0
 # … with more rows
 ```
-After you have found the appropriate transformations for your dataset, you can
-replace the DataFrame input with ml_pipeline(sc), and the result will be a pipeline
-that you can apply to any DataFrame with the appropriate schema. In the next sec‐
-tion, we’ll see how pipelines can make it easier for us to test different model
-specifications.
+
+找到数据集的合适转换后，可以用`ml_pipeline(sc)`替换数据框输入，结果是一个可以应用到任何具有合适结构的数据框的管道。在下一节中，我们将看到管道如何使我们更容易测试不同的模型配置。
 
 ### 超参调试
 
-Going back to the pipeline we have created earlier, we can use `ml_cross_validator()` to perform the cross-validation workflow we demonstrated in the previous
-chapter and easily test different hyperparameter combinations. In this example, we
-test whether centering the variables improves predictions together with various regu‐
-larization values for the logistic regression. We define the cross-validator as follows:
+回到前面创建的管道，我们可以使用`ml_cross_validator()`来执行在上一章中介绍的交叉验证工作流，并轻松测试不同的超参数组合。在这个例子中，我们测试逻辑回归中变量的中心化和各种正则化手段是否可以改善预测。我们定义交叉验证器，代码如下：
+
 ```{r}
 cv <- ml_cross_validator(
 sc,
@@ -2366,14 +2321,7 @@ reg_param = c(1e-2, 1e-3) )
 evaluator = ml_binary_classification_evaluator(sc, label_col = "not_working"),
 num_folds = 10)
 ```
-The `estimator` argument is simply the estimator that we want to tune, and in this
-case it is the pipeline that we defined. We provide the hyperparameter values we are
-interested in via the `estimator_param_maps` parameter, which takes a nested named
-list. The names at the first level correspond to UIDs, which are unique identifiers
-associated with each pipeline stage object, of the stages we want to tune (if a partial
-UID is provided, `sparklyr` will attempt to match it to a pipeline stage), and the
-names at the second level correspond to parameters of each stage. In the preceding
-snippet, we are specifying that we want to test the following:
+`estimator`参数只是我们想要调整的评估器，在本例中，它是我们定义的管道。我们通过`estimator_param_maps`参数给我们感兴趣的超参提供数值，该参数采用一个嵌套的命名列表。第一层的名称对应UID，它是与每个我们要调试的管道阶段对象关联的唯一标识符（如果只提供了部分UID，`sparklyr`将尝试将其与管道阶段匹配）。而第二级的名称对应于每个阶段的参数。在开始的代码片段中，我们指定要测试以下内容：
 
 * Standard scaler
     The values TRUE and FALSE for with_mean, which denotes whether predictor values are centered.
