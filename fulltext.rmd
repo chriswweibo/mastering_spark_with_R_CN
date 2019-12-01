@@ -2323,13 +2323,13 @@ num_folds = 10)
 ```
 `estimator`参数只是我们想要调整的评估器，在本例中，它是我们定义的管道。我们通过`estimator_param_maps`参数给我们感兴趣的超参提供数值，该参数采用一个嵌套的命名列表。第一层的名称对应UID，它是与每个我们要调试的管道阶段对象关联的唯一标识符（如果只提供了部分UID，`sparklyr`将尝试将其与管道阶段匹配）。而第二级的名称对应于每个阶段的参数。在开始的代码片段中，我们指定要测试以下内容：
 
-* Standard scaler
-    The values TRUE and FALSE for with_mean, which denotes whether predictor values are centered.
-* Logistic regression
-    The values 0.25 and 0.75 for α, and the values 1e-2 and 1e-3 for λ.
-We expect this to give rise to 2 × 2 × 2 = 8 hyperparameter combinations, which we
-can confirm by printing the cv object:
-```{r}
+* 标准标量
+    `with_mean`的`TRUE`和`FALSE`值，表示预测变量的值是否中心化。
+* 逻辑回归
+    $\alpha$的`0.25`和`0.75`值，$\lambda$的`1e-2`和`1e-3`值。
+
+我们希望这些信息可以生成`2 × 2 × 2 = 8`种超参数组合，我们可以通过打印`cv`对象来确认：
+```
 cv
 CrossValidator (Estimator)
 <cross_validator_d5676ac6f5>
@@ -2342,11 +2342,11 @@ CrossValidator (Estimator)
  num_folds: 10
  [Tuned over 8 hyperparameter sets]
 ```
-As with any other estimator, we can fit the cross-validator by using `ml_fit()`
+有了其它的评估器，我们可以使用`ml_fit()`拟合交叉验证器：
 ```{r}
 cv_model <- ml_fit(cv, okc_train)
 ```
-and then inspect the results:
+并查看结果：
 ```{r}
 ml_validation_metrics(cv_model) %>%
 arrange(-areaUnderROC)
@@ -2360,23 +2360,20 @@ arrange(-areaUnderROC)
 7 0.7713816 0.75 0.001 FALSE
 8 0.7703913 0.25 0.001 FALSE
 ```
-Now that we have seen the pipelines API in action, let’s talk more formally about how
-they behave in various contexts.
+因为我们看到了实际工作中的管道API，因此让我们更加正式的介绍它们在不同的问题背景下是如何运行的：
 
 ## 操作模式
 
-By now, you have likely noticed that the pipeline stage functions, such as
-`ft_string_indexer()` and `ml_logistic_regression()`, return different types of
-objects depending on the first argument passed to them. Table 5-1 presents the full
-pattern.
-Table 5-1. Operating modes in machine learning functions
+截止到目前，你很可能已经注意到，管道阶段函数，例如`ft_string_indexer()`和`ml_logistic_regression()`会根据传入的第一个变量返回不同类型的对象。表5-1给出了完整的模式。
 
-First argument |Returns| Example
+表5-1. 机器学习函数的操作模式
+
+第一个变量 |返回值| 示例
 -----------|-----------|------------
-Spark connection |Estimator or transformer object| `ft_string_indexer(sc)`
-Pipeline |Pipeline| `ml_pipeline(sc) %>% ft_string_indexer()`
-DataFrame, without formula |DataFrame |`ft_string_indexer(iris, "Species", "indexed")`
-DataFrame, with formula |`sparklyr` ML model object| `ml_logistic_regression(iris, Species ~ .)`
+Spark连接|评估器或转换器对象| `ft_string_indexer(sc)`
+管道 |管道| `ml_pipeline(sc) %>% ft_string_indexer()`
+数据框，不带公式|数据框 |`ft_string_indexer(iris, "Species", "indexed")`
+数据框，带公式|数据框 |`sparklyr` ML模型对象| `ml_logistic_regression(iris, Species ~ .)`
 
 These functions are implemented using S3, which is the most popular object-oriented
 programming paradigm provided by R. For our purposes, it suffices to know that the
