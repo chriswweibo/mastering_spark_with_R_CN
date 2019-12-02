@@ -2479,46 +2479,27 @@ spark_disconnect(sc)
 
 ## 部署
 
-What we have just demonstrated bears emphasizing: by collaborating within the
-framework of ML Pipelines, we reduce friction among different personas in a data
-science team. In particular, we cut down on the time from modeling to deployment.
-In many cases, a data science project does not end with just a slide deck with insights
-and recommendations. Instead, the business problem at hand might require scoring
-new data points on a schedule or on-demand in real time. For example, a bank might
-want to evaluate its mortgage portfolio risk nightly or provide instant decisions on
-credit card applications. This process of taking a model and turning it into a service
-that others can consume is usually referred to as deployment or productionization.
-Historically, there was a large gap between the analyst who built the model and the
-engineer who deployed it: the former might work in R and develop extensive docu‐
-mentation on the scoring mechanism, so that the latter can reimplement the model in
-C++ or Java. This practice, which might easily take months in some organizations, is
-less prevalent today, but is almost always unnecessary in Spark ML workflows.
-The aforementioned nightly portfolio risk and credit application scoring examples
-represent two modes of ML deployment known as batch and real time. Loosely, batch
-processing implies processing many records at the same time, and that execution
-time is not important as long it is reasonable (often on the scale of minutes to hours).
-On the other hand, real-time processing implies scoring one or a few records at a
-time, but the latency is crucial (on the scale of <1 second). Let’s turn now to see how
-we can take our OKCupid pipeline model to “production.”
+我们刚刚介绍的内容值得强调：通过在ML管道框架内协作，我们减少了数据科学团队中不同角色之间的摩擦。特别的，我们减少了从建模到部署的时间。
 
-### 批计分
+在许多情况下，一个数据科学项目并不仅仅是以一个带有见解和建议的幻灯片结束。相反，手头的业务问题可能需要实时的按计划或按需求给新的数据点打分。例如，一家银行可能希望每晚评估其抵押贷款组合风险，或就信用卡申请提供即时决策。将模型转换为其他人可以使用的服务的过程通常称为*部署*或*产品化*。历史上，构建模型的分析人员和部署模型的工程人员之间存在巨大的鸿沟。前者可能使用R并开发了大量打分机制的文档，以便后者可以在C++或Java中重新实现模型。这种做法在一些组织中很可能需要几个月的时间，也并不盛行。但在Spark ML工作流中几乎都不必要。
 
-For both scoring methods, batch and real time, we will expose our model as web serv‐
-ices, in the form of an API over the Hypertext Transfer Protocol (HTTP). This is the
-primary medium over which software communicates. By providing an API, other
-services or end users can utilize our model without any knowledge of R or Spark. The
-`plumber` R package enables us to do this very easily by annotating our prediction
-function.
-You will need make sure that `plumber`, `callr`, and the `httr` package are installed by
-running the following:
+前面提到的每晚投资组合风险和信贷应用评分示例代表了两种ML部署模式，即批处理和实时。简单的说，批处理是指同时处理许多记录，而且只要执行时间合理（通常以分钟到小时为单位），执行时间就不重要。另一方面，实时处理意味着一次给一条或几条记录打分，但延迟是至关重要的（在小于1秒的范围内）。现在让我们来看看如何把我们的`OKCupid`管道模型应用到“生产”中。
+
+
+### 批打分
+
+对于批打分和实时打分两种方法，我们将以超文本传输协议（Hypertext Transfer Protocol，HTTP）上API的形式将模型发布为web服务，这是软件通信的主要桥梁。通过提供API，其他服务或最终用户可以在不了解R或Spark的情况下利用我们的模型。R程序包`plumber`通过注释我们的预测函数让我们能够很容易做到这一点。
+
+你需要确保安装了`plumber`, `callr`和`httr`程序包，代码如下：
+
 ```{r}
 install.packages(c("plumber", "callr", "httr"))
 ```
-The `callr` package provides support to run R code in separate R sessions; it is not
-strictly required, but we will use it to start a web service in the background. The `httr`
-package allows us to use web APIs from R.
-In the batch scoring use case, we simply initiate a Spark connection and load the
-saved model. Save the following script as plumber/spark-plumber.R:
+
+`callr`包支持在单独的R进程中运行R代码。这不是必须的，但我们将使用它在后台启动web服务。`httr`包允许我们使用R的web api。
+
+在批量打分用例中，我们只需启动一个Spark连接并加载保存的模型。把以下脚本保存为*plumber/spark-plumber.R*：
+
 ```{r}
 library(sparklyr)
 sc <- spark_connect(master = "local", version = "2.3")
@@ -2538,14 +2519,12 @@ ml_transform(spark_model, new_data_tbl) %>%
 dplyr::pull(prediction) }
 ```
 
-We can then initialize the service by executing the following:
+然后，我们可以通过执行下列代码初始化服务：
 ```{r}
 service <- callr::r_bg(function() { p <- plumber::plumb("plumber/spark-plumber.R") p$run(port = 8000)
 })
 ```
-This starts the web service locally, and then we can query the service with new data to
-be scored; however, you might need to wait a few seconds for the Spark service to
-initialize:
+这个代码会启动本地web服务，然后我们可以使用要打分的数据查询服务。然而，你可能需要等待几秒钟，让Spark服务完成初始化：
 ```{r}
 httr::content(httr::POST(
 "http://127.0.0.1:8000/predict",
@@ -2555,48 +2534,35 @@ body = '{"age": 42, "sex": "m", "drinks": "not at all",
 [[1]]
 [1] 0
 ```
-This reply informs us that this particular profile is likely to not be unemployed—that
-is, employed. We can now terminate the `plumber` service by stopping the `callr`
-service:
+这个结果告知我们，这个人很可能不是失业，也就是在业。我们现在可以通过停止`callr`服务来终止`plumber`服务：
+
 ```{r}
 service$interrupt()
 ```
-If we were to time this operation (e.g., with `system.time()`), we see that the latency is
-on the order of hundreds of milliseconds, which might be appropriate for batch appli‐
-cations but is insufficient for real time. The main bottleneck is the serialization of the
-R DataFrame to a Spark DataFrame and back. Also, it requires an active Spark ses‐
-sion, which is a heavy runtime requirement. To ameliorate these issues, we discuss
-next a deployment method more suitable for real-time deployment.
 
-### 实时计分
+如果我们对该操作进行计时（例如，使用`system.time()`），我们会看到延迟大约为数百毫秒级别，这可能适用于批处理应用，但不足以满足实时操作。主要的瓶颈是R数据框和Spark数据框之间的两个方向的序列化。此外，它还需要一个工作的Spark进程，这是一个很重的运行时要求。为了改善这些问题，我们接下来讨论一种更适合实时部署的方法。
 
-For real-time production, we want to keep dependencies as light as possible so we can
-target more platforms for deployment. We now show how we can use the `mleap` pack‐
-age, which provides an interface to the MLeap library, to serialize and serve Spark ML
-models. MLeap is open source (Apache License 2.0) and supports a wide range of,
-though not all, Spark ML transformers. At runtime, the only prerequisites for the
-environment are the Java Virtual Machine (JVM) and the MLeap runtime library.
-This avoids both the Spark binaries and expensive overhead in converting data to and
-from Spark DataFrames.
-Since `mleap` is a `sparklyr` extension and an R package, first we need to install it from
-CRAN:
+### 实时打分
+
+对于实时生产，我们希望尽可能减少依赖关系，以便能够针对更多的平台进行部署。现在我们介绍如何使用`mleap`程序包（它提供了*MLeap*库的接口）来序列化和服务Spark ML模型。MLeap是开源的（Apache License 2.0），支持很多功能，诸如Spark ML转换器。在运行时，环境的唯一需求是Java虚拟机（Java Virtual Machine，JVM）和MLeap运行时库。这既避免了Spark二进制文件，也避免了将数据转换为和转换出Spark数据框的昂贵开销。
+
+由于`mleap`是`sparklyr`扩展和R程序包，所以首先需要从CRAN安装它：
+
 ```{r}
 install.packages("mleap")
 ```
-It then must be loaded when `spark_connect()` is called; so let’s restart your R session,
-establish a new Spark connection,1
- and load the pipeline model that we previously
-saved:
+然后它必须在调用`spark_connect()`的时候加载。所以让我们重启R进程，建立新的连接[^20]，加载之前保存的管道模型：
+
+[^20]: 编写本书的时候，MLeap还不支持Spark 2.4。
+
 ```{r}
 library(sparklyr)
 library(mleap)
 sc <- spark_connect(master = "local", version = "2.3")
 spark_model <- ml_load(sc, "spark_model")
 ```
-The way we save a model to MLeap bundle format is very similar to saving a model
-using the Spark ML Pipelines API; the only additional argument is `sample_input`,
-which is a Spark DataFrame with schema that we expect new data to be scored to
-have:
+我们将模型保存为MLeap bundle格式的方法与使用Spark ML 管道API保存模型的方法非常相似；唯一的附加参数是`sample_input`，它是一个Spark数据框，带有我们希望给新数据打分的模式：
+
 ```{r}
 sample_input <- data.frame(
 sex = "m",
@@ -2610,19 +2576,17 @@ sample_input_tbl <- copy_to(sc, sample_input)
 ml_write_bundle(spark_model, sample_input_tbl, "mleap_model.zip", overwrite =
 TRUE)
 ```
-We can now deploy the artifact we just created, mleap_model.zip, in any device that
-runs Java and has the open source MLeap runtime dependencies, without needing
-Spark or R! In fact, we can go ahead and disconnect from Spark already:
+现在我们可以在任何运行Java并具备开源mleap运行时依赖的设备中部署刚刚创建的结果*mleap_model.zip*，而不需要Spark或R！事实上，我们可以继续断开与Spark的连接：
+
 ```{r}
 spark_disconnect(sc)
 ```
-Before we use this MLeap model, make sure the runtime dependencies are installed:
+在使用MLeap模型之前，确保已经安装运行时依赖：
 ```{r}
 mleap::install_maven()
 mleap::install_mleap()
 ```
-To test this model, we can create a new plumber API to expose it. The script plumber/
-mleap-plumber.R is very similar to the previous example:
+要测试这个模型，我们可以创建一个新的`plumber` API，并完成发布。脚本*plumber/mleap-plumber.R*非常类似于之前的例子：
 ```{r}
 library(mleap)
 mleap_model <- mleap_load_bundle("mleap_model.zip") 
@@ -2639,13 +2603,12 @@ stringsAsFactors = FALSE
 mleap_transform(mleap_model, new_data)$prediction
 }
 ```
-And the way we launch the service is exactly the same:
+我们启动服务的方法也一样：
 ```{r}
 service <- callr::r_bg(function() { p <- plumber::plumb("plumber/mleap-plumber.R") p$run(port = 8000)
 })
 ```
-We can run the exact same code we did previously to test unemployment predictions
-in this new service:
+我们可以运行之前编写的完全一样的代码，在新的服务中测试对失业人员的预测：
 ```{r}
 httr::POST(
 "http://127.0.0.1:8000/predict",
@@ -2656,35 +2619,21 @@ httr::content()
 [[1]]
 [1] 0
 ```
-If we were to time this operation, we would see that the service now returns predic‐
-tions in tens of milliseconds.
-Let’s stop this service and then wrap up this chapter:
+如果我们对这个操作计时，可以看到服务现在在几十毫秒内返回预测结果。
+
+让我们停止服务，结束这一章：
+
 ```{r}
 service$interrupt()
 ```
 
 ## Recap
 
-In this chapter, we discussed Spark Pipelines, which is the engine behind the model‐
-ing functions introduced in Chapter 4. You learned how to tidy up your predictive
-modeling workflows by organizing data processing and modeling algorithms into
-pipelines. You learned that pipelines also facilitate collaboration among members of a
-multilingual data science and engineering team by sharing a language-agnostic serial‐
-ization format—you can export a Spark pipeline from R and let others reload your
-pipeline into Spark using Python or Scala, which allows them to collaborate without
-changing their language of choice.
-90 | Chapter 5: Pipelines
-You also learned how to deploy pipelines using mleap, a Java runtime that provides
-another path to productionize Spark models—you can export a pipeline and integrate
-it to Java-enabled environments without requiring the target environment to support
-Spark or R.
-You probably noticed that some algorithms, especially the unsupervised learning
-kind, were slow, even for the OKCupid dataset, which can be loaded into memory. If
-we had access to a proper Spark cluster, we could spend more time modeling and less
-time waiting! Not only that, but we could use cluster resources to run broader
-hyperparameter-tuning jobs and process large datasets. To get there, Chapter 6
-presents what exactly a computing cluster is and explains the various options you can
-consider, like building your own or using cloud clusters on demand.
+在本章中，我们讨论了Spark管道，这是第4章中介绍的建模函数背后的引擎。你学习了如何通过将数据处理和建模算法组织到管道中来整理预测建模工作流。您学习了管道还通过共享与语言无关的序列化格式促进了多语言数据科学和工程团队成员之间的协作，也就是说，你可以从R导出Spark管道，让其他人使用Python或Scala将你的管道重新加载到Spark中，这使得他们可以在不改变语言选择的情况下进行合作。
+
+你还学习了如何使用`mleap`部署管道。它是一个Java运行时，提供了另一条产品化Spark模型的方法，即你可以导出管道并将其集成到支持Java的环境中，而不要求目标环境支持Spark或R。
+
+你可能注意到一些算法，特别是无监督的学习算法，速度很慢。甚至对于可以加载到内存中的`OKCupid`数据集也是如此。如果我们能够访问一个合适的Spark集群，我们可以用更多的时间建模，用更少的时间等待！不仅如此，我们还可以使用集群资源运行更广泛的超参数优化作业并处理大型数据集。为了达到这个目的，第6章介绍了什么是计算集群，并解释了值得你考虑的各种选项，比如建立自己的集群或按需使用云集群。
 
 ------
 
