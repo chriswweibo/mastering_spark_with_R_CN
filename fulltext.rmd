@@ -2375,46 +2375,31 @@ Spark连接|评估器或转换器对象| `ft_string_indexer(sc)`
 数据框，不带公式|数据框 |`ft_string_indexer(iris, "Species", "indexed")`
 数据框，带公式|数据框 |`sparklyr` ML模型对象| `ml_logistic_regression(iris, Species ~ .)`
 
-These functions are implemented using S3, which is the most popular object-oriented
-programming paradigm provided by R. For our purposes, it suffices to know that the
-behavior of an `ml_` or `ft_` function is dictated by the class of the first argument pro‐
-vided. This allows us to provide a wide range of features without introducing addi‐
-tional function names. We now can summarize the behavior of these functions:
+这些函数是使用S3实现的，S3是R提供的最流行的面向对象编程范例。就我们的目的而言，只需知道`ml_`或`ft_`函数的行为是由提供的第一个参数的类决定的就可以了。这可以使我们在不引入额外函数名的情况下提供很多功能。现在我们总结一下这些函数的行为：
 
-* If a Spark connection is provided, the function returns a transformer or estima‐
-tor object, which can be utilized directly using `ml_fit()` or `ml_transform()` or
-be included in a pipeline.
-* If a pipeline is provided, the function returns a pipeline object with the stage
-appended to it.
-* If a DataFrame is provided to a feature transformer function (those with prefix
-`ft_`), or an ML algorithm without also providing a formula, the function instan‐
-tiates the pipeline stage object, fits it to the data if necessary (if the stage is an
-estimator), and then transforms the DataFrame returning a DataFrame.
-* If a DataFrame and a formula are provided to an ML algorithm that supports the
-formula interface, `sparklyr` builds a pipeline model under the hood and returns
-an ML model object that contains additional metadata information.
+* 如果提供了Spark连接，则函数返回一个转换器或评估器对象，它们可以直接通过`ml_fit()`或`ml_transform()`调用，也可以包含在管道中。
 
-The formula interface approach is what we studied in Chapter 4, and this is what we
-recommend users new to Spark start with, since its syntax is similar to existing R
-modeling packages and abstracts away some Spark ML peculiarities. However, to take
-advantage of the full power of Spark ML and leverage pipelines for workflow organi‐
-zation and interoperability, it is worthwhile to learn the ML Pipelines API.
-With the basics of pipelines down, we are now ready to discuss the collaboration and
-model deployment aspects hinted at in the introduction of this chapter.
+* 如果提供了管道，函数将返回一个追加有阶段的管道对象。
+
+* 如果将数据框提供给特征转换函数（带有前缀`ft_`的函数），或者不带公式的ML算法，则该函数将实例化管道阶段对象，必要时会完成拟合（如果阶段是评估器），然后转换返回数据框。
+
+* 如果给支持公式接口的ML算法提供了数据框和公式，那么`sparklyr`会在后台构建管道模型，并返回包含其他元数据信息的ML模型对象。
+
+公式接口方法是我们在第4章中学到的，这就是我们推荐给Spark新手的入门方法，因为它的语法类似于现有的R建模程序包，并且抽象掉了一些SPARM ML特性。然而，为了充分利用Spark ML的强大功能并利用管道进行工作流组织和交互性，学习ML管道的API还是很值得的。
+
+随着管道基础知识的深入，我们现在开始讨论本章导言中提到的协作和模型部署话题。
+
 
 ## 交互性
 
-One of the most powerful aspects of pipelines is that they can be serialized to disk
-and are fully interoperable with the other Spark APIs such as Python and Scala. This
-means that you can easily share them among users of Spark working in different lan‐
-guages, which might include other data scientists, data engineers, and deployment
-engineers. To save a pipeline model, call `ml_save()` and provide a path:
+管道最强大的功能之一是，它们可以序列化到磁盘，并且可以与其他Spark api（如Python和Scala）完全可交互。这意味着你可以在使用不同语言的Spark用户之间轻松地共享成果，其中可能包括其他数据科学家、数据工程师和部署工程师。要保存管道模型，请调用`ml_save()`并提供路径：
+
 ```{r}
 model_dir <- file.path("spark_model")
 ml_save(cv_model$best_model, model_dir, overwrite = TRUE)
 Model successfully saved.
 ```
-Let’s take a look at the directory to which we just wrote:
+让我们看一下刚才写的目录：
 ```{r}
 list.dirs(model_dir,full.names = FALSE) %>%
 head(10)
@@ -2424,13 +2409,12 @@ head(10)
  [4] "stages/0_string_indexer_5b42c72817b"
  [5] "stages/0_string_indexer_5b42c72817b/data"
  [6] "stages/0_string_indexer_5b42c72817b/metadata"
-84 | Chapter 5: Pipelines
  [7] "stages/1_string_indexer_5b423192b89f"
  [8] "stages/1_string_indexer_5b423192b89f/data"
  [9] "stages/1_string_indexer_5b423192b89f/metadata"
 [10] "stages/2_string_indexer_5b421796e826"
 ```
-We can dive into a couple of the files to see what type of data was saved:
+我们可以再试两个文件，看看保存了什么类型的数据：
 ```{r}
 spark_read_json(sc, file.path(
 file.path(dir(file.path(model_dir, "stages"),
@@ -2456,13 +2440,12 @@ full.names = TRUE), "data")
  <int> <int> <list> <list> <lgl>
 1 2 12 <dbl [1]> <-1.27950828662… FALSE
 ```
-We see that quite a bit of information has been exported, from the SQL statement in
-the `dplyr` transformer to the fitted coefficient estimates of the logistic regression. We
-can then (in a new Spark session) reconstruct the model by using `ml_load()`:
+我们看到，从`dplyr`转换器中的SQL语句到逻辑回归的拟合系数估计，我们已经导出了相当多的信息。然后，我们可以（在新的Spark进程中）使用`ml_load()`重建模型：
+
 ```{r}
 model_reload <- ml_load(sc, model_dir)
 ```
-Let’s see if we can retrieve the logistic regression stage from this pipeline model:
+让我们看看我们是否可以从管道模型中得到逻辑回归阶段：
 ```{r}
 ml_stage(model_reload, "logistic_regression")
 LogisticRegressionModel (Transformer)
@@ -2483,28 +2466,16 @@ LogisticRegressionModel (Transformer)
  threshold: num 0.5
  thresholds: num [1:2] 0.5 0.5
 ```
-Note that the exported JSON and parquet files are agnostic of the API that exported
-them. This means that in a multilingual machine learning engineering team, you can
-pick up a data preprocessing pipeline from a data engineer working in Python, build
-a prediction model on top of it, and then hand off the final pipeline to a deployment
-engineering working in Scala. In the next section, we discuss deployment of models
-in more detail.
+注意，导出的JSON和parquet文件与导出它们的API无关。这意味着，在多语言机器学习工程团队中，你可以从使用Python的数据工程师那里获取数据预处理管道，基于此构建预测模型，然后将最终管道交给使用Scala的部署工程。在下一节中，我们会详细讨论模型的部署。
 
-> When `ml_save()` is called for `sparklyr` ML models (created using
-the formula interface), the associated pipeline model is saved, but
-any sparklyr-specific metadata, such as index labels, is not. In
-other words, saving a `sparklyr` `ml_model` object and then loading
-it will yield a pipeline model object, as if you created it via the ML
-Pipelines API. This behavior is required to use pipelines with other
-programming languages.
 
-Before we move on to discuss how to run pipelines in production, make sure you dis‐
-connect from Spark:
+> 为（使用公式接口创建的）`sparklyr` ml模型调用`ml_save()`时，将保存关联的管道模型，但不会保存任何`sparklyr`相关的元数据，例如索引标签。换句话说，保存一个`sparklyr` `ml_model`对象以及后续的加载将生成一个管道模型对象，就像是通过ml 管道API创建的一样。这个行为需要与其他编程语言一起使用管道。
+
+在我们继续讨论如何在生产环境汇总运行管道之前，确保你断开了Spark：
 ```{r}
 spark_disconnect(sc)
 ```
-That way, we can start from a brand new environment, which is also expected when
-you are deploying pipelines to production.
+我们可以重启一个全新的环境，这也是你给生产环境部署管道时所期望的。
 
 ## 部署
 
