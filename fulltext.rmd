@@ -2654,91 +2654,43 @@ service$interrupt()
 
 ![图6-1. 内部部署（主机），云计算和Kubernetes的Google trends](figures/6_1.png)
 
-When purchasing hundreds or thousands of computing instances, it doesn’t make
-sense to keep them in the usual computing case that we are all familiar with; instead,
-it makes sense to stack them as efficiently as possible on top of one another to mini‐
-mize the space the use. This group of efficiently stacked computing instances is
-known as a rack. After a cluster grows to thousands of computers, you will also need
-to host hundreds of racks of computing devices; at this scale, you would also need
-significant physical space to host those racks.
-A building that provides racks of computing instances is usually known as a datacen‐
-ter. At the scale of a datacenter, you would also need to find ways to make the build‐
-ing more efficient, especially the cooling system, power supplies, network
-connectivity, and so on. Since this is time-consuming, a few organizations have come
-together to open source their infrastructure under the Open Compute Project initia‐
-tive, which provides a set of datacenter blueprints free for anyone to use.
-There is nothing preventing you from building our own datacenter, and, in fact,
-many organizations have followed this path. For instance, Amazon started as an
-online bookstore, but over the years it grew to sell much more than just books. Along
-with its online store growth, its datacenters also grew in size. In 2002, Amazon con‐
-sidered renting servers in their datacenters to the public, and two years later, Amazon
-Web Services (AWS) launched as a way to let anyone rent servers in the company’s
-datacenters on demand, meaning that you did not need to purchase, configure, main‐
-tain, or tear down your own clusters; rather, you could rent them directly from AWS.
+在购买成百上千个计算实例时，将它们放在我们熟知的常见计算机箱中是没有意义的；相反，尽可能高效地将它们堆叠在一起以最小化使用空间是有意义的。这组高效堆叠的计算实例称为*机架*。当集群增长到数千台计算机之后，你还需要托管数百个计算设备机架；在这种规模下，您还需要大量的物理空间来托管这些机架。
 
-This on-demand compute model is what we know today as cloud computing. In the
-cloud, the cluster you use is not owned by you, and it’s not in your physical building;
-instead it’s a datacenter owned and managed by someone else. Today, there are many
-cloud providers in this space, including AWS, Databricks, Google, Microsoft, Qubole,
-and many others. Most cloud computing platforms provide a user interface through
-either a web application or command line to request and manage resources.
-While the benefits of processing data in the cloud were obvious for many years, pick‐
-ing a cloud provider had the unintended side effect of locking in organizations with
-one particular provider, making it hard to switch between providers or back to on￾premises clusters. Kubernetes, announced by Google in 2014, is an open source sys‐
-tem for managing containerized applications across multiple hosts. In practice, it
-makes it easier to deploy across multiple cloud providers and on-premises as well.
-In summary, we have seen a transition from on-premises to cloud computing and,
-more recently, Kubernetes. These technologies are often loosely described as the pri‐
-vate cloud, the public cloud, and as one of the orchestration services that can enable a
-hybrid cloud, respectively. This chapter walks you through each cluster computing
-trend in the context of Spark and R.
+提供计算实例机架的建筑通常称为*数据中心*。在数据中心的规模上，你还需要找到提高建筑物效率的方法，特别是冷却系统、电源、网络连接等。由于这是一项耗时的工作，一些组织以开放计算项目计划（open Compute Project initiative）的名义联合起来开放其基础设施的源代码，该计划为任何人免费提供一组数据中心蓝图。
+
+没有什么可以阻止你构建自己的数据中心。事实上，许多组织都已经开始了这条道路。例如，亚马逊最初是一家在线书店，但经过几年的发展，它的销售远远不止是书。随着在线商店的增长，其数据中心的规模也在增长。2002年，亚马逊考虑把数据中心的服务器出租给公众。两年后，亚马逊网络服务（Amazon Web Services，AWS）推出，让任何人都可以按需租用该公司数据中心的服务器，这意味着您你需购买、配置、维护或拆除自己的集群；相反，你可以直接从AWS租下来。
+
+这种按需计算模型就是我们今天熟知的云计算。在云中，你使用的集群不归你所有，也不在你的物理建筑中；而是由其他人拥有和管理的数据中心。今天，这个领域有许多云提供商，包括AWS、Databricks、Google、Microsoft、Qubole和许多其他公司。大多数云计算平台通过web应用程序或命令行提供用户界面来请求和管理资源。
+
+虽然多年来在云中处理数据的好处是显而易见的，但选择一个云提供商却产生了意想不到的副作用，即把组织锁定到一个特定提供商，使得很难在提供商之间切换或返回到本地群集。201年谷歌发布的Kubernetes是一个开源系统，用于跨多个主机管理容器化应用程序。实际上，它使跨多个云提供商和本地部署变得更容易。
+
+总而言之，我们已经看到了从本地到云计算的转变，以及最近的Kubernetes。这些技术通常被简单地描述为私有云、公共云，以及启用混合云的编排服务之一。本章将带你了解Spark和R环境中的每一种集群计算趋势。
 
 ## 本地化
 
-As mentioned in the overview section, on-premises clusters represent a set of com‐
-puting instances procured and managed by staff members from your organization.
-These clusters can be highly customized and controlled; however, they can also incur
-higher initial expenses and maintenance costs.
-When using on-premises Spark clusters, there are two concepts you should consider:
+如概述部分所述，内部部署群集代表一组由组织中的工作人员采购和管理的计算实例。这些群集可以高度定制和控制；但是，它们也可能产生较高的初始费用和维护成本。
 
-* Cluster manager
-    In a similar way as to how an operating system (like Windows or macOS) allows
-you to run multiple applications in the same computer, a cluster manager allows
-multiple applications to be run in the same cluster. You need to choose one your‐
-self when working with on-premises clusters.
-* Spark distribution
-    While you can install Spark from the Apache Spark site, many organizations
-partner with companies that can provide support and enhancements to Apache
-Spark, which we often refer to as Spark distributions.
+在使用本地Spark群集时，你应该考虑两个概念：
 
-### Managers
+* 集群管理员
+    与操作系统（如Windows或macOS）允许你在同一台计算机上运行多个应用程序类似，集群管理器允许多个应用程序在同一个集群中运行。在使用内部部署集群时，你需要自己选择一个。
+* Spark分发
+    虽然你可以从Apache Spark站点安装Spark，但是许多组织与能够为Apache Spark提供支持和增强的公司合作，我们通常称之为Spark分发。
+    
+### 管理器
 
-To run Spark within a computing cluster, you will need to run software capable of
-initializing Spark over each physical machine and register all the available computing
+要在一个计算集群上运行Spark,你需要运行能够在每一个物理机器上初始化Spark并注册所有可用计算节点的软件。这个软件就是集群管理器。Spark中可用的集群管理器包括Spark单机，YARN，Mesos和Kubernetes。
 
-nodes. This software is known as a cluster manager. The available cluster managers in
-Spark are Spark Standalone, YARN, Mesos, and Kubernetes.
+> 在分布式系统和集群文献中，我们经常把每一个物理机器叫做一个*计算实例*，*计算结点*或者*结点*。
 
-> In distributed systems and clusters literature, we often refer to each
-physical machine as a compute instance, compute node, instance, or
-node.
+#### 单机
 
-#### Standalone
+在Spark单机中，Spark使用自己作为自己的集群管理器，这允许你无需在集群中安装其他软件的情况下使用Spark。如果你计划使用集群仅运行Spark应用程序，这可能很有用；如果该集群不只用于Spark，那么像YARN、Mesos或Kubernetes这样的通用集群管理器会更适合。Spark独立文档包含有关配置、启动、监视和启用高可用性的详细信息，如图6-2所示。
 
-In Spark Standalone, Spark uses itself as its own cluster manager, which allows you to
-use Spark without installing additional software in your cluster. This can be useful if
-you are planning to use your cluster to run only Spark applications; if this cluster is
-not dedicated to Spark, a generic cluster manager like YARN, Mesos, or Kubernetes
-would be more suitable. The Spark Standalone documentation contains detailed
-information on configuring, launching, monitoring, and enabling high availability, as
-illustrated in图6-2.
-However, since Spark Standalone is contained within a Spark installation, by com‐
-pleting Chapter 2, you have now a Spark installation available that you can use to ini‐
-tialize a local Spark Standalone cluster on your own machine. In practice, you would
-want to start the worker nodes on different machines, but for simplicity, we present
-the code to start a standalone cluster on a single machine.
-First, retrieve the SPARK_HOME directory by running `spark_home_dir()`, and then start
-the master node and a worker node as follows:
+由于Spark单机包含在第2章介绍的Spark一般安装，你可以使用Spark安装来初始化自己机器上的本地Spark 单机集群。实际工作中，你可能希望启动不同的机器上的工作节点，但为了简单起见，我们提供了在单个机器上启动单机集群的代码。
+
+首先，通过运行`spark_home_dir()`来获取`SPARK_HOME`目录，然后按如下代码启动主节点和工作节点：
+
 ```{r}
 # Retrieve the Spark installation directory
 spark_home <- spark_home_dir()
@@ -2747,7 +2699,7 @@ spark_path <- file.path(spark_home, "bin", "spark-class")
 # Start cluster manager master node
 system2(spark_path, "org.apache.spark.deploy.master.Master", wait = FALSE)
 ```
-![Figure 6-2. Spark Standalone website](figures/6_2.png)
+![Figure 6-2. Spark单机网站](figures/6_2.png)
 The previous command initializes the master node. You can access the master node
 interface at localhost:8080, as captured in图6-3. Note that the Spark master URL
 is specified as spark://address:port; you will need this URL to initialize worker nodes.
