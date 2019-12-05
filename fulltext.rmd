@@ -2642,35 +2642,17 @@ service$interrupt()
 > I have a very large army and very large dragons.
 > —Daenerys Targaryen
 
-Previous chapters focused on using Spark over a single computing instance, your per‐
-sonal computer. In this chapter, we introduce techniques to run Spark over multiple
-computing instances, also known as a computing cluster. This chapter and subsequent
-ones will introduce and make use of concepts applicable to computing clusters; how‐
-ever, it’s not required to use a computing cluster to follow along, so you can still use
-your personal computer. It’s worth mentioning that while previous chapters focused
-on single computing instances, you can also use all the data analysis and modeling
-techniques we presented in a computing cluster without changing any code.
-If you already have a Spark cluster in your organization, you could consider skipping
-to Chapter 7, which teaches you how to connect to an existing cluster. Otherwise, if
-you don’t have a cluster or are considering improvements to your existing infrastruc‐
-ture, this chapter introduces the cluster trends, managers, and providers available
-today.
+前几章集中讨论了在一个计算实例上,即你的个人计算机上，使用Spark。在本章中，我们将介绍在多个计算实例（也称为计算集群）上运行Spark的技术。本章和后续章节将介绍并使用适用于计算集群的概念；但是，并不需要使用计算集群来继续学习，因此你仍然可以使用个人计算机。值得一提的是，虽然前面的章节主要关注一个计算实例，但你也可以在计算集群中使用介绍的所有数据分析和建模技术，而无需更改任何代码。
 
-## Overview
+如果你的组织中已经有了Spark集群，可以考虑跳过第7章，它会教你如何连接到现有的集群。否则，如果没有集群或正在考虑对现有基础设施的改进，本章将介绍目前可用的集群趋势、管理者和供应商。
 
-There are three major trends in cluster computing worth discussing: on-premises,
-cloud computing, and Kubernetes. Framing these trends over time will help us under‐
-stand how they came to be, what they are, and what their future might be. To illus‐
-trate this,图6-1 plots these trends over time using data from Google trends.
-For on-premises clusters, you or someone in your organization purchased physical
-computers that were intended to be used for cluster computing. The computers in
-this cluster are made of off-the-shelf hardware, meaning that someone placed an order
-to purchase computers usually found on store shelves, or high-performance hardware,
-93
-meaning that a computing vendor provided highly customized computing hardware,
-which also comes optimized for high-performance network connectivity, power con‐
-sumption, and so on.
-![图6-1. Google trends for on-premises (mainframe), cloud computing, and Kubernetes](figures/6_1.png)
+## 概述
+
+集群计算有三大趋势值得讨论：内部部署、云计算和Kubernetes。刻画这些在时间上的趋势将有助于我们了解它们是如何形成的，它们是什么，以及它们的未来可能是什么。为了说明这一点，图6-1使用来自Google trends的数据绘制了这些随时间变化的趋势图。
+
+对于内部群集，你或你组织中的某个人购买了用于集群计算的物理计算机。集群中的计算机是由*现成*的硬件组成的，这意味着有人下订单购买了通常在商店货架上就可以找到的计算机；或者是*高性能*硬件组成的，这意味着计算供应商提供了高度定制的计算硬件，它还针对高性能网络连接、功耗等进行了优化。
+
+![图6-1. 内部部署（主机），云计算和Kubernetes的Google trends](figures/6_1.png)
 
 When purchasing hundreds or thousands of computing instances, it doesn’t make
 sense to keep them in the usual computing case that we are all familiar with; instead,
