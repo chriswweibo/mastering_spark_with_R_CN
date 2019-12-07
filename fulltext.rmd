@@ -2896,7 +2896,7 @@ IBM云计算是一套面向业务的云计算服务。IBM云包括通过公共�
 
 在IBM云服务中，打开Watson Studio并创建一个数据科学项目，在项目设置下添加一个Spark集群，然后在Launch IDE菜单上启动RStudio。请注意，截至写书的时候，提供的`sparklyr`版本不是CRAN中提供的最新版本，因为`sparklyr`被修改了以便IBM云下运行。在任何情况下，请按照IBM的文档作为权威参考，在IBM云上运行R和Spark，特别是如何恰当的升级`sparklyr`。图6-11展示了启动Spark集群的IBM的云门户。
 
-![Figure 6-11. IBM Watson Studio launching Spark with R support](figures/6_11.png)
+![Figure 6-11. 使用R启动Spark集群的IBM Watson](figures/6_11.png)
 
 最新的定价信息可以在ibm.com/cloud/pricing获得。在表6-5中，计算成本使用每月成本对应的31天进行了归一。
 
@@ -2904,7 +2904,7 @@ IBM云计算是一套面向业务的云计算服务。IBM云包括通过公共�
 
 实例 |CPU |内存| 存储 |成本
 ------|------|-------|-----|------
-C1.1x1x25 |1 |1 GB |25 GB |0.033美元/小时
+C1.1c1x25 |1 |1 GB |25 GB |0.033美元/小时
 C1.4x4x25 4 4 GB |25 GB |0.133美元/小时
 C1.32x32x25 |32 |25 GB |25 GB |0.962美元/小时
 
