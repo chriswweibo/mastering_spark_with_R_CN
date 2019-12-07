@@ -2700,28 +2700,22 @@ spark_path <- file.path(spark_home, "bin", "spark-class")
 system2(spark_path, "org.apache.spark.deploy.master.Master", wait = FALSE)
 ```
 ![Figure 6-2. Spark单机网站](figures/6_2.png)
-The previous command initializes the master node. You can access the master node
-interface at localhost:8080, as captured in图6-3. Note that the Spark master URL
-is specified as spark://address:port; you will need this URL to initialize worker nodes.
-We then can initialize a single worker using the master URL; however, you could use
-a similar approach to initialize multiple workers by running the code multiple times
-and, potentially, across different machines:
+
+上一个命令初始化主节点。你可以通过localhost:8080访问主节点接口，如图6-3所示。注意，Spark主URL被指定为Spark://address:port。 你需要此URL来初始化工作节点。
+
+然后，我们可以使用主URL初始化单个工作节点；但是，你可以使用类似的方法，即多次运行代码，在不同的机器上初始化多个工作节点：
+
 ```{r}
 # Start worker node, find master URL at http://localhost:8080/
 system2(spark_path, c("org.apache.spark.deploy.worker.Worker",
 "spark://address:port"), wait = FALSE)
 ```
-![Figure 6-3. The Spark Standalone web interface](figures/6_3.png)
-There is one worker register in Spark Standalone. Click the link to this worker node
-to view details for this particular worker, like available memory and cores, as shown
-in图6-4.
-![Figure 6-4. Spark Standalone worker web interface](figures/6_4.png)
-After you are done performing computations in this cluster, you will need to stop the
-master and worker nodes. You can use the jps command to identify the process
-numbers to terminate. In the following example, 15330 and 15353 are the processes
-that you can terminate to finalize this cluster. To terminate a process, you can use
-system("Taskkill /PID ##### /F") in Windows, or system("kill -9 #####") in
-macOS and Linux.
+![Figure 6-3. Spark单机网络接口](figures/6_3.png)
+Spark单机中只注册了一个工作节点。点击这个工作节点的链接，查看这个节点的细节，例如内存和处理器，如图6-4所示。
+![Figure 6-4. Spark单机工作节点网络接口](figures/6_4.png)
+
+在这个集群执行完计算之后，你需要停止主节点和工作节点。你可以使用`jps`命令来标识要终止的进程号。在下面的例子中，`15330`和`15353`是可以终止并结束集群的进程。要终止进程，可以在Windows中使用`system("Taskkill /PID ##### /F")`，在macOS或Linux中使用`system("kill -9 #####")`。
+
 ```{r}
 system("jps")
 15330 Master
@@ -2729,41 +2723,24 @@ system("jps")
 15353 Worker
 1689 QuorumPeerMain
 ```
-You can follow a similar approach to configure a cluster by running the initialization
-code over each machine in the cluster.
-While it’s possible to initialize a simple standalone cluster, configuring a proper Spark
-Standalone cluster that can recover from computer restarts and failures, and supports
-multiple users, permissions, and so on, is usually a much longer process that falls
-beyond the scope of this book. The following sections present several alternatives that
-can be much easier to manage on-premises or through cloud services. We will start
-by introducing YARN.
+
+你可以按照类似的方法配置集群，即在集群中的每台计算机上运行初始化代码。
+
+虽然可以初始化一个简单的单机集群，但是要配置一个合适的Spark单机集群，满足从计算机重启和故障中恢复，并且支持多个用户、权限等，通常是一更加漫长的过程。这超出了本书的范围。以下各节介绍了几种更易于在本地或通过云服务进行管理的替代方案。我们首先介绍YARN。
 
 #### YARN
 
-Hadoop YARN, or simply YARN, as it is commonly called, is the resource manager of
-the Hadoop project. It was originally developed in the Hadoop project but was refac‐
-tored into its own project in Hadoop 2. As we mentioned in Chapter 1, Spark was
-built to speed up computation over Hadoop, and therefore it’s very common to find
-Spark installed on Hadoop clusters.
-One advantage of YARN is that it is likely to be already installed in many existing
-clusters that support Hadoop; this means that you can easily use Spark with many
-existing Hadoop clusters without requesting any major changes to the existing cluster
-infrastructure. It is also very common to find Spark deployed in YARN clusters since
-many started out as Hadoop clusters and were eventually upgraded to also support
-Spark.
-You can submit YARN applications in two modes: yarn-client and yarn-cluster. In
-yarn-cluster mode the driver is running remotely (potentially), while in yarn-client
-mode, the driver is running locally. Both modes are supported, and we explain them
-further in Chapter 7.
-YARN provides a resource management user interface useful to access logs, monitor
-available resources, terminate applications, and more. After you connect to Spark
-from R, you will be able to manage the running application in YARN, as shown in
-Figure 6-5.
-Since YARN is the cluster manager from the Hadoop project, you can find YARN’s
-documentation at hadoop.apache.org. You can also reference the “Running Spark on
-YARN” guide at spark.apache.org.
-On-Premises | 99
-![Figure 6-5. YARN’s Resource Manager running a `sparklyr` application](figures/6_5.png)
+Hadoop YARN，或者简称为YARN，是Hadoop项目的资源管理器。它最初是在Hadoop项目中开发的，但在Hadoop 2中被重构为自己的项目。正如我们在第1章中提到的，Spark是为了加快Hadoop上的计算速度而构建的，因此在Hadoop集群上安装Spark很常见。
+
+YARN的一个优点是它可能已经安装在许多支持Hadoop的现有集群上，这意味着你可以轻松地使用Spark与许多现有的Hadoop集群，而不需要对现有集群的基础设施进行任何重大改变。Spark部署在YARN集群中也非常常见，因为许多集群最初是Hadoop集群，最终也会升级支持Spark。
+
+您可以通过两种模式提交YARN应用：YARN客户端和YARN群集。在YARN集群模式下，驱动程序（可能）正在远程运行，而在YARN客户端模式下，驱动程序在本地运行。这两种模式都支持，我们将在第7章中进一步结束它们。
+
+YARN提供了一个资源管理用户界面，可用于访问日志、监视可用资源、终止应用程序等。从R连接到Spark后，你能够用YARN管理正在运行的应用程序，如图6-5所示。
+
+由于YARN是Hadoop项目中的集群管理器，因此可以在Hadoop.apache.org上找到YARN的文档。你还可以参考Spark.apache.org上的““Running Spark on YARN”指南。
+
+![Figure 6-5. 运行`sparklyr`应用的YARN资源管理器](figures/6_5.png)
 
 #### Apache Mesos
 
