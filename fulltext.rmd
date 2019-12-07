@@ -2828,129 +2828,116 @@ rstudio-sparklyr/rstudio_sparklyr_emr5.sh,Args=["--user-pw", "<password>", \
 
 表6-2. 亚马逊EMR定价信息
 
-实例| CPUs| 内存| 存储| EC2 |成本| EMR成本
-c1.medium |2 |1.7 GB |350 GB |每小时0.148美元 |每小时0.030美元
-m3.2xlarge |8 |30 GB |160 GB |每小时0.616美元 |每小时0.140美元
-|i2.8xlarge |32 |244 GB |6400 GB |每小时7.502美元|每小时0.270美元
+实例| CPU| 内存| 存储| EC2 |成本| EMR成本
+------|-----|----|-----|-------|------|-----
+c1.medium |2 |1.7 GB |350 GB |0.148美元/小时 |0.030美元/小时
+m3.2xlarge |8 |30 GB |160 GB |0.616美元/小时 |0.140美元/小时
+|i2.8xlarge |32 |244 GB |6400 GB |7.502美元/小时|0.270美元/小时
 
 > 我们仅介绍了截至2019年亚马逊和后续云提供商提供额可用计算实例的一个子集；但是 需要注意，硬件（CPU速度、硬盘驱动器速度等）因供应商和位置而异。因此，你不能使用这些硬件表作为准确的价格比较。准确的比较需要运行特定的工作负载并考虑计算实例成本之外的其他方面。
 
 ### Databricks
 
-Databricks is a company founded by the creators of Apache Spark, whose aim is to
-help clients with cloud-based big data processing using Spark. Databricks grew out of
-the AMPLab project at the University of California, Berkeley.
-Databricks provides enterprise-level cluster computing plans as well as a free/
-community tier to explore functionality and become familiar with their environment.
-After a cluster is launched, you can use R and `sparklyr` from Databricks notebooks
-following the steps provided in Chapter 2 or by installing RStudio on Databricks.
-Figure 6-9 shows a Databricks notebook using Spark through sparkylyr.
-Figure 6-9. Databricks community notebook running sparklyr
-Additional resources are available under the Databricks Engineering Blog post “Using
-sparklyr in Databricks” and the Databricks documentation for `sparklyr`。
-You can find the latest pricing information at databricks.com/product/pricing.
-Table 6-3 lists the available plans as of this writing.
-Table 6-3. Databricks procong information
-Plan Basic Data engineering Data analytics
-AWS Standard $0.07/DBU $0.20/DBU $0.40/DBU
-Azure Standard $0.20/DBU $0.40/DBU
-106 | Chapter 6: Clusters
-Plan Basic Data engineering Data analytics
-Azure Premium $0.35/DBU $0.55/DBU
-Notice that pricing is based on cost of DBU per hour. From Databricks, “a Databricks
-Unit (DBU) is a unit of Apache Spark processing capability per hour. For a varied set
-of instances, DBUs are a more transparent way to view usage instead of the node￾hour.”
+Databricks是由Apache Spark的创建者创立的一家公司，其目标是帮助客户使用Spark进行基于云的大数据处理。Databricks源于加州大学伯克利分校的AMPLab项目。
 
-### Google
+Databricks提供了企业级的集群计算套餐，以及一个免费/社区版本，用于探索功能并熟悉其环境。
 
-Google provides Google Cloud Dataproc as a cloud-based managed Spark and
-Hadoop service offered on Google Cloud Platform (GCP). Dataproc utilizes many
-GCP technologies, such as Google Compute Engine and Google Cloud Storage, to
-offer fully managed clusters running popular data processing frameworks such as
-Apache Hadoop and Apache Spark.
-You can easily create a cluster from the Google Cloud console or the Google Cloud
-command-line interface (CLI) as illustrated in图6-10.
-Figure 6-10. Launching a Dataproc cluster
-Cloud | 107
-After you’ve created your cluster, ports can be forwarded to allow you to access this
-cluster from your machine—for instance, by launching Chrome to make use of this
-proxy and securely connect to the Dataproc cluster. Configuring this connection
-looks as follows:
+启动集群后，你可以按照第2章中提供的步骤或通过在数据块上安装RStudio来使用Databricks笔记本中的R和`sparklyr`。图6-9展示了通过`sparkylyr`使用Spark的Databricks笔记本。
+
+![图6-9. 运行`sparkylyr`的Databricks社区版笔记本](figures/6_9.png)
+
+其他资源可以在Databricks工程博客文章“Using
+sparklyr in Databricks”和`sparklyr`的Databricks文档下获得。
+
+你可以在databricks.com/product/pricing上找到最新的定价信息。表6-3列出了截至本文撰写时可用的套餐。
+
+表6-3. Databricks定价信息
+
+套餐| 基础定价|数据工程|数据分析
+----|----|-----|------
+AWS标准版| 0.07美元/DBU |0.20美元/DBU |0.40美元/DBU
+Azure标准版| |0.20美元/DBU |0.40美元/DBU
+Azure高级版| |0.35美元/DBU |0.55美元/DBU
+
+注意，定价基于每小时DBU的成本。在Databricks中，“Databricks单位（DBU）是Apache Spark每小时处理能力的一个单位。对于一组不同的实例，DBU是一种更透明的查看使用情况的方法，而不是节点-小时。”
+
+### 谷歌
+
+谷歌提供谷歌云Dataproc，作为谷歌云平台（GCP）上提供的云端托管Spark和Hadoop的服务。Dataproc利用许多GCP技术，如谷歌计算引擎和g弍云存储，来提供运行主流数据处理框架（如Apache Hadoop和Apache Spark）的完全托管集群。
+
+你可以从谷歌云控制台或谷歌云命令行界面（CLI）轻松创建集群，如图6-10所示。
+
+![图6-10. 启动Dataproc集群](figures/6_10.png)
+
+创建集群后，可以转发端口以允许从计算机访问此集群。例如，通过启动Chrome来使用此代理并安全地连接到Dataproc集群。配置此连接，代码如下：
+
+```
 gcloud compute ssh sparklyr-m --project=<project> --zone=<region> -- -D 1080 \
  -N "<path to chrome>" --proxy-server="socks5://localhost:1080" \
  --user-data-dir="/tmp/sparklyr-m" http://sparklyr-m:8088
-There are various tutorials available (cloud.google.com/dataproc/docs/tutorials),
-including a comprehensive tutorial to configure RStudio and `sparklyr`。
-You can find the latest pricing information at cloud.google.com/dataproc/pricing. In
-Table 6-4 notice that the cost is split between compute engine and a dataproc
-premium.
-Table 6-4. Google Cloud Dataproc pricing information
-Instance CPUs Memory Compute engine Dataproc premium
-n1-standard-1 1 3.75 GB $0.0475/hour $0.010/hour
-n1-standard-8 8 30 GB $0.3800/hour $0.080/hour
-n1-standard-64 64 244 GB $3.0400/hour $0.640/hour
+
+```
+
+有各种教程（cloud.google.com/dataproc/docs/tutorials）可以参考，包括配置RStudio和`sparklyr`的综合教程。
+
+你可以在cloud.google.com/dataproc/pricing上找到最新的定价信息。在表6-4中，注意成本是在计算引擎和dataproc高级版之间分摊的。
+
+Table 6-4. 谷歌云Dataproc定价信息
+
+实例e |CPU|内存 |计算引擎| Dataproc高级版
+------|------|------|------|------
+n1-standard-1 |1 |3.75 GB |0.0475美元/小时 |0.010美元/小时
+n1-standard-8 |8 |30 GB |0.3800美元/小时 |0.080美元/小时
+n1-standard-64 |64| 244 GB |3.0400美元/小时 |0.640美元/小时
 
 ### IBM
 
-IBM cloud computing is a set of cloud computing services for business. IBM cloud
-includes Infrastructure as a Service (IaaS), Software as a Service (SaaS), and Platform
-as a Service (PaaS) offered through public, private, and hybrid cloud delivery models,
-in addition to the components that make up those clouds.
-From within IBM Cloud, open Watson Studio and create a Data Science project, add
-a Spark cluster under the project settings, and then, on the Launch IDE menu, start
-RStudio. Please note that, as of this writing, the provided version of `sparklyr` was not
-the latest version available in CRAN, since `sparklyr` was modified to run under the
-IBM Cloud. In any case, follow IBM’s documentation as an authoritative reference to
-run R and Spark on the IBM Cloud and particularly on how to upgrade sparklyr
-appropriately.图6-11 captures IBM’s Cloud portal launching a Spark cluster.
-108 | Chapter 6: Clusters
-Figure 6-11. IBM Watson Studio launching Spark with R support
-The most up-to-date pricing information is available at ibm.com/cloud/pricing. In
-Table 6-5, compute cost was normalized using 31 days from the per-month costs.
-Table 6-5. IBM Cloud pricing information
-Instance CPUs Memory Storage Cost
-C1.1x1x25 1 1 GB 25 GB $0.033/hour
-C1.4x4x25 4 4 GB 25 GB $0.133/hour
-C1.32x32x25 32 25 GB 25 GB $0.962/hour
+IBM云计算是一套面向业务的云计算服务。IBM云包括通过公共、私有和混合云交付模型提供的基础设施即服务（IaaS）的云、软件即服务的云（SaaS）和平台即服务的云（PaaS），以及组成这些云的组件。
 
-### Microsoft
+在IBM云服务中，打开Watson Studio并创建一个数据科学项目，在项目设置下添加一个Spark集群，然后在Launch IDE菜单上启动RStudio。请注意，截至写书的时候，提供的`sparklyr`版本不是CRAN中提供的最新版本，因为`sparklyr`被修改了以便IBM云下运行。在任何情况下，请按照IBM的文档作为权威参考，在IBM云上运行R和Spark，特别是如何恰当的升级`sparklyr`。图6-11展示了启动Spark集群的IBM的云门户。
 
-Microsoft Azure is a cloud computing service created by Microsoft for building, test‐
-ing, deploying, and managing applications and services through a global network of
-Microsoft-managed datacenters. It provides SaaS, PaaS, and IaaS and supports many
-different programming languages, tools, and frameworks, including both Microsoft￾specific and third-party software and systems.
-From the Azure portal, the Azure HDInsight service provides support for on￾demand Spark clusters. You can easily create HDInsight cluster with support for
-Spark and RStudio by selecting the ML Services cluster type. Note that the provided
-version of `sparklyr` might not be the latest version available in CRAN since the
-default package repository seems to be initialized using a Microsoft R Application
-Network (MRAN) snapshot, not directly from CRAN.图6-12 shows the Azure
-portal launching a Spark cluster with support for R.
-Cloud | 109
-Figure 6-12. Creating an Azure HDInsight Spark cluster
-Up-to-date pricing for HDInsight is available at azure.microsoft.com/en-us/pricing/
-details/hdinsight; Table 6-6 lists the pricing as of this writing.
-Table 6-6. Azure HDInsight pricing information
-Instance CPUs Memory Total cost
-D1 v2 1 3.5 GB $0.074/hour
-D4 v2 8 28 GB $0.59/hour
-G5 64 448 GB $9.298/hour
+![Figure 6-11. IBM Watson Studio launching Spark with R support](figures/6_11.png)
+
+最新的定价信息可以在ibm.com/cloud/pricing获得。在表6-5中，计算成本使用每月成本对应的31天进行了归一。
+
+表6-5. IBM云服务定价信息
+
+实例 |CPU |内存| 存储 |成本
+------|------|-------|-----|------
+C1.1x1x25 |1 |1 GB |25 GB |0.033美元/小时
+C1.4x4x25 4 4 GB |25 GB |0.133美元/小时
+C1.32x32x25 |32 |25 GB |25 GB |0.962美元/小时
+
+### 微软
+
+微软Azure是由微软创建的云计算服务，用于通过微软管理的数据中心全球网络来构建、测试、部署和管理应用程序和服务。它提供SaaS、PaaS和IaaS，并支持许多不同的编程语言、工具和框架，包括微软特定的和第三方软件和系统。
+
+通过Azure门户，Azure HDInsight服务为定制化Spark集群提供支持。通过选择ML Services集群类型，可以轻松创建支持Spark和RStudio的HDInsight集群。注意，提供的`sparklyr`版本可能不是CRAN中的最新版本，因为默认的程序包仓库似乎是使用微软R应用程序网络（MRAN）而初始化的，而不是直接从CRAN初始化的。图6-12显示了使用R启动Spark集群的Azure门户。
+
+![图6-12. 创建Azure HDInsight Spark集群](figures/6_12.png)
+HDInsight的最新定价信息可以在azure.microsoft.com/en-us/pricing/details/hdinsight找到。表6-6列出了写书之时的报价。
+
+表6-6. Azure HDInsight定价信息
+
+实例 |CPU |内存 |总成本
+-----|-----|------|--------
+D1 v2 |1 |3.5 GB |0.074美元/小时
+D4 v2 |8 |28 GB |0.59美元/小时
+G5 |64 |448 GB |9.298美元/小时
 
 ### Qubole
 
-Qubole was founded in 2013 with a mission to close the data accessibility gap. Qubole
-delivers a self-service platform for big data analytics built on Amazon, Microsoft,
-Google, and Oracle Clouds. In Qubole, you can launch Spark clusters, which you can
-then use from Qubole notebooks or RStudio Server.图6-13 shows a Qubole clus‐
-ter initialized with RStudio and `sparklyr`。
-110 | Chapter 6: Clusters
-Figure 6-13. A Qubole cluster initialized with RStudio and sparklyr
-You can find the latest pricing information at Qubole’s pricing page. Table 6-7 lists the
-price for Qubole’s current plan, as of this writing. Notice that pricing is based on cost
-of QCU/hr, which stands for “Qubole Compute Unit per hour,” and the Enterprise
-Edition requires an annual contract.
-Table 6-7. Qubole pricing information
-Test Drive Full-featured trial Enterprise Edition
-$0 $0 $0.14/QCU
+Qubole成立于2013年，其使命是缩小数据的可访问性差距。Qubole为基于亚马逊、微软、谷歌和甲骨文云的大数据分析提供了一个自助服务平台。在Qubole，你可以启动Spark集群，支持通过Qubole笔记本或RStudio服务器使用。图6-13展示了一个用RStudio和`sparklyr`初始化的Qubole集群。
+
+![Figure 6-13. 用RStudio和`sparklyr`初始化的Qubole集群](figures/6_13.png)
+
+你可以在Qubole的定价页面上找到最新的定价信息。表6-7列出了截至写书的时候Qubole当前套餐的价格。注意，定价基于QCU/hr的成本，即“每小时Qubole计算单位”，而企业版本需要一份年度合同。
+
+表6-7. Qubole定价信息
+
+测试驱动 |全功能试用版|企业版
+------|------|----
+0美元 0美元 0.14美元/QCU
 
 ## Kubernetes
 
