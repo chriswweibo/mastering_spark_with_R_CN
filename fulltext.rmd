@@ -2744,84 +2744,46 @@ YARN提供了一个资源管理用户界面，可用于访问日志、监视可�
 
 #### Apache Mesos
 
-Apache Mesos is an open source project to manage computer clusters. Mesos began
-as a research project in the UC Berkeley RAD Lab. It makes use of Linux Cgroups to
-provide isolation for CPU, memory, I/O, and file system access.
-Mesos, like YARN, supports executing many cluster frameworks, including Spark.
-However, one advantage particular to Mesos is that it allows cluster frameworks like
-Spark to implement custom task schedulers. A scheduler is the component that coor‐
-dinates in a cluster which applications are allocated execution time and which resour‐
-ces are assigned to them. Spark uses a coarse-grained scheduler, which schedules
-resources for the duration of the application; however, other frameworks might use
-Mesos’ fine-grained scheduler, which can increase the overall efficiency in the cluster
-by scheduling tasks in shorter intervals, allowing them to share resources between
-them.
-Mesos provides a web interface to manage your running applications, resources, and
-so on. After connecting to Spark from R, your application will be registered like any
-other application running in Mesos.图6-6 shows a successful connection to
-Spark from R.
-Mesos is an Apache project with its documentation available at mesos.apache.org.
-The Running Spark on Mesos guide is also a great resource if you choose to use Mesos
-as your cluster manager.
-100 | Chapter 6: Clusters
-![Figure 6-6. Mesos web interface running Spark and R](figures/6_6.png)
+Apache Mesos是一个用于管理计算机集群的开源项目。Mesos最初是加州大学伯克利分校RAD实验室的一个研究项目，它利用Linux Cgroup为CPU、内存、I/O和文件系统访问提供隔离。
 
-### Distributions
+与YARN一样，Mesos支持执行许多集群框架，包括Spark。然而，Mesos的一个优势是它允许像Spark这样的集群框架实现定制的任务调度器。调度器是集群中协调应用程序分配执行时间和资源的组件。Spark使用粗粒度的调度器，它根据应用程序的持续时间调度资源；但是，其他框架可能使用Mesos的细粒度调度器，它可以通过在较短的时间区间内调度任务来提高集群的整体效率，从而允许任务之间共享资源。
 
-You can use a cluster manager in on-premises clusters, as described in the previous
-section; however, many organizations—including, but not limited to, Apache Spark—
-choose to partner with companies providing additional management software, serv‐
-ices, and resources to help manage applications in their cluster. Some of the on￾premises cluster providers include Cloudera, Hortonworks, and MapR, which we
-briefly introduce next.
-Cloudera, Inc., is a US-based software company that provides Apache Hadoop and
-Apache Spark–based software, support and services, and training to business custom‐
-ers. Cloudera’s hybrid open source Apache Hadoop distribution, Cloudera
-Distribution Including Apache Hadoop (CDH), targets enterprise-class deployments
-of that technology. Cloudera donates more than 50% of its engineering output to the
-various Apache-licensed open source projects (Apache Hive, Apache Avro, Apache
-HBase, and so on) that combine to form the Apache Hadoop platform. Cloudera is
-also a sponsor of the Apache Software Foundation.
-Cloudera clusters make use of parcels, which are binary distributions containing pro‐
-gram files and metadata. Spark happens to be installed as a parcel in Cloudera. It’s
-beyond the scope of this book to present how to configure Cloudera clusters, but
-resources and documentation can be found under cloudera.com, and “Introducing
-sparklyr, an R Interface for Apache Spark” on the Cloudera blog.
-Cloudera provides the Cloudera Manager web interface to manage resources, serv‐
-ices, parcels, diagnostics, and more.图6-7 shows a Spark parcel running in Clou‐
-dera Manager, which you can later use to connect from R.
+Mesos提供了一个web界面来管理正在运行的应用程序、资源等。从R连接到Spark后，你的应用程序像Mesos中运行的任何其他应用程序一样完成注册。图6-6显示了从R到Spark的成功连接。
 
-![Figure 6-7. Cloudera Manager running Spark parcel](figures/6_7.png)
-sparklyr is certified with Cloudera, meaning that Cloudera’s support is aware of spar
-klyr and can be effective helping organizations that are using Spark and R. Table 6-1
-summarizes the versions currently certified.
-Table 6-1. Versions of `sparklyr` certified with Cloudera
+Mesos是一个Apache项目，它的文档可以在Mesos.Apache.org上找到。如果你选择使用Mesos作为集群管理器，《Running Spark on Mesos》指南也是一个很好的资源。
 
-Cloudera version |Product |Version |Components |Kerberos
+
+![Figure 6-6. 运行Spark和R的Mesos网络接口](figures/6_6.png)
+
+### 发行版
+
+正如前一节所介绍的，你可以在本地群集中使用群集管理器；但是，许多组织（包括但不限于Apache Spark）选择与提供附加管理软件、服务和资源的公司合作，以帮助管理其群集中的应用程序。一些本地集群提供商包括*Cloudera*、*Hortonworks*和*MapR*。下面我们会简要介绍它们。
+
+Cloudera，Inc.是一家美国软件公司，为商业客户提供基于Apache Hadoop和Apache Spark的软件、支持、服务以及培训。Cloudera的混合开源Apache Hadoop发行版，即含Apache Hadoop的Cloudera发行版（CDH），目标成为该技术的企业级部署方案。Cloudera将其50%以上的工程输出捐赠给Apache许可的各种开源项目（Apache Hive、Apache Avro、Apache HBase等），这些项目结合在一起形成Apache Hadoop平台。Cloudera也是Apache软件基金会的赞助商。
+
+Cloudera集群使用包。包是包含程序文件和元数据的二进制发行版。Spark恰好作为一个包安装在Cloudera上。介绍如何配置Cloudera集群超出了本书的范围，但是可以在Cloudera.com和Cloudera博客上的“Introducing
+sparklyr, an R Interface for Apache Spark”下找到资源和文档。
+
+Cloudera提供Cloudera管理器网络接口来管理资源、服务、包、诊断等。图6-7显示了运行在Cloudera管理器中的Spark包，你可以稍后使用它连接R。
+
+![Figure 6-7. 运行Spark包的Cloudera管理器](figures/6_7.png)
+`sparklyr`通过了Cloudera认证，意味着Cloudera也会支持`sparklyr`，可以有效帮助使用Spark和R的组织。表6-1总结了当前认证的版本。
+
+表6-1. Cloudera认证d额`sparklyr`版本
+
+Cloudera版本|产品 |版本|构件|Kerberos
 ------|----------|-------|------|-------
-CDH5.9 |`sparklyr` |0.5 |HDFS, Spark | Yes
-CDH5.9 |`sparklyr` |0.6 |HDFS, Spark |Yes
-CDH5.9 |`sparklyr` |0.7 |HDFS, Spark |Yes
+CDH5.9 |`sparklyr` |0.5 |HDFS, Spark | 是
+CDH5.9 |`sparklyr` |0.6 |HDFS, Spark |是
+CDH5.9 |`sparklyr` |0.7 |HDFS, Spark |是
 
-Hortonworks is a big data software company based in Santa Clara, California. The
-company develops, supports, and provides expertise on an expansive set of entirely
-open source software designed to manage data and processing for everything from
-Internet of Things (IoT) to advanced analytics and machine learning. Hortonworks
-believes that it is a data management company bridging the cloud and the datacenter.
-Hortonworks partnered with Microsoft to improve support in Microsoft Windows
-for Hadoop and Spark, which used to be a differentiation point from Cloudera; how‐
-ever, comparing Hortonworks and Cloudera is less relevant today since the compa‐
-nies merged in January 2019. Despite the merger, support for the Cloudera and
-Hortonworks Spark distributions are still available. Additional resources to configure
-Spark under Hortonworks are available at hortonworks.com.
-MapR is a business software company headquartered in Santa Clara, California.
-MapR provides access to a variety of data sources from a single computer cluster,
-102 | Chapter 6: Clusters
-including big data workloads such as Apache Hadoop and Apache Spark, a dis‐
-tributed file system, a multimodel database management system, and event stream
-processing, combining analytics in real time with operational applications. Its tech‐
-nology runs on both commodity hardware and public cloud computing services.
+Hortonworks是一家总部位于加州圣克拉拉的大数据软件公司。公司开发、支持并提供一整套的完全开源的软件，旨在管理从物联网（IoT）到高级分析和机器学习等的数据和处理。Hortonworks相信它是一家连接云和数据中心的数据管理公司。
 
-## Cloud
+Hortonworks与微软合作，改善微软Windows对Hadoop和Spark的支持。这一点曾是区别于Cloudera的一个不同点；然而，自从两家公司于2019年1月合并以来，Hortonworks和Cloudera的比较在今天就不那么重要了。尽管已经合并，对Cloudera和Hortonworks的Spark发行版的支持仍然可用。在Hortonworks下配置Spark的其他资源可以在Hortonworks.com上找到。
+
+MapR也是一家总部位于加利福尼亚州圣克拉拉的商业软件公司。MapR提供从单个计算机集群访问各种数据源的权限，包括大数据工作负载，如Apache Hadoop和Apache Spark，分布式文件系统，多模式数据库管理系统和事件流处理，实时分析与操作应用的结合。它的技术运行在商品硬件和公有云计算服务上。
+
+## 云端
 
 If you have neither an on-premises cluster nor spare machines to reuse, starting with
 a cloud cluster can be quite convenient since it will allow you to access a proper clus‐
