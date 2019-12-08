@@ -3121,40 +3121,22 @@ sc <- spark_connect(master = "yarn")
 
 ### YARN集群
 
-The main difference between running YARN in cluster mode and running YARN in
-client mode is that, in cluster mode, the driver node is not required to be the node
-where R and `sparklyr` were launched; instead, the driver node remains the designa‐
-ted driver node, which is usually a different node than the edge node where R is run‐
-ning. It can be helpful to consider using cluster mode when the edge node has too
-many concurrent users, when it is lacking computing resources, or when tools (like
-RStudio or Jupyter) need to be managed independently of other cluster resources.
-Figure 7-6 shows how the different components become decoupled when running in
-cluster mode. Notice there is still a line connecting the client with the cluster manager
-since, first of all, resources still need to be allocated from the cluster manager; how‐
-ever, after they’re allocated, the client communicates directly with the driver node,
-which communicates with the worker nodes. From图7-6, you might think that
-cluster mode looks much more complicated than client mode—this would be a
-YARN | 123
-correct assessment; therefore, if possible, it’s best to avoid cluster mode due to its
-additional configuration overhead.
+在集群模式下运行YARN与在客户端模式下运行YARN的主要区别在于，在集群模式下，不要求驱动节点是启动R和`sparklyr`的节点。相反，驱动节点仍然是专门指定的，通常与运行R的边缘节点不同。当边缘节点有太多并发用户、缺少计算资源或诸如RStudio或Jupyter的工具需要区别于其他集群资源管理工具进行独立管理时，考虑使用集群模式可能会有帮助。
 
-![Figure 7-6. YARN cluster connection diagram](figures/7_6.png)
+图7-6展示了在集群模式下运行时不同组件是如何分离的。注意，仍然有一条连接客户端和集群管理器的线路，因为首先，仍然需要从集群管理器分配资源；但是，在分配资源之后，客户端直接与驱动节点通信，驱动节点与工作节点通信。从图7-6中，你可能认为集群模式看起来比客户端模式复杂得多。这种认识是正确的；因此，如果可能的话，最好避免集群模式，因为它有额外的配置开销。
 
-To connect in YARN cluster mode, simply run the following:
+![图7-6. YARN集群连接图](figures/7_6.png)
+
+为了连接YARN集群节点，只需要运行下列代码：
 ```{r}
 sc <- spark_connect(master = "yarn-cluster")
 ```
-Cluster mode assumes that the node running `spark_connect()` is properly config‐
-ured, meaning that `yarn-site.xml` exists and the `YARN_CONF_DIR` environment vari‐
-able is properly set. When using Hadoop as a file system, you will also need the
-`HADOOP_CONF_DIR` environment variable properly configured. In addition, you would
-need to ensure proper network connectivity between the client and the driver node—
-not just by having both machines reachable, but also by making sure that they have
-sufficient bandwidth between them. This configuration is usually provided by your
-system administrator and is not something that you would need to manually
-configure.
+
+集群模式假定运行`spark_connect()`的节点都正确配置好了，这意味着存在`yarn-site.xml`，并且`YARN_CONF_DIR`环境变量都配置正确。。当使用Hadoop作为文件系统时，还需要`HADOOP_CONF_DIR`环境变量配置正确。此外，你需要确保客户端和驱动节点之间的网络连接正确，这不仅仅是需要两台机器都可以访问，而且还需要确保它们之间有足够的带宽。此配置通常由系统管理员提供，不需要手动配置。
 
 ## Livy
+
+与其他需要在集群中使用边缘节点的连接方法不同，Livy提供了一个web API，使Spark集群可以从集群外部访问，并且不需要在客户端中安装Spark。在通过web API连接之后，*Livy服务*通过从集群管理器请求资源并像往常一样分发工作来启动Spark上下文。图7-7展示了一个Livy连接；注意，客户端通过web API远程连接到驱动节点。
 
 As opposed to other connection methods that require using an edge node in the clus‐
 ter, Livy provides a web API that makes the Spark cluster accessible from outside the
@@ -3162,13 +3144,10 @@ cluster and does not require a Spark installation in the client. After it’s co
 through the web API, the Livy Service starts the Spark context by requesting resources
 from the cluster manager and distributing work as usual.图7-7 illustrates a Livy
 connection; notice that the client connects remotely to the driver through a web API.
-124 | Chapter 7: Connections
 
-![Figure 7-7. Livy connection diagram](figures/7_7.png)
+![图7-7. Livy连接图](figures/7_7.png)
 
-Connecting through Livy requires the URL to the Livy service, which should be simi‐
-lar to https://hostname:port/livy. Since remote connections are allowed, connec‐
-tions usually require, at the very least, basic authentication:
+通过Livy连接需要指向Livy服务的URL，应该与https://hostname:port/livy类似。因为允许远程连接，连接通常至少需要基本的认证：
 ```{r}
 sc <- spark_connect(
 master = "https://hostname:port/livy",
@@ -3178,27 +3157,16 @@ username = "<username>",
 password = "<password>"
 ))
 ```
-To try out Livy on your local machine, you can install and run a Livy service as
-described under the “Livy” on page 114 section and then connect as follows:
+要在本地机器上使用Livy，你可以想之前在“Livy”中描述的那样，安装运行Livy服务并进行连接，代码如下：
 ```{r}
 sc <- spark_connect(
 master = "http://localhost:8998",
 method = "livy",
 version = "2.3.1")
 ```
-After you’re connected through Livy, you can make use of any `sparklyr` feature; how‐
-ever, Livy is not suitable for exploratory data analysis, since executing commands has
-a significant performance cost. That said, while running long-running computations,
-this overhead could be considered irrelevant. In general, you should prefer to avoid
-using Livy and work directly within an edge node in the cluster; when this is not fea‐
-sible, using Livy could be a reasonable approach.
-Livy | 125
+通过Livy连接后，你可以使用`sparklyr`的任何特性；但是，Livy不适合探索性数据分析，因为执行命令会带来很大的性能开销。虽然这么说，但在长时间运行计算时，这种开销可能被认为是无关紧要的。一般来说，你应该避免使用Livy并直接在集群中的边缘节点内工作；当这种策略不可行时，使用Livy才是一种合理的方法。
 
-> Specifying the Spark version through the spark_version parame‐
-ter is optional; however, when the version is specified, performance
-is significantly improved by deploying precompiled Java binaries
-compatible with the given version. Therefore, it is a best practice to
-specify the Spark version when connecting to Spark using Livy.
+> 通过`spark_version`参数指定Spark版本是可选的；但是，当指定了版本时，部署与给定版本兼容的预编译Java二进制文件会显著提高集群性能。因此，在使用Livy连接到Spark时，最好指定Spark版本。
 
 ## Mesos
 
