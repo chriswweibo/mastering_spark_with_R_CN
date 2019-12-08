@@ -2987,6 +2987,7 @@ Apache Livy是Apache中的一个孵化项目，支持通过web界面远程使用
 ## 3 0.4.0
 ## 4 0.5.0
 ```
+
 这个命令可以列出可安装的版本。我们建议安装最新的版本并完成验证，代码如下：
 
 ```{r}
@@ -3000,7 +3001,7 @@ livy_service_start()
 ```
 你可以导航至本地http://localhost:8998 上的Livy进程。第7章会具体介绍如何通过Livy连接。连接成功后，你可以导航至Livy web应用，如图6-17所示。
 
-![[图6-17. 作为本地服务运行的Apache Livy](figures/6_17.png)
+![图6-17. 作为本地服务运行的Apache Livy](figures/6_17.png)
 
 确保你在使用本地Livy实例的时候已经终止了Livy服务（而对于集群中运行的正常Livy服务，你无需这么做）： 
 
@@ -3011,9 +3012,9 @@ livy_service_stop()
 
 ## 小结
 
-本章介绍了内部部署和云计算的历史和权衡，并介绍了Kubernetes这一提供跨本地部署或多个云提供商之间灵活性的有前途的框架。本章还引入了集群管理器（Spark Standalone、YARN、Mesos和Kubernetes），作为运行Spark集群应用所需的软件。本章简要介绍了本地集群提供商，如Cloudera、Hortonworks和MapR，以及主要的Spark云提供商：亚马逊、Databricks、IBM、谷歌、微软和Qubole。
+本章介绍了内部部署和云计算的历史和权衡，以及Kubernetes这一提供跨内部部署或多个云提供商之间灵活性的有前途的框架。本章还引入了集群管理器（Spark Standalone、YARN、Mesos和Kubernetes），作为运行Spark集群应用所需的软件。本章还简要介绍本地集群提供商，如Cloudera、Hortonworks和MapR，以及主要的Spark云提供商：亚马逊、Databricks、IBM、谷歌、微软和Qubole。
 
-虽然本章为理解当前集群计算趋势、工具和服务提供商处理大规模数据科学项目提供了坚实的基础，但它并没有提供一个全面的框架来帮助你决定选择哪种集群技术。相反，请使用本章作为概述和起点来寻找其他资源，以帮助找到最适合组织需要的集群。
+虽然本章为理解当前集群计算趋势、工具和服务提供商在处理大规模数据科学项目上提供了坚实的基础，但它并没有提供一个全面的框架来帮助你决定选择哪种集群技术。相反，可以将本章作为概述和起点来寻找其他资源，以帮助找到最适合组织需要的集群。
 
 第7章将重点介绍如何连接到现有的集群，因此，就像我们在本章中介绍的,它假定Spark集群已经可用。
 
@@ -3024,164 +3025,79 @@ livy_service_stop()
 > They don’t get to choose.
 > —Daenerys Targaryen
 
-Chapter 6 presented the major cluster computing trends, cluster managers, distribu‐
-tions, and cloud service providers to help you choose the Spark cluster that best suits
-your needs. In contrast, this chapter presents the internal components of a Spark
-cluster and how to connect to a particular Spark cluster.
-When reading this chapter, don’t try to execute every line of code; this would be quite
-hard since you would need to prepare different Spark environments. Instead, if you
-already have a Spark cluster or if the previous chapter gets you motivated enough to
-sign up for an on-demand cluster, now is the time to learn how to connect to it. This
-chapter helps you connect to your cluster, which you should have already chosen by
-now. Without a cluster, we recommend that you learn the concepts and come back to
-execute code later on.
-In addition, this chapter provides various troubleshooting connection techniques.
-While we hope you won’t need to use them, this chapter prepares you to use them as
-effective techniques to resolve connectivity issues.
-While this chapter might feel a bit dry—connecting and troubleshooting connections
-is definitely not the most exciting part of large-scale computing—it introduces the
-components of a Spark cluster and how they interact, often known as the architecture
-of Apache Spark. This chapter, along with Chapters 8 and 9, will provide a detailed
-view of how Spark works, which will help you move toward becoming an intermedi‐
-ate Spark user who can truly understand the exciting world of distributed computing
-using Apache Spark.
-117
+第6章介绍了主要的集群计算趋势、集群管理器、发行版和云服务提供商，以帮助你选择最适合需要的Spark集群。相比之下，本章会介绍Spark集群内部组件以及如何连接到特定Spark集群。
 
-## Overview
+阅读本章时，无需执行每一行代码。这会非常困难，因为你需要准备不同的Spark环境。相反，如果你已经有了一个Spark集群，或者上一章让你有足够的动力去注册一个按需的集群，那么现在是学习如何连接集群的时候了。本章帮助你连接到已经选择的集群。如果还没有选择集群，我们建议你学习这些概念，然后回来运行相关代码。
 
-The overall connection architecture for a Spark cluster is composed of three types of
-compute instances: the driver node, the worker nodes, and the cluster manager. A clus‐
-ter manager is a service that allows Spark to be executed in the cluster; this was
-detailed in “Managers” on page 95. The worker nodes (also referred to as executors)
-execute compute tasks over partitioned data and communicate intermediate results to
-other workers or back to the driver node. The driver node is tasked with delegating
-work to the worker nodes, but also with aggregating their results and controlling
-computation flow. For the most part, aggregation happens in the worker nodes; how‐
-ever, even after the nodes aggregate data, it is often the case that the driver node
-would need to collect the worker’s results. Therefore, the driver node usually has at
-least, but often much more, compute resources (memory, CPUs, local storage, etc.) as
-the worker node.
-Strictly speaking, the driver node and worker nodes are just names assigned to
-machines with particular roles, while the actual computation in the driver node is
-performed by the Spark context. The Spark context is the main entry point for Spark
-functionality since it’s tasked with scheduling tasks, managing storage, tracking exe‐
-cution status, specifying access configuration settings, canceling jobs, and so on. In
-the worker nodes, the actual computation is performed under a spark executor, which
-is a Spark component tasked with executing subtasks against a specific data partition.
-Figure 7-1 illustrates this concept, where the driver node orchestrates a worker’s work
-through the cluster manager.
+此外，本章还提供了各种连接故障排除技术。虽然我们不希望你需要使用它们，但还是保证你可以运用这些技术解决连接问题。
 
-![Figure 7-1. Apache Spark connection architecture](figures/7_1.png)
+虽然本章的内容可能有点枯燥，因为连接和故障排除绝对不是大规模计算中最让人兴奋的内容，但是本章还是会介绍Spark集群的构成和交互方式,通常被称为Apache Spark*体系结构*。本章以及第8章和第9章将详细介绍Spark的工作原理，这将帮助你成长为Spark的中级用户，能够真正理解使用Apache Spark进行分布式计算的精彩内容。
 
-If you already have a Spark cluster in your organization, you should request the con‐
-nection information to this cluster from your cluster administrator, read their usage
-policies carefully, and follow their advice. Since a cluster can be shared among many
-users, you want to ensure that you request only the compute resources you need. We
-cover how to request resources in Chapter 9. Your system administrator will specify
-whether it’s an on-premises or cloud cluster, the cluster manager being used, sup‐
-ported connections, and supported tools. You can use this information to jump
-directly to Local, Standalone, YARN, Mesos, Livy, or Kubernetes based on which is
-appropriate for your situation.
+## 概述
 
-> After you’ve used `spark_connect()` to connect, you can use all the
-techniques described in previous chapters using the sc connection;
-for instance, you can do data analysis or modeling with the same
-code previous chapters presented.
+Spark集群的所有连接体系结构由三种类型的计算实例组成：*驱动节点*、*工作节点*和*集群管理器*。集群管理器是一种允许Spark在集群中执行的服务。这部分内容第之前的“管理器”中有详细说明。工作节点（也称为执行器）在分区数据上执行计算任务，并将中间结果传递给其他工作节点或返回给驱动节点。驱动节点的任务是将工作委托给工作节点，同时还负责聚合它们的结果和控制计算流。在大多数情况下，聚合发生在工作节点中；然而，即使在节点聚合数据之后，驱动节点通常也需要收集工作节点的结果。因此，驱动节点通常至少配备（通常更多）一些计算资源（内存、CPU、本地存储等），可以作为工作节点。
 
-### Edge Nodes
+严格地说，驱动节点和工作节点只是分配了具有特定角色的机器的名称，而驱动节点中的实际计算则根据*Spark上下文*执行的。Spark上下文是Spark功能的主要入口，因为它的任务是调度任务、管理存储、跟踪执行状态、指定访问配置的设置、取消作业等。在工作节点中，实际计算是在spark执行器下执行的，spark执行器是一个spark组件，其任务是针对特定的数据分区执行子任务。图7-1说明了这个概念，其中驱动节点通过集群管理器编排一个工作节点的工作。
 
-Computing clusters are configured to enable high bandwidth and fast network con‐
-nectivity between nodes. To optimize network connectivity, the nodes in the cluster
-are configured to trust one another and to disable security features. This improves
-performance but requires you to close all external network communication, making
-the entire cluster secure as a whole except for a few cluster machines that are carefully
-configured to accept connections from outside the cluster; conceptually, these
-machines are located in the “edge” of the cluster and are known as edge nodes.
-Therefore, before connecting to Apache Spark, it is likely that you will first need to
-connect to an edge node in your cluster. There are two methods to connect:
+![图7-1. Apache Spark连接体系结构](figures/7_1.png)
 
-* Terminal
-    Using a computer terminal application, you can use a Secure Shell to establish a
-remote connection into the cluster; after you connect into the cluster, you can
-launch R and then use `sparklyr`。 However, a terminal can be cumbersome for
-some tasks, like exploratory data analysis, so it’s often used only while configur‐
-ing the cluster or troubleshooting issues.
-* Web browser
-    While using `sparklyr` from a terminal is possible, it is usually more productive
-to install a web server in an edge node that provides access to run R with spar
-klyr from a web browser. Most likely, you will want to consider using RStudio or
-Jupyter rather than connecting from the terminal.
-Figure 7-2 explains these concepts visually. The left block is usually your web
-browser, and the right block is the edge node. Client and edge nodes communicate
-Overview | 119
-over HTTP when using a web browser or Secure Shell (SSH) when using the
-terminal.
+如果你的组织中已经有一个Spark集群，那么你应该向集群管理员请求指向该集群的连接信息，仔细阅读它们的使用策略，并遵循它们的建议。因为集群可以在许多用户之间共享，所以你需要确保只请求所需的计算资源。我们将在第9章中介绍如何请求资源。系统管理员将指定它是本地集群还是云集群、使用的集群管理器、支持的连接和支持的工具。你可以使用此信息直接跳转到本地、单机、YARN、Mesos、Livy或Kubernetes，根据这些信息可以选择适合需求的方案。
 
-![Figure 7-2. Connecting to Spark’s edge node](figures/7_2.png)
 
-### Spark Home
+> 使用`spark_connect()`连接后，可以借助`sc`连接方法使用在前面章节中描述的技术；例如，你可以使用前面章节中介绍的相同代码进行数据分析或建模。
 
-After you connect to an edge node, the next step is to determine where Spark is
-installed, a location known as the `SPARK_HOME`. In most cases, your cluster administra‐
-tor will have already set the `SPARK_HOME` environment variable to the correct installa‐
-tion path. If not, you will need to get the correct `SPARK_HOME` path. You must
-specify the `SPARK_HOME` path as an environment variable or explicitly when running
-`spark_connect()` using the spark_home parameter.
-If your cluster provider or cluster administrator already provided SPARK_HOME for
-you, the following code should return a path instead of an empty string:
+### 边缘节点
+
+计算集群会完成配置，支持节点之间的大带宽和快速网络连接。为了优化网络连接，集群中的节点被配置为相互信任并禁用安全功能。这会提高性能，但需要你关闭所有外部网络通信，从而使整个集群成为一个安全的整体，只有少数集群计算机在精心配置后接受来自集群外部的连接。理论上讲，这些计算机位于集群的“边缘”，称为*边缘节点*。因此，在连接到Apache Spark之前，可能首先需要连接到集群中的边缘节点。有两种连接方法：
+
+* 终端
+    使用计算机终端应用程序，可以使用Secure Shell建立到集群的远程连接；连接到集群后，可以启动R，然后使用`sparklyr`。但是，终端对于一些任务，如探索性数据分析来说可能会很麻烦，因此它通常只在配置集群或故障排查时使用。
+* 网络浏览器
+    虽然可以从终端使用`sparklyr`，但在边缘节点安装web服务器通常会更高效，该节点提供从网络浏览器运行R和`sparklyr`的访问权限。很可能，你会考虑使用RStudio或Jupyter，而不是从终端连接。
+
+图7-2形象的解释了这些概念。左边部分通常是你的网络浏览器，右边部分是边缘节点。在使用网路浏览器的时候，客户端和边缘节点使用HTTP通信；在使用终端的时候，客户端和边缘节点使用Secure Shell （SSH）通信。
+
+![图7-2. 连接到Spark边缘节点](figures/7_2.png)
+
+### Spark主目录
+
+在连接到边缘节点之后，下一步是确定Spark安装在哪里，一个名为`SPARK_HOME`的位置。在大多数情况下，集群管理器已经将`SPARK_HOME`环境变量设置为正确的安装路径。如果没有，你需要得到正确的*SPARK_HOME*路径。必须指定`SPARK_HOME`路径作为环境变量，或者在运行`spark_connect()`时显式地指定`spark_connect()`路径。
+
+如果你的集群提供商或集群管理员已经为提供了*SPARK_HOME*，那么下面的代码应该返回路径而不是空字符串：
+
 ```{r}
 Sys.getenv("SPARK_HOME")
 ```
-If this code returns an empty string, this would mean that the `SPARK_HOME` environ‐
-ment variable is not set in your cluster, so you will need to specify `SPARK_HOME` while
-using `spark_connect()`, as follows:
+如果这段代码返回了空字符串，这就意味着集群中的`SPARK_HOME`环境变量没有设置。所以你需要在使用`spark_connect()`的时候指定`SPARK_HOME`，代码如下：
 ```{r}
 sc <- spark_connect(master = "master", spark_home = "local/path/to/spark")
 ```
-In this example, master is set to the correct cluster manager master for Spark Stand‐
-alone, YARN, Mesos, Kubernetes, or Livy.
+在这个例子里，设置`master`，为Spark单机，YARN，Mesos，Kubernetes或Livy指向集群管理器主节点。
 
-## Local
+## 本地模式
 
-When you connect to Spark in local mode, Spark starts a single process that runs
-most of the cluster components like the Spark context and a single executor. This is
-ideal to learn Spark, work offline, troubleshoot issues, or test code before you run it
-over a large compute cluster.图7-3 depicts a local connection to Spark.
-120 | Chapter 7: Connections
+当你以本地模式连接到Spark时，Spark会像Spark上下文和单个执行一样，启动一个运行大多数集群组件的进程。这对于在大型计算集群上运行Spark、脱机工作、故障排查或测试代码非常理想。图7-3描述了Spark的本地连接。
 
-![Figure 7-3. Local connection diagram](figures/7_3.png)
+![图7-3. 本地连接图](figures/7_3.png)
 
-Notice that there is neither a cluster manager nor worker process since, in local
-mode, everything runs inside the driver application. It’s also worth noting that spar
-klyr starts the Spark context through spark-submit, a script available in every Spark
-installation to enable users to submit custom applications to Spark. If you’re curious,
-Chapter 13 explains the internal processes that take place in `sparklyr` to submit this
-application and connect properly from R.
-To perform this local connection, we can use the following familiar code from previ‐
-ous chapters:
+注意，本地模式下既没有集群管理器，也没有工作进程，因为在本地模式下，所有工作都在驱动应用程序中运行。另外值得注意的是，`sparklyr`通过`spark-submit`启动Spark上下文 。`spark-submit`是每个Spark安装程序中都提供的一个脚本，允许用户向Spark提交自定义应用程序。如果你好奇的话，第13章会解释`sparklyr`中发生的提交此应用程序并从R正确连接的内部过程。
+
+要执行本地连接，我们可以使用前面章节中熟悉的以下代码：
+
 ```{r}
 # Connect to local Spark instance
 sc <- spark_connect(master = "local")
 ```
 
-## Standalone
+## 单机模式
 
-Connecting to a Spark Standalone cluster requires the location of the cluster manag‐
-er’s master instance, which you can find in the cluster manager web interface as
-described in the “Standalone” on page 96 section. You can find this location by look‐
-ing for a URL starting with spark://.
-A connection in standalone mode starts from sparklyr, which launches `spark-submit`, which then submits the `sparklyr` application and creates the Spark Context,
-which requests executors from the Spark Standalone instance running under the
-given master address.
-Figure 7-4 illustrates this process, which is quite similar to the overall connection
-architecture from图7-1 but with additional details that are particular to stand‐
-alone clusters and `sparklyr`。
-Standalone | 121
+连接到Spark单机集群需要集群管理器主节点实例的位置。就像之前在“单机”部分介绍的，你可以在集群管理器的web界面中找到该实例。你可以通过查找以spark://开头的URL来找到此位置。
 
-![Figure 7-4. Spark Standalone connection diagram](figures/7_4.png)
+单机模式下的连接从`sparklyr`开始，它会启动`spark-submit`，然后提交`sparklyr`应用程序并创建Spark上下文。该上下文从运行在给定主节点地址下的Spark单机实例中请求执行器。图7-4说明了此过程，这与图7-1中的总体连接架构非常相似，但有一些单机集群和`sparklyr`特有的附加细节。
 
-To connect, use master = "spark://hostname:port" in `spark_connect()` as fol‐
-lows:
+![图7-4. Spark单机连接图](figures/7_4.png)
+
+要完成连接，使用`spark_connect()`中的`master = "spark://hostname:port"`，代码如下：
 ```{r}
 sc <- spark_connect(master = "spark://hostname:port")
 ```
