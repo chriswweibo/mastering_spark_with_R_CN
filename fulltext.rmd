@@ -3104,32 +3104,22 @@ sc <- spark_connect(master = "spark://hostname:port")
 
 ## YARN
 
-Hadoop YARN is the cluster manager from the Hadoop project. It’s the most com‐
-mon cluster manager that you are likely to find in clusters, which started out as
-Hadoop clusters; with Cloudera, Hortonworks, and MapR distributions as when
-using Amazon EMR. YARN supports two connection modes: YARN client and YARN
-cluster. However, YARN client mode is much more common than YARN cluster since
-it’s more efficient and easier to set up.
+Hadoop YARN是Hadoop项目中的集群管理器。这是集群中最常见的集群管理器，最初是Hadoop集群；之后是和亚马逊EMR类似的Cloudera、Hortonworks和MapR发行版。YARN支持两种连接方式：YARN客户端和YARN集群。然而，YARN客户端模式比YARN集群更常见，因为它更高效，更容易建立。
 
-### YARN Client
 
-When you connect in YARN client mode, the driver instance runs R, `sparklyr`, and
-the Spark context, which requests worker nodes from YARN to run Spark executors,
-as shown in图7-5.
+### YARN客户端
 
-![Figure 7-5. YARN client connection diagram](figures/7_5.png)
-To connect, you simply run with `master = "yarn"`, as follows:
+当你使用YARN客户端模式连接时，驱动实例运行R，`sparklyr`和Spark上下文。这些操作需要YARN工作节点来运行Spark执行器，如图7-5所示。
+
+![图7-5. YARN客户端连接图](figures/7_5.png)
+
+要完成连接，你只需运行`master = "yarn"`，代码如下：
 ```{r}
 sc <- spark_connect(master = "yarn")
 ```
-Behind the scenes, when you’re running YARN in client mode, the cluster manager
-will do what you would expect a cluster manager would do: it allocates resources
-from the cluster and assigns them to your Spark application, which the Spark context
-will manage for you. The important piece to notice in “YARN” on page 122 is that the
-Spark context resides in the same machine where you run R code; this is different
-when you’re running YARN in cluster mode.
+当你使用客户端模式运行YARN时，集群管理器会在后台执行你希望集群管理器执行的操作：它从集群分配资源并将它们分配给Spark应用程序。Spark上下文会为你管理这些应用。在之前的的“YARN”部分中有一点需要注意，Spark上下文位于运行R代码的同一台机器中；这与集群模式下运行YARN有所不同。
 
-### YARN Cluster
+### YARN集群
 
 The main difference between running YARN in cluster mode and running YARN in
 client mode is that, in cluster mode, the driver node is not required to be the node
