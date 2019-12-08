@@ -2687,7 +2687,7 @@ service$interrupt()
 
 在Spark单机中，Spark使用自己作为自己的集群管理器，这允许你无需在集群中安装其他软件的情况下使用Spark。如果你计划使用集群仅运行Spark应用程序，这可能很有用；如果该集群不只用于Spark，那么像YARN、Mesos或Kubernetes这样的通用集群管理器会更适合。Spark独立文档包含有关配置、启动、监视和启用高可用性的详细信息，如图6-2所示。
 
-由于Spark单机包含在第2章介绍的Spark一般安装，你可以使用Spark安装来初始化自己机器上的本地Spark 单机集群。实际工作中，你可能希望启动不同的机器上的工作节点，但为了简单起见，我们提供了在单个机器上启动单机集群的代码。
+由于Spark单机包含在第2章介绍的Spark安装中，你可以使用Spark安装来初始化自己机器上的本地Spark 单机集群。实际工作中，你可能希望启动不同的机器上的工作节点，但为了简单起见，我们提供了在单个机器上启动单机集群的代码。
 
 首先，通过运行`spark_home_dir()`来获取`SPARK_HOME`目录，然后按如下代码启动主节点和工作节点：
 
@@ -3138,13 +3138,6 @@ sc <- spark_connect(master = "yarn-cluster")
 
 与其他需要在集群中使用边缘节点的连接方法不同，Livy提供了一个web API，使Spark集群可以从集群外部访问，并且不需要在客户端中安装Spark。在通过web API连接之后，*Livy服务*通过从集群管理器请求资源并像往常一样分发工作来启动Spark上下文。图7-7展示了一个Livy连接；注意，客户端通过web API远程连接到驱动节点。
 
-As opposed to other connection methods that require using an edge node in the clus‐
-ter, Livy provides a web API that makes the Spark cluster accessible from outside the
-cluster and does not require a Spark installation in the client. After it’s connected
-through the web API, the Livy Service starts the Spark context by requesting resources
-from the cluster manager and distributing work as usual.图7-7 illustrates a Livy
-connection; notice that the client connects remotely to the driver through a web API.
-
 ![图7-7. Livy连接图](figures/7_7.png)
 
 通过Livy连接需要指向Livy服务的URL，应该与https://hostname:port/livy类似。因为允许远程连接，连接通常至少需要基本的认证：
@@ -3170,24 +3163,17 @@ version = "2.3.1")
 
 ## Mesos
 
-Similar to YARN, Mesos supports client mode and a cluster mode; however, sparklyr
-currently supports only client mode under Mesos. Therefore, the diagram shown in
-Figure 7-8 is equivalent to YARN client’s diagram with only the cluster manager
-changed from YARN to Mesos.
+与YARN类似，Mesos支持客户端模式和集群模式；但是，`sparklyr`目前仅支持Mesos下的客户端模式。因此，图7-8所示的图相当于YARN客户端图，只有集群管理器从YARN更改为Mesos。
 
-![Figure 7-8. Mesos connection diagram](figures/7_8.png)
+![图7-8. Mesos连接图](figures/7_8.png)
 
-Connecting requires the address to the Mesos master node, usually in the form of
-mesos://host:port or mesos://zk://host1:2181,host2:2181,host3:2181/mesos
-for Mesos using ZooKeeper:
+连接需要指向Mesos主节点的网址。对于使用ZooKeeper的Mesos，通常形式是mesos://host:port或者mesos://zk://host1:2181,host2:2181,host3:2181/mesos。
+
 ```{r}
 sc <- spark_connect(master = "mesos://host:port")
 ```
-The MESOS_NATIVE_JAVA_LIBRARY environment variable needs to be set by your sys‐
-tem administrator or manually set when you are running Mesos on your local
-machine. For instance, in macOS, you can install and initialize Mesos from a termi‐
-nal, followed by manually setting the mesos library and connecting with `spark_connect()`:
-```{r}
+The `MESOS_NATIVE_JAVA_LIBRARY`需要经过系统管理员的设置，或者在本地机器上运行Mesos的时候手动设置。例如，在MacOS中，你可以用终端安装和初始化，然后通过手动设置Mesos库，并使用`spark_connect()`进行连接：
+```
 brew install mesos
 /usr/local/Cellar/mesos/1.6.1/sbin/mesos-master --registry=in_memory
  --ip=127.0.0.1 MESOS_WORK_DIR=. /usr/local/Cellar/mesos/1.6.1/sbin/mesos-slave
@@ -3201,15 +3187,12 @@ spark_home = spark_home_dir())
 
 ## Kubernetes
 
-Kubernetes clusters do not support client modes like Mesos or YARN; instead, the
-connection model is similar to YARN cluster, where the driver node is assigned by
-Kubernetes, as illustrated in图7-9.
+Kubernetes并不像Mesos或者YARN支持客户端模式。相反，连接模型类似于YARN集集群，其中的驱动节点由Kubernetes指定，如图7-9所示。
 
-![Figure 7-9. Kubernetes connection diagram](figures/7_9.png)
+![图7-9. Kubernetes连接图](figures/7_9.png)
 
-To use Kubernetes, you need to prepare a virtual machine with Spark installed and
-properly configured; however, it is beyond the scope of this book to present how to
-create one. Once created, connecting to Kubernetes works as follows:
+要使用Kubernetes，你需要准备一个安装了Spark并完成正确配置的虚拟机；但是，本书不讨论如何创建一个虚拟机。完成创建后，Kubernetes连接的流程如下：
+
 ```{r}
 library(sparklyr)
 sc <- spark_connect(config = spark_config_kubernetes(
@@ -3218,43 +3201,39 @@ account = "default",
 image = "docker.io/owner/repo:version",
 version = "2.3.1"))
 ```
-If your computer is already configured to use a Kubernetes cluster, you can use the
-following command to find the `apiserver-host` and `apiserver-port`:
+如果你的计算机已经完成使用Kubernetes集群的配置，你可以使用下面的命令找出`apiserver-host`和`apiserver-port`：
 ```{r}
 system2("kubectl", "cluster-info")
 ```
 
-## Cloud
+## 云模式
 
-When you are working with cloud providers, there are a few connection differences.
-For instance, connecting from Databricks requires the following connection method:
+当你使用云服务提供商时，有不同的连接方式。例如，从Databricks连接需要下面的方法：
 ```{r}
 sc <- spark_connect(method = "databricks")
 ```
-Since Amazon EMR makes use of YARN, you can connect using `master = "yarn"`:
+因为亚马逊EMR使用YARN，因此你可以使用`master = "yarn"`进行连接：
 ```{r}
 sc <- spark_connect(master = "yarn")
 ```
-Connecting to Spark when using IBM’s Watson Studio requires you to retrieve a con‐
-figuration object through a `load_spark_kernels()` function that IBM provides:
+当使用IBM的Watson Studio连接到Spark时，需要你通过IBM提供的`load_spark_kernels()`函数获取一个配置对象：
 ```{r}
 kernels <- load_spark_kernels()
 sc <- spark_connect(config = kernels[2])
 ```
-In Microsoft Azure HDInsights and when using ML Services (R Server), a Spark con‐
-nection is initialized as follows:
+使用微软的Azure HDInsights和ML服务（R服务器）时，Spark连接按照以下方式初始化：
 ```{r}
 library(RevoScaleR)
 cc <- rxSparkConnect(reset = TRUE, interop = "sparklyr")
 sc <- rxGetSparklyrConnection(cc)
 ```
-Connecting from Qubole requires using the `qubole` connection method:
+从Qubole连接需要使用`qubole`连接方法：
 ```{r}
 sc <- spark_connect(method = "qubole")
 ```
-Refer to your cloud provider’s documentation and support channels if you need help.
+如果需要帮助，参考你的云服务提供商文档和支持渠道。
 
-## Batches
+## 批量模式
 
 Most of the time, you use `sparklyr` interactively; that is, you explicitly connect with
 `spark_connect()` and then execute commands to analyze and model large-scale data.
