@@ -2941,91 +2941,45 @@ Qubole成立于2013年，其使命是缩小数据的可访问性差距。Qubole�
 
 ## Kubernetes
 
-Kubernetes is an open source container orchestration system for automating deploy‐
-ment, scaling, and management of containerized applications that was originally
-designed by Google and is now maintained by the Cloud Native Computing Founda‐
-tion (CNCF). Kubernetes was originally based on Docker, while, like Mesos, it’s also
-based on Linux Cgroups.
-Kubernetes can execute many cluster applications and frameworks that you can
-highly customize by using container images with specific resources and libraries. This
-allows a single Kubernetes cluster to be used for many different purposes beyond data
-analysis, which in turn helps organizations manage their compute resources with
-ease. One trade-off from using custom images is that they add further configuration
-overhead but make Kubernetes clusters extremely flexible. Nevertheless, this flexibil‐
-ity has proven to be instrumental to easily administer cluster resources in many
-organizations and, as pointed out in “Overview” on page 93, Kubernetes is becoming
-a very popular cluster framework.
-Kubernetes is supported across all major cloud providers. They all provide extensive
-documentation as to how to launch, manage, and tear down Kubernetes clusters;
-Figure 6-14 shows the GCP console while creating a Kubernetes cluster. You can
-Kubernetes | 111
-deploy Spark over any Kubernetes cluster, and you can use R to connect, analyze,
-model, and more.
-Figure 6-14. Creating a Kubernetes cluster for Spark and R using Google Cloud
-You can learn more at kubernetes.io, and read the Running Spark on Kubernetes guide
-from spark.apache.org.
-Strictly speaking, Kubernetes is a cluster technology, not a specific cluster architec‐
-ture. However, Kubernetes represents a larger trend often referred to as a hybrid
-cloud. A hybrid cloud is a computing environment that makes use of on-premises and
-public cloud services with orchestration between the various platforms. It’s still too
-early to precisely categorize the leading technologies that will form a hybrid approach
-to cluster computing; although, as previously mentioned, Kubernetes is the leading
-one, many more are likely to form to complement or even replace existing
-technologies.
+Kubernetes是一个开源的容器编排系统，用于容器化应用程序的自动部署、扩展和管理，最初由Google设计，现在由云原生计算基金会（Cloud Native Computing Foundation，CNCF）维护。Kubernetes最初基于Docker，而和Mesos一样，它现在也基于Linux Cgroups。
 
-## Tools
+Kubernetes可以执行许多集群应用和框架，你可以通过使用具有特定资源和库的容器镜像进行高度定制。这可以让Kubernetes集群用于数据分析之外的许多不同目的，进而又帮助组织轻松地管理他们的计算资源。使用自定义镜像需要权衡增加了进一步的配置开销的问题，但又使Kubernetes集群非常灵活。然而，这种灵活性证明，在许多组织中都有助于轻松管理集群资源。正如之前“概述”中所指出的，Kubernetes正在成为一个非常流行的集群框架。
 
-While using only R and Spark can be sufficient for some clusters, it is common to
-install complementary tools in your cluster to improve monitoring, SQL analysis,
-workflow coordination, and more, with applications like Ganglia, Hue, and Oozie,
-respectively. This section is not meant to cover all tools; rather, it mentions the ones
-that are commonly used.
-112 | Chapter 6: Clusters
+所有主要的云提供商都支持Kubernetes。它们都提供了关于如何启动、管理和拆除Kubernetes集群的大量文档；图6-14展示了创建Kubernetes集群时的GCP控制台。你可以在任何Kubernetes集群上部署Spark，并且可以使用R来完成连接、分析、建模等操作。
+
+![图6-14. 使用谷歌云为Spark和R创建Kubernetes集群](figures/6_14.png)
+
+你可以在kubernetes.io上了解更多信息，并通过Spark.apache.org阅读《kubernetes运行Spark指南》。
+
+严格地说，Kubernetes是一种集群技术，而不是一种特定的集群体系结构。然而，Kubernetes代表了一个更大的趋势，通常被称为混合云。混合云是一种计算环境，它利用内部部署和公有云服务，在不同平台之间进行调度。现在，要准确的对形成集群计算混合方法的主要技术进行分类还为时尚早。尽管前面提到，Kubernetes是领先的方案，但还有更多技术可能形成补充，甚至替代现有技术。
+
+## 工具
+
+虽然对于一些集群来说，仅使用R和Spark就足够了，但通常在集群中还会安装补充工具,例如分别使用Ganglia、Hue和Oozie等应用来改进监视、SQL分析、工作流协调等。本节并不打算涵盖所有工具，而是介绍常用的工具。
 
 #### RStudio
 
-From reading Chapter 1, you are aware that RStudio is a well-known and free desk‐
-top development environment for R; therefore, it is likely that you are following the
-examples in this book using RStudio Desktop. However, you might not be aware that
-you can run RStudio as a web service within a Spark cluster. This version of RStudio
-is known as RStudio Server. You can see RStudio Server running in图6-15. In the
-same way that the Spark UI runs in the cluster, you can install RStudio Server within
-the cluster. Then you can connect to RStudio Server and use RStudio in exactly the
-same way you use RStudio Desktop but with the ability to run code against the Spark
-cluster. As you can see in图6-15, RStudio Server looks and feels just like RStudio
-Desktop, but adds support to run commands efficiently by being located within the
-cluster.
-Figure 6-15. RStudio Server Pro running in AWS
-If you’re familiar with R, Shiny Server is a very popular tool for building interactive
-web applications from R. We recommended that you install Shiny directly in your
-Spark cluster.
-RStudio Server and Shiny Server are a free and open source; however, RStudio also
-provides professional products like RStudio Server, RStudio Server Pro, Shiny Server
-Pro, and RStudio Connect, which you can install within the cluster to support addi‐
-tional R workflows. While `sparklyr` does not require any additional tools, they pro‐
-vide significant productivity gains worth considering. You can learn more about them
-at rstudio.com/products/.
-Tools | 113
+通过第1章的学习，你知道RStudio是R的一个著名的免费桌面开发环境；因此，很可能大家正在使用RStudio 桌面版完成本书中的示例。但是，你可能不知道RStudio也可以作为web服务在Spark集群中运行。这个版本的RStudio称为RStudio Server。你可以在图6-15中看到正在运行的RStudio Server。与Spark UI在集群中运行的方式相同，你可以在集群中安装RStudio Server，然后连接到RStudio Server，并按照RStudio Desktop完全相同的方式使用RStudio，同时支持针对Spark集群运行代码。如图6-15所示，RStudio Server不管看起来，还是感觉起来都像RStudio Desktop，但是它支持通过所在的集环境中来高效的运行命令。
+
+![图6-15. 运行在AWS的RStudio Server专业版](figures/6_15.png)
+
+如果你熟悉R的话，Shiny服务是从R构建交互式web应用程序的一个非常流行的工具。我们建议你直接在Spark集群中安装Shiny。
+
+RStudio和Shiny服务器是免费开源的产品；但是，RStudio还提供RStudio Server、RStudio Server Pro、Shiny Server Pro和RStudio Connect等专业产品。你可以在集群内安装这些产品以支持其他R工作流程。`sparklyr`不需要任何额外的工具，但它们带来了值得考虑的生产力显著提高。你可以在rstudio.com/products/上了解更多相关信息。
+
 
 #### Jupyter
 
-Project Jupyter exists to develop open source software, open standards, and services
-for interactive computing across dozens of programming languages. A Jupyter note‐
-book provides support for various programming languages, including R. You can use
-sparklyr with Jupyter notebooks using the R Kernel.图6-16 shows sparklyr
-running within a local Jupyter notebook.
-Figure 6-16. Jupyter notebook running sparklyr
+Juyter项目为开发开源软件、公开标准和跨几十种编程语言的交互式计算服务而生。Jupyter笔记本支持多种编程语言，包括R。你可以使用R内核实现`sparklyr`与Jupyter笔记本一起使用。图6-16展示了`sparklyr`在本地Jupyter笔记本中运行的情况。
+
+![图6-16. 运行`sparklyr`的Jupyter笔记本](figures/6_16.png)
 
 #### Livy
 
-Apache Livy is an incubation project in Apache providing support to use Spark clus‐
-ters remotely through a web interface. It is ideal to connect directly into the Spark
-cluster; however, there are times where connecting directly to the cluster is not feasi‐
-ble. When facing those constraints, you can consider installing Livy in the cluster and
-secure it properly to enable remote use over web protocols. Be aware, though, that
-there is a significant performance overhead from using Livy in `sparklyr`。
-To help test Livy locally, `sparklyr` provides support to list, install, start, and stop a
-local Livy instance by executing livy_available_versions():
+Apache Livy是Apache中的一个孵化项目，支持通过web界面远程使用Spark集群。直接连接到Spark集群是最理想的；但是，有时直接连接到Spark集群是不可行的。当面临这些限制时，你可以考虑在集群中安装Livy并对其进行适当的安全保护，以便能够通过web协议进行远程使用。不过，请注意，在`sparklyr`中使用Livy会带来明显的性能开销。
+
+为了帮助在本地测试Livy，`sparklyr`通过执行`livy_available_versions()`列出、安装、启动和停止本地Livy实例：
+
 ```{r}
 ## livy
 ## 1 0.2.0
@@ -3033,8 +2987,8 @@ local Livy instance by executing livy_available_versions():
 ## 3 0.4.0
 ## 4 0.5.0
 ```
-This lists the versions that you can install; we recommend installing the latest version
-and verifying it as follows:
+这个命令可以列出可安装的版本。我们建议安装最新的版本并完成验证，代码如下：
+
 ```{r}
 # Install default Livy version
 livy_install()
@@ -3044,35 +2998,24 @@ livy_installed_versions()
 # Start the Livy service
 livy_service_start()
 ```
-You then can navigate to the local Livy session at http://localhost:8998. Chapter 7 will
-detail how to connect through Livy. After you’re connected, you can navigate to the
-Livy web application, as shown in图6-17.
-Figure 6-17. Apache Livy running as a local service
-Make sure you also stop the Livy service when working with local Livy instances (for
-proper Livy services running in a cluster, you won’t have to):
+你可以导航至本地http://localhost:8998 上的Livy进程。第7章会具体介绍如何通过Livy连接。连接成功后，你可以导航至Livy web应用，如图6-17所示。
+
+![[图6-17. 作为本地服务运行的Apache Livy](figures/6_17.png)
+
+确保你在使用本地Livy实例的时候已经终止了Livy服务（而对于集群中运行的正常Livy服务，你无需这么做）： 
+
 ```{r}
 # Stops the Livy service
 livy_service_stop()
 ```
 
-## Recap
+## 小结
 
-This chapter explained the history and trade-offs of on-premises and cloud comput‐
-ing and presented Kubernetes as a promising framework to provide flexibility across
-on-premises or multiple cloud providers. It also introduced cluster managers (Spark
-Standalone, YARN, Mesos, and Kubernetes) as the software needed to run Spark as a
-cluster application. This chapter briefly mentioned on-premises cluster providers like
-Cloudera, Hortonworks, and MapR, as well as the major Spark cloud providers: Ama‐
-zon, Databricks, IBM, Google, Microsoft, and Qubole.
-While this chapter provided a solid foundation to understand current cluster com‐
-puting trends, tools, and service providers useful to perform data science at scale, it
-did not provide a comprehensive framework to help you decide which cluster tech‐
-nologies to choose. Instead, use this chapter as an overview and a starting point to
-seek out additional resources to help you find the cluster stack that best fits your
-organization needs.
-Chapter 7 will focus on understanding how to connect to existing clusters; therefore,
-it assumes a Spark cluster like those we presented in this chapter is already available
-to you.
+本章介绍了内部部署和云计算的历史和权衡，并介绍了Kubernetes这一提供跨本地部署或多个云提供商之间灵活性的有前途的框架。本章还引入了集群管理器（Spark Standalone、YARN、Mesos和Kubernetes），作为运行Spark集群应用所需的软件。本章简要介绍了本地集群提供商，如Cloudera、Hortonworks和MapR，以及主要的Spark云提供商：亚马逊、Databricks、IBM、谷歌、微软和Qubole。
+
+虽然本章为理解当前集群计算趋势、工具和服务提供商处理大规模数据科学项目提供了坚实的基础，但它并没有提供一个全面的框架来帮助你决定选择哪种集群技术。相反，请使用本章作为概述和起点来寻找其他资源，以帮助找到最适合组织需要的集群。
+
+第7章将重点介绍如何连接到现有的集群，因此，就像我们在本章中介绍的,它假定Spark集群已经可用。
 
 -------
 
