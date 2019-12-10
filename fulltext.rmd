@@ -3235,52 +3235,41 @@ sc <- spark_connect(method = "qubole")
 
 ## 批量模式
 
-Most of the time, you use `sparklyr` interactively; that is, you explicitly connect with
-`spark_connect()` and then execute commands to analyze and model large-scale data.
-However, you can also automate processes by scheduling Spark jobs that use spar
-klyr. Spark does not provide tools to schedule data-processing tasks; instead, you
-would use other workflow management tools. This can be useful to transform data,
-prepare a model and score data overnight, or to make use of Spark by other systems.
-As an example, you can create a file named batch.R with the following contents:
+大多数情况下，你可以交互使用`sparklyr`；也就是说，你可以显式地与`spark_connect()`连接，然后执行命令来分析和建模大规模数据。但是，你也可以通过调度使用`sparklyr`的spark作业来自动化进程。Spark不提供调度数据处理任务的工具；相反，你要使用其他工作流管理工具。这对于转换数据、准备模型和隔夜数据打分，或者其他系统使用Spark非常有用。
+
+例如，你可以创建名为`batch.R`的文件，其中包含以下内容：
+
 ```{r}
 library(sparklyr)
 sc <- spark_connect(master = "local")
 sdf_len(sc, 10) %>% spark_write_csv("batch.csv")
 spark_disconnect(sc)
 ```
-You then can submit this application to Spark in batch mode using `spark_submit()`;
-the `master` parameter should be set appropriately:
+然后，你可以使用`spark_submit()`给Spark提交这个申请。`master`参数应该完成设置：
 ```{r}
 spark_submit(master = "local", "batch.R")
 ```
-You can also invoke `spark-submit` from the shell directly through the following:
+你也可以从Shell直接调用`spark-submit`代码如下：
 ```{r}
 /spark-home-path/spark-submit
  --class `sparklyr`.Shell '/spark-jars-path/sparklyr-2.3-2.11.jar'
 8880 12345 --batch /path/to/batch.R
 ```
-The last parameters represent the port number 8880 and the session number 12345,
-which you can set to any unique numeric identifier. You can use the following R code
-to get the correct paths:
+最后一个参数表示端口号8880和进程号12345。你可以将其设置为任何唯一的数字标识符。使用以下R代码获得正确的路径：
+
 ```{r}
 # Retrieve spark-home-path
 spark_home_dir()
 # Retrieve spark-jars-path
 system.file("java", package = "sparklyr")
 ```
-You can customize your script by passing additional command-line arguments to
-spark-submit and then read them back in R using `commandArgs()`.
+你可以通过给`spark_submit()`传递额外的命令行参数定制你的脚本，并使用R的`commandArgs()`读取出来。
 
-## Tools
+## 工具
 
-When connecting to a Spark cluster using tools like Jupyter and RStudio, you can run
-the same connection parameters presented in this chapter. However, since many
-cloud providers make use of a web proxy to secure Spark’s web interface, to use
-`spark_web()` or the RStudio Connections pane extension, you need to properly con‐
-figure the `sparklyr.web.spark` setting, which you would then pass to `spark_config()` through the config parameter.
-For instance, when using Amazon EMR, you can configure `sparklyr.web.spark` and
-`sparklyr.web.yarn` by dynamically retrieving the YARN application and building
-the EMR proxy URL:
+使用Jupyter和RStudio等工具连接到Spark集群时，你可以运行本章中介绍的相同连接参数。但是，由于许多云提供商使用web代理来保护Spark的web界面，要使用`spark_web()`或RStudio Connections窗口扩展，你需要正确配置`sparklyr.web.spark`，然后通过`config`参数将其传递给`spark_config()`。
+
+例如，在使用亚马逊EMR时，可以通过动态检索YARN应用程序和构建EMR代理URL来配置`sparklyr.web.spark`和`sparklyr.web.yarn`：
 ```{r}
 domain <- "http://ec2-12-345-678-9.us-west-2.compute.amazonaws.com"
 config <- spark_config()
@@ -3290,13 +3279,9 @@ config$sparklyr.web.yarn <- paste0(domain, ":8088")
 sc <- spark_connect(master = "yarn", config = config)
 ```
 
-## Multiple Connections
+## 多次连接
 
-It is common to connect once, and only once, to Spark. However, you can also open
-multiple connections to Spark by connecting to different clusters or by specifying the
-app_name parameter. This can be helpful to compare Spark versions or validate your
-analysis before submitting to the cluster. The following example opens connections to
-Spark 1.6.3, 2.3.0 and Spark Standalone:
+通常，我们只会连接Spark一次，而且只有一次。但是，你也可以通过连接到不同的集群或指定`app_name`参数来打开多次Spark连接。这有助于在提交到集群之前比较Spark版本或验证你的分析结果。以下示例打开了与Spark 1.6.3、2.3.0和Spark单击的连接：
 
 ```{r}
 # Connect to local Spark 1.6.3
@@ -3306,34 +3291,28 @@ sc_23 <- spark_connect(master = "local", version = "2.3", appName = "Spark23")
 # Connect to local Spark Standalone
 sc_standalone <- spark_connect(master = "spark://host:port")
 ```
-Finally, you can disconnect from each connection:
+最后，你可以断开每个连接：
 ```{r}
 spark_disconnect(sc_1_6_3)
 spark_disconnect(sc_2_3_0)
 spark_disconnect(sc_standalone)
 ```
-Alternatively, you can disconnect from all connections at once:
+你也可以一次性断开所有连接：
 ```{r}
 spark_disconnect_all()
 ```
 
-## Troubleshooting
+## 故障排除
 
-Last but not least, we introduce the following troubleshooting techniques: Logging,
-Spark Submit, and Windows. When in doubt about where to begin, start with the
-Windows section when using Windows systems, followed by Logging and finally
-Spark Submit. These techniques are useful when running `spark_connect()` fails with
-an error message.
+最后，我们介绍以下故障排除技术：日志记录、Spark Submit和Windows。如果不确定从何处开始，请在使用Windows系统时从Windows部分开始，然后是日志记录，最后是Spark Submit。当运行`spark_connect()`失败并显示错误消息时，这些技术非常有用。
 
-### Logging
+### 日志记录
 
-The first technique to troubleshoot connections is to print Spark logs directly to the
-console to help you spot additional error messages:
+第一项故障排除技术是直接打印Spark日志到控制台，帮助你定位额外的错误消息：
 ```{r}
 sc <- spark_connect(master = "local", log = "console")
 ```
-In addition, you can enable verbose logging by setting the `sparklyr.verbose` option
-to TRUE when connecting:
+另外，你可以通过设定连接时`sparklyr.verbose`选项为`TRUE`来开启详细日志：
 ```{r}
 sc <- spark_connect(master = "local", log = "console",
 config = list(sparklyr.verbose = TRUE))
@@ -3341,17 +3320,14 @@ config = list(sparklyr.verbose = TRUE))
 
 ### Spark Submit
 
-You can diagnose whether a connection issue is specific to R or Spark in general by
-running an example job through spark-submit and validating that no errors are
-thrown:
+通常，你可以通过`spark_submit()`运行一个示例任务，判断一个连接问题是R导致的还是Spark导致的，并说明没有抛出错误：
 ```{r}
 # Find the spark directory using an environment variable
 spark_home <- Sys.getenv("SPARK_HOME")
 # Or by getting the local spark installation
 spark_home <- sparklyr::spark_home_dir()
 ```
-Then, execute the sample compute Pi example by replacing "local" with the correct
-master parameter that you are troubleshooting:
+然后，使用故障排除中正确的`master`参数替换`"local"`计算圆周率例子：
 ```{r}
 # Launching a sample application to compute Pi
 system2(
@@ -3366,83 +3342,56 @@ stderr = FALSE
 )
 Pi is roughly 3.1415503141550314
 ```
-If the preceding message is not displayed, you will need to investigate why your Spark
-cluster is not properly configured, which is beyond the scope of this book. As a start,
-rerun the Pi example but remove `stderr = FALSE`; this prints errors to the console,
-which you then can use to investigate what the problem might be. When using a
-cloud provider or a Spark distribution, you can contact their support team to help
-you troubleshoot this further; otherwise, Stack Overflow is a good place to start.
-If you do see the message, this means that your Spark cluster is properly configured
-but somehow R is not able to use Spark, so you need to troubleshoot in detail, as we
-will explain next.
 
-#### Detailed troubleshooting
+如果前面的消息没有显示，你需要调查为什么您的Spark集群没有正确配置。这超出了本书的范围。首先，重新运行圆周率例子，但是要删除`stderr = FALSE`；这会将错误消息打印到控制台，然后你可以使用控制台的消息来调查问题可能的原因。当使用云提供商或Spark发行版时，你可以联系他们的支持团队帮助进一步解决此问题；另外，Stack Overflow也是一个很好的调查问题的起点。如果你确实看到消息，这意味着你的Spark群集已正确配置，但是不知道为什么故R无法使用Spark，因此你还需要详细地解决此问题，我们接下来会解释。
 
-To troubleshoot the connection process in detail, you can manually replicate the two￾step connection process, which is often very helpful to diagnose connection issues.
-First, spark-submit is triggered from R, which submits the application to Spark; sec‐
-ond, R connects to the running Spark application.
-First, identify the Spark installation directory and the path to the correct `sparklyr*.jar` file by running the following:
+#### 故障排除细节
+
+要详细排除连接过程的故障，可以手动复制两步连接过程，这通常对诊断连接问题非常有帮助。首先，从R调用`spark_submit()`，将应用提交给spark；其次，R连接到正在运行的spark应用程序。
+
+首先，通过运行以下命令来标识Spark安装目录和正确`sparklyr*.jar`文件路径：
+
 ```{r}
 dir(system.file("java", package = "sparklyr"),
 pattern = "sparklyr", full.names = T)
 ```
-Ensure that you identify the correct version that matches your Spark cluster—for
-instance, `sparklyr-2.1-2.11.jar` for Spark 2.1.
-Then, from the terminal, run this:
+确保你找到了匹配Saprk的正确版本。例如，`sparklyr-2.1-2.11.jar`匹配Spark 2.1。
+
+然后，在终端中运行以下代码：
 ```
 $SPARK_HOME/bin/spark-submit --class `sparklyr`。Shell $PATH_TO_SPARKLYR_JAR 8880 42
 18/06/11 12:13:53 INFO sparklyr: Session (42) found port 8880 is available
 18/06/11 12:13:53 INFO sparklyr: Gateway (42) is waiting for `sparklyr` client
  to connect to port 8880
 ```
-The parameter 8880 represents the default port to use in `sparklyr`, while 42 is the
-session number, which is a cryptographically secure number generated by `sparklyr`,
-but for troubleshooting purposes can be as simple as 42.
-If this first connection step fails, it means that the cluster can’t accept the application.
-This usually means that there are not enough resources, or there are permission
-restrictions.
-The second step is to connect from R as follows (notice that there is a 60-second
-timeout, so you’ll need to run the R command after running the terminal command;
-if needed, you can configure this timeout as described in Chapter 9):
+参数8880表示`sparklyr`中使用的默认端口，而42是进程号，这是`sparklyr`生成的加密安全号，但出于故障排除的目的，可以简化为42。
+
+如果第一个连接步骤失败，这意味着集群无法接受应用程序。这通常意味着没有足够的资源，或者存在权限限制。
+
+第二步是按如下方式从R连接（注意有60秒的超时，在运行终端命令后需要运行R命令；如果需要，你可以按照第9章中的说明配置超时参数）：
+
 ```{r}
 library(sparklyr)
 sc <- spark_connect(master = "sparklyr://localhost:8880/42", version = "2.3")
 ```
-If this second connection step fails, it usually means that there is a connectivity prob‐
-lem between R and the driver node. You can try using a different connection port, for
-instance.
+如果第二个连接步骤失败，通常意味着R和驱动节点之间存在连接问题。例如，你可以尝试使用其他连接端口。
 
 ### Windows
 
-Connecting from Windows is, in most cases, as straightforward as connecting from
-Linux and macOS. However, there are a few common connection issues that you
-should be aware of:
+在大多数情况下，Windows连接和从Linux和macOS连接一样简单。但是，有几个常见的连接问题需要注意：
 
-* Firewalls and antivirus software might block ports for your connection. The
-default port used by `sparklyr` is 8880; double-check that this port is not being
-blocked.
-* Long path names can cause issues, especially with older Windows systems like
-Windows 7. When you’re using these systems, try connecting with Spark
-installed with all folders, using at most eight characters and no spaces in their
-names.
+* 防火墙和防病毒软件可能会阻止连接端口。`sparklyr`使用的默认端口是8880；请仔细检查此端口是否未被阻止。
+* 长路径名可能会导致问题，特别是对于像Windows 7这样的旧Windows系统。使用这些系统时，请尝试与所有文件夹一起安装的Spark连接，最多使用8个字符，名称中不要有空格。
 
-## Recap
 
-This chapter presented an overview of Spark’s architecture, connection concepts, and
-examples to connect in local mode, standalone, YARN, Mesos, Kubernetes, and Livy.
-It also presented edge nodes and their role while connecting to Spark clusters. This
-should have provided you with enough information to successfully connect to any
-Apache Spark cluster.
+## 小结
 
-To troubleshoot connection problems beyond the techniques described in this chap‐
-ter, we recommend that you search for the connection problem in Stack Overflow,
-the `sparklyr` issues GitHub page, and, if needed, open a new GitHub issue in spar
-klyr to assist further.
+本章介绍了Spark的体系结构、连接概念和在本地模式、单机模式、YARN模式、Mesos模式、Kubernetes模式和Livy模式下连接的示例，并介绍了边缘节点及其在连接到Spark集群时的作用。这些内容应该可以给你提供足够的信息，以便成功连接到任何Apache Spark集群。
 
-In Chapter 8, we cover how to use Spark to read and write from a variety of data
-sources and formats, which allows you to be more agile when adding new data sour‐
-ces for data analysis. What used to take days, weeks, or even months, you now can
-complete in hours by embracing data lakes.
+要解决本章介绍的技术之外的连接问题，我们建议你在Stack Overflow、`sparklyr`问题的GitHub页面中搜索连接问题。如果需要，在`sparklyr`中打开一个新的GitHub问题以进一步获得帮助。
+
+在第8章中，我们会介绍如何使用Spark读写来自从各种数据源和格式的数据，这可以让你在数据分析时更加灵活的添加新的数据源。过去需要几天，几周，甚至几个月完成的事情，现在你可以通过拥抱数据湖在数小时内完成。
+
 
 ------
 
