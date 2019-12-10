@@ -3020,7 +3020,7 @@ livy_service_stop()
 
 -------
 
-# 第七章 Connections
+# 第七章 连接
 
 > They don’t get to choose.
 > —Daenerys Targaryen
@@ -3395,83 +3395,39 @@ sc <- spark_connect(master = "sparklyr://localhost:8880/42", version = "2.3")
 
 ------
 
-# Data
+# 第八章 数据
 
 > Has it occurred to you that she might not have
 > been a reliable source of information?
 > —Jon Snow
 
-With the knowledge acquired in previous chapters, you are now equipped to start
-doing analysis and modeling at scale! So far, however, we haven’t really explained
-much about how to read data into Spark. We’ve explored how to use `copy_to()` to
-upload small datasets or functions like `spark_read_csv()` or `spark_write_csv()`
-without explaining in detail how and why.
-So, you are about to learn how to read and write data using Spark. And, while this is
-important on its own, this chapter will also introduce you to the data lake—a reposi‐
-tory of data stored in its natural or raw format that provides various benefits over
-existing storage architectures. For instance, you can easily integrate data from exter‐
-nal systems without transforming it into a common format and without assuming
-those sources are as reliable as your internal data sources.
-In addition, we will also discuss how to extend Spark’s capabilities to work with data
-not accessible out of the box and make several recommendations focused on improv‐
-ing performance for reading and writing data. Reading large datasets often requires
-you to fine-tune your Spark cluster configuration, but that’s the topic of Chapter 9.
+根据前面章节中获得的知识，你现在可以进行大规模数据分析和建模了！然而，到目前为止，我们还没有真正解释过如何将数据读入Spark。我们已经探索了如何使用`copy_to()`上传小数据集或使用函数，如`spark_read_csv()`或 `spark_write_csv()`，但没有详细解释过程和原因。
 
-## Overview
+所以，你会学习到如何使用Spark读写数据。尽管这一点很重要，但本章还会向介绍数据湖——按照自然或原始格式存储的数据仓库，它提供了有别于现有存储体系结构的优点。例如，你可以轻松地集成来自外部系统的数据，而无需将其转换为通用格式，也无需假定这些源与内部数据源一样可靠。
 
-In Chapter 1, you learned that beyond big data and big compute, you can also use
-Spark to improve velocity, variety, and veracity in data tasks. While you can use the
-learnings of this chapter for any task requiring loading and storing data, it is particu‐
-larly interesting to present this chapter in the context of dealing with a variety of data
-135
-sources. To understand why, we should first take a quick detour to examine how data
-is currently processed in many organizations.
-For several years, it’s been a common practice to store large datasets in a relational
-database, a system first proposed in 1970 by Edgar F. Codd.1
- You can think of a data‐
-base as a collection of tables that are related to one another, where each table is care‐
-fully designed to hold specific data types and relationships to other tables. Most
-relational database systems use Structured Query Language (SQL) for querying and
-maintaining the database. Databases are still widely used today, with good reason:
-they store data reliably and consistently; in fact, your bank probably stores account
-balances in a database and that’s a good practice.
-However, databases have also been used to store information from other applications
-and systems. For instance, your bank might also store data produced by other banks,
-such as incoming checks. To accomplish this, the external data needs to be extracted
-from the external system, transformed into something that fits the current database,
-and finally be loaded into it. This is known as Extract, Transform, and Load (ETL), a
-general procedure for copying data from one or more sources into a destination sys‐
-tem that represents the data differently from the source. The ETL process became
-popular in the 1970s.
-Aside from databases, data is often also loaded into a data warehouse, a system used
-for reporting and data analysis. The data is usually stored and indexed in a format
-that increases data analysis speed but that is often not suitable for modeling or run‐
-ning custom distributed code. The challenge is that changing databases and data
-warehouses is usually a long and delicate process, since data needs to be reindexed
-and the data from multiple data sources needs to be carefully transformed into single
-tables that are shared across data sources.
-Instead of trying to transform all data sources into a common format, you can
-embrace this variety of data sources in a data lake, a system or repository of data
-stored in its natural format (see图8-1). Since data lakes make data available in its
-original format, there is no need to carefully transform it in advance; anyone can use
-it for analysis, which adds significant flexibility over ETL. You then can use Spark to
-unify data processing from data lakes, databases, and data warehouses through a sin‐
-gle interface that is scalable across all of them. Some organizations also use Spark to
-replace their existing ETL process; however, this falls in the realm of data engineer‐
-ing, which is well beyond the scope of this book. We illustrate this with dotted lines in
-Figure 8-1. 1 Codd EF (1970). “A relational model of data for large shared data banks.”
-136 | Chapter 8: Data
+此外，我们还将讨论如何扩展Spark的能力，使其能够处理无法直接访问的数据，并提出一些提高数据读写性能建议。读取大型数据集通常需要微调Spark集群配置，但这是第9章的主题。
 
-![Figure 8-1. Spark processing raw data from a data lakes, databases, and data warehouses](figures/8_1.png)
+## 概述
 
-To support a broad variety of data sources, Spark needs to be able to read and write
-data in several different file formats (CSV, JSON, Parquet, and others), and access
-them while stored in several file systems (HDFS, S3, DBFS, and more) and, poten‐
-tially, interoperate with other storage systems (databases, data warehouses, etc.). We
-will get to all of that, but first, we will start by presenting how to read, write, and copy
-data using Spark.
+在第1章中，你学习到除了大数据和大计算之外，还可以使用Spark来提高数据任务的速度、多样性和准确性。虽然你可以将本章的知识用于任何需要加载和存储数据的任务中，但在处理各种数据源的时，本章的内容尤其有趣。为了理解原因，我们首先应该快速看一下，当今数据在许多组织中是如何处理的。
 
-## Reading Data
+多年来，人们经常把大型数据集存储在关系*数据库*中，这是Edgar F.Codd于1970年首次提出的一种系统[^21]。你可以将数据库视为相互关联的表的集合，其中每个表都经过精心设计以保存特定的数据类型和与其他表的关系。大多数关系数据库系统使用*结构化查询语言（Structured Query Language，SQL）*来查询和维护数据库。数据库在今天仍然被广泛使用，这是有充分理由的：它们可靠且一致地存储数据；事实上，你的银行很可会将帐户余额存储在数据库中，这是一种很好的实践。
+
+[^21]: Codd EF (1970). “A relational model of data for large shared data banks.”
+
+然而，数据库也被用来存储来自其他应用程序和系统的信息。例如，你的银行还可能存储其他银行生成的数据，例如传入的支票。要做到这一点，需要从外部系统中提取外部数据，转换成适合当前数据库的数据，最后加载到数据库。这称为*提取*、*转换*和*加载*（ETL），是一种将数据从一个或多个源复制到目标系统的通用过程，该目标系统以不同于源的方式表示数据。ETL过程从20世纪70年代开始流行。
+
+除了数据库之外，数据通常还加载到*数据仓库*中，数据仓库是一个用于报告和数据分析的系统。数据通常以提高数据分析速度的格式存储和索引，但这种格式通常不适合建模或运行自定义的分布式代码。挑战在于，更改数据库和数据仓库通常是一个漫长而微妙的过程，因为需要重新建立数据索引，并且需要小心地将来自多个数据源的数据转换为单个跨数据源共享的表。
+
+不要试图将所有数据源转换为通用格式，你可以在一个数据湖、即一个以其自然格式存储的数据系统或存储库中包含各种数据源（见图8-1）。由于数据湖允许使数据以其原始格式存储，所以不必预先对其进行仔细的转换，任何人都可以使用它进行分析，这就大大增加了ETL的灵活性。然后，你可以使用Spark通过一个可在所有数据池、数据库和数据仓库中扩展的单一接口来统一数据处理。一些组织还使用Spark替换现有ETL过程；然而，这属于数据工程领域，远远超出了这本书的范围。我们在图8-1中用虚线来说明这一点。
+
+
+
+![图8-1. Spark处理来自数据湖，数据库和数据仓库的原始数据](figures/8_1.png)
+
+为了支持各种各样的数据源，Spark需要能够读写几种不同的文件格式（CSV、JSON、Parquet和其他格式），并访问存储在几个文件系统（HDFS、S3、DBFS等）中的数据，并且可能与其他存储系统（数据库、数据仓库等）进行交互。我们会讨论所有这些内容，但首先，我们会介绍如何使用Spark读取、写入和复制数据。
+
+## 读取数据
 
 If you are new to Spark, it is highly recommended to review this section before you
 start working with large datasets. We will introduce several techniques that improve
