@@ -3306,7 +3306,7 @@ spark_disconnect_all()
 
 最后，我们介绍以下故障排除技术：日志记录、Spark Submit和Windows。如果不确定从何处开始，请在使用Windows系统时从Windows部分开始，然后是日志记录，最后是Spark Submit。当运行`spark_connect()`失败并显示错误消息时，这些技术非常有用。
 
-### 日志记录
+### 记录日志
 
 第一项故障排除技术是直接打印Spark日志到控制台，帮助你定位额外的错误消息：
 ```{r}
