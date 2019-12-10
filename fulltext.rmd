@@ -44,7 +44,7 @@ Assistant Professor at Stanford University,
 Chief Technologist at Databricks,
 and original creator of Apache Spark
 
-# Preface
+# 序
 
 In a world where information is growing exponentially, leading tools like Apache
 Spark provide support to solve many of the relevant problems we face today. From
@@ -248,7 +248,7 @@ Find us on Facebook: http://facebook.com/oreilly
 Follow us on Twitter: http://twitter.com/oreillymedia
 Watch us on YouTube: http://www.youtube.com/oreillymedia
 
-# 第一章 引言
+# 第1章 引言
 
 > 你什么都不知道，Jon Snow。
 
@@ -473,7 +473,7 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 
 ----------
 
-# 第二章 开始
+# 第2章 开始
 
 > I always wanted to be a wizard.
 
@@ -918,7 +918,7 @@ spark_disconnect_all()
 
 ----------------
 
-# 第三章 分析
+# 第3章 分析
 
 
 > First lesson: stick them with the pointy end.
@@ -1418,7 +1418,7 @@ output:
 
 -------
 
-# 第四章 建模
+# 第4章 建模
 
 > I’ve trusted in your visions, in your prophecies, for years.
 > —Stannis Baratheon
@@ -2134,7 +2134,7 @@ spark_disconnect(sc)
 
 ----------
 
-# 第五章 管道操作
+# 第5章 管道操作
 
 > You will never walk again, but you will fly!
 > —Three-Eyed Raven
@@ -2637,7 +2637,7 @@ service$interrupt()
 
 ------
 
-# 第六章 集群
+# 第6章 集群
 
 > I have a very large army and very large dragons.
 > —Daenerys Targaryen
@@ -3020,7 +3020,7 @@ livy_service_stop()
 
 -------
 
-# 第七章 连接
+# 第7章 连接
 
 > They don’t get to choose.
 > —Daenerys Targaryen
@@ -3395,7 +3395,7 @@ sc <- spark_connect(master = "sparklyr://localhost:8880/42", version = "2.3")
 
 ------
 
-# 第八章 数据
+# 第8章 数据
 
 > Has it occurred to you that she might not have
 > been a reliable source of information?
@@ -4102,7 +4102,7 @@ analysis and modeling tasks.
 
 -------
 
-# Tuning
+# 第9章 调试
 
 > Chaos isn’t a pit. Chaos is a ladder.
 > —Petyr Baelish
@@ -4729,7 +4729,7 @@ and modeling topics that are required to master large-scale computing in R.
 
 ------
 
-# Extensions
+# 第10章 扩展
 
 > I try to know as many people as I can. You never know which one you’ll need.
 > —Tyrion Lannister
@@ -5563,7 +5563,7 @@ tion using R code, as we describe in Chapter 11.
 
 ------
 
-# 第11章 Distributed R
+# 第11章 分布式R
 
 > Not like this. Not like this. Not like this.
 > —Cersei Lannister
@@ -6573,7 +6573,7 @@ information.
 
 ------
 
-# 第12章 Streaming
+# 第12章 流式计算
 
 > Our stories aren’t over yet.
 > —Arya Stark
@@ -7089,7 +7089,7 @@ Spark and R communities at large.
 
 ------
 
-# Contributing
+# 第13章 社区贡献
 
 > Hold the door, hold the door.
 > —Hodor
@@ -7400,7 +7400,7 @@ we’ll address your suggestions in upcoming revisions. We hope you enjoyed read
 this book, and that you’ve learned as much as we have learned while writing it. We
 hope it was worthy of your time—it has been an honor having you as our reader.
 
-# APPENDIX A :Supplemental Code References
+# 附录A :Supplemental Code References
 
 Throughout the book we’ve included references to this appendix. Here we’ve included
 important content (and listed the sections where this material can be found).
