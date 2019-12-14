@@ -3803,24 +3803,17 @@ spark_write_source("xml", options = list(path = "data.xml"))
 ```
 此外，R社区还开发了一些扩展来加载其他文件格式，例如`sparklyr.nested`用于帮助嵌套数据，`spark.sas7bdat`用于从SAS读取数据，`sparkavro`用于以AVRO格式读取数据，`sparkwarc`用于读取WARC文件，这些扩展使用了第10章中介绍的扩展机制。第11章介绍了使用R包加载其他文件格式的技术，第13章介绍了使用Java库做了进一步补充。但首先，让我们探讨如何从几个不同的文件系统中检索和存储文件。
 
-## File Systems
+## 文件系统
 
-Spark defaults to the file system on which it is currently running. In a YARN man‐
-aged cluster, the default file system will be HDFS. An example path of /home/user/
-file.csv will be read from the cluster’s HDFS folders, not the Linux folders. The operat‐
-ing system’s file system will be accessed for other deployments, such as Standalone,
-and sparklyr’s local.
-The file system protocol can be changed when reading or writing. You do this via the
-path argument of the `sparklyr` function. For example, a full path of file://home/user/
-file.csv forces the use of the local operating system’s file system.
-There are many other file system protocols, such as _dbfs://_ for Databricks’ file
-system, _s3a://_ for Amazon’s S3 service, _wasb://_ for Microsoft Azure storage,
-and _gs://_ for Google storage.
-Spark does not provide support for all them directly; instead, they are configured as
-needed. For instance, accessing the “s3a” protocol requires adding a package to the
-`sparklyr.connect.packages` configuration setting, while connecting and specifying
-appropriate credentials might require using the `AWS_ACCESS_KEY_ID` and
-`AWS_SECRET_ACCESS_KEY` environment variables.
+Spark默认为当前运行它的文件系统。在YARN管理的集群中，默认的文件系统是HDFS。*/home/user/file.csv*的示例路径将从集群的HDFS文件夹（而不是Linux文件夹）读取。操作系统的文件系统将用于其他部署，如独立部署和`sparklyr`的本地部署。
+
+文件系统协议可以在读取或写入时更改。你可以通过`sparklyr`函数的`path`参数来实现这一点。例如，*file://home/user/file.csv*的完整路径强制使用本地操作系统的文件系统。
+
+还有许多其他文件系统协议，例如Databricks的文件系统的*_dbfs://_*、Amazon的S3服务的*_s3a://_*、Microsoft Azure存储的*_wasb://_*和Google存储的*_gs://_*。
+
+Spark并没有直接为所有这些组件提供支持；相反，它们是根据需要配置的。例如，访问“s3a”协议需要向`sparklyr.connect.packages`配置添加一个包，而连接和指定适当的请求凭据可能需要使用`AWS_ACCESS_KEY_ID`和
+`AWS_SECRET_ACCESS_KEY`环境变量。
+
 ```{r}
 Sys.setenv(AWS_ACCESS_KEY_ID = my_key_id)
 Sys.setenv(AWS_SECRET_ACCESS_KEY = my_secret_key)
@@ -3828,24 +3821,21 @@ sc <- spark_connect(master = "local", version = "2.3", config = list(
 sparklyr.connect.packages = "org.apache.hadoop:hadoop-aws:2.7.7"))
 my_file <- spark_read_csv(sc, "my-file", path = "s3a://my-bucket/my-file.csv")
 ```
-Accessing other file protocols requires loading different packages, although, in some
-cases, the vendor providing the Spark environment might load the package for you.
-Please refer to your vendor’s documentation to find out whether that is the case.
-File Systems | 149
 
-## Storage Systems
+访问其他文件协议需要加载不同的包，但在某些情况下，提供Spark环境的供应商可能会为你加载包。请参考供应商的文件，以了解是否存在这种情况。
 
-A data lake and Spark usually go hand-in-hand, with optional access to storage sys‐
-tems like databases and data warehouses. Presenting all the different storage systems
-with appropriate examples would be quite time-consuming, so instead we present
-some of the commonly used storage systems.
-As a start, Apache Hive is a data warehouse software that facilitates reading, writing,
-and managing large datasets residing in distributed storage using SQL. In fact, Spark
-has components from Hive built directly into its sources. It is very common to have
-installations of Spark or Hive side-by-side, so we will start by presenting Hive, fol‐
-lowed by Cassandra, and then close by looking at JDBC connections.
+
+## 存储系统
+
+数据池和Spark通常是同时存在的，可以选择访问数据库和数据仓库等存储系统。用适当的示例演示所有不同的存储系统非常耗时，因此我们将介绍一些常用的存储系统。
+
+首先，Apache *Hive*是一个数据仓库软件，它使用SQL方便地读取、写入和管理驻留在分布式存储中的大型数据集。事实上，Spark将Hive的组件直接嵌入到它的源中。同时安装Spark和Hive是很常见的，因此我们首先介绍Hive，然后介绍Cassandra，再介绍JDBC连接。
 
 ### Hive
+
+在YARN管理的集群中，Spark提供了与Apache Hive的更深入的集成。
+
+打开Spark连接后，可以方便地访问Hive表。通过在SQL语句中引用表，使用`DBI`访问该表的数据：
 
 In YARN managed clusters, Spark provides a deeper integration with Apache Hive.
 Hive tables are easily accessible after opening a Spark connection.
@@ -3856,54 +3846,42 @@ sc <- spark_connect(master = "local", version = "2.3")
 spark_read_csv(sc, "test", "data-csv/", memory = FALSE)
 DBI::dbGetQuery(sc, "SELECT * FROM test limit 10")
 ```
-Another way to reference a table is with `dplyr` using the `tbl()` function, which
-retrieves a reference to the table:
+另一个应用表的方法是使用`dplyr`和`tbl()`函数，它们会得到一个表的引用：
 ```{r}
 dplyr::tbl(sc, "test")
 ```
-It is important to reiterate that no data is imported into R; the `tbl()` function only
-creates a reference. You then can pipe more `dplyr` verbs following the `tbl()`
-command:
+
+必须重申没有数据导入到R中`tbl()`函数只创建一个引用。然后，你可以在`tbl()`命令之后添加更多`dplyr`谓词作为管道操作：
+
 ```{r}
 dplyr::tbl(sc, "test") %>%
 dplyr::group_by(y) %>%
 dplyr::summarise(totals = sum(y))
 ```
-Hive table references assume a default database source. Often, the needed table is in a
-different database within the metastore. To access it using SQL, prefix the database
-name to the table. Separate them using a period, as demonstrated here:
+Hive表引用会假设一个默认数据库源。通常，所需的表位于元存储中的不同数据库中。如果要使用SQL访问它，请在表前面加上数据库名称当做前缀。并使用句点分隔，如下所示：
+
 ```{r}
 DBI::dbSendQuery(sc, "SELECT * FROM databasename.table")
 ```
-In dplyr, the `in_schema()` function can be used. The function is used inside the
-`tbl()` call:
+在`dplyr`中，可以使用`in_schema()`函数。这个函数用`tbl()`调用中：
 ```{r}
 tbl(sc, dbplyr::in_schema("databasename", "table"))
 ```
-You can also use the `tbl_change_db()` function to set the current session’s default
-database. Any subsequent call via `DBI` or `dplyr` will use the selected name as the
-default database:
+你还可以使用`tbl_change_db()`函数设置当前进程的默认数据库。通过`DBI`或`dplyr`的任何后续调用都将使用选定的名称作为默认数据库：
+
 ```{r}
 tbl_change_db(sc, "databasename")
 ```
-The following examples require additional Spark packages and databases which
-might be difficult to follow unless you happen to have a JDBC driver or Cassandra
-database accessible to you.
-Next, we explore a less structured storage system, often referred to as a
-NoSQL database.
+以下示例需要额外的Spark包和数据库，除非你恰好可以访问JDBC驱动程序或Cassandra数据库，否则很难推进。
+
+接下来，我们将探讨一个不太结构化的存储系统，通常称为NoSQL数据库。
 
 ### Cassandra
 
-Apache Cassandra is a free and open source, distributed, wide-column store, NoSQL
-database management system designed to handle large amounts of data across many
-commodity servers. While there are many other database systems beyond Cassandra,
-taking a quick look at how Cassandra can be used from Spark will give you insight
-into how to make use of other database and storage systems like Solr, Redshift, Delta
-Lake, and others.
-The following example code shows how to use the `datastax:spark-cassandra-connector` package to read from Cassandra. The key is to use the
-`org.apache.spark.sql.cassandra` library as the source argument. It provides the
-mapping Spark can use to make sense of the data source. Unless you have a Cassan‐
-dra database, skip executing the following statement:
+Apache *Cassandra*是一个免费的、开源的、分布式的、宽列存储的NoSQL数据库管理系统，旨在跨许多商业服务器处理大量数据。虽然除了Cassandra之外还有许多其他数据库系统，但快速查看Spark中Cassandra的使用方法，可以让您深入了解如何使用其他数据库和存储系统，如Solr、Redshift、Delta Lake等。
+
+下面的示例代码演示如何使用`datastax:spark-cassandra-connector`包从Cassandra读取数据。关键是使用`org.apache.spark.sql.cassandra`库作为源参数。它提供了Spark可用的理解数据源的映射。除非有Cassandra数据库，否则跳过执行以下语句：
+
 ```{r}
 sc <- spark_connect(master = "local", version = "2.3", config = list(
 sparklyr.connect.packages = "datastax:spark-cassandra-connector:2.3.1-s_2.11"))
@@ -3914,35 +3892,18 @@ source = "org.apache.spark.sql.cassandra",
 options = list(keyspace = "dev", table = "emp"),
 memory = FALSE)
 ```
-One of the most useful features of Spark when dealing with external databases and
-data warehouses is that Spark can push down computation to the database, a feature
-known as pushdown predicates. In a nutshell, pushdown predicates improve perfor‐
-mance by asking remote databases smart questions. When you execute a query that
-contains the `filter(age > 20)` expression against a remote table referenced through
-`spark_read_source()` and not loaded in memory, rather than bringing the entire
-table into Spark, it will be passed to the remote database and only a subset of the
-remote table is retrieved.
-Storage Systems | 151
-While it is ideal to find Spark packages that support the remote storage system, there
-will be times when a package is not available and you need to consider vendor JDBC
-drivers.
+Spark在处理外部数据库和数据仓库时最有用的特性之一是Spark可以将计算向下推到数据库中，这一特性称为*下推谓词（pushdown predicates）*。简而言之，下推谓词通过询问远程数据库一些智能问题来提高性能。当你对通过`spark_read_source()`引用但未加载到内存中的远程表执行包含`filter(age > 20)`表达式的查询时，不会将整个表放入spark中，而该查询会被传递到远程数据库，并且只获取远程表的一个子集。
+
+虽然寻找支持远程存储系统的Spark包是理想的选择，但有时包不可用，你需要考虑供应商JDBC驱动程序。
 
 ### JDBC
 
-When a Spark package is not available to provide connectivity, you can consider a
-JDBC connection. JDBC is an interface for the programming language Java, which
-defines how a client can access a database.
-It is quite easy to connect to a remote database with `spark_read_jdbc()`, and
-`spark_write_jdbc()`; as long as you have access to the appropriate JDBC driver,
-which at times is trivial and other times is quite an adventure. To keep this simple, we
-can briefly consider how a connection to a remote MySQL database could be
-accomplished.
-First, you would need to download the appropriate JDBC driver from MySQL’s devel‐
-oper portal and specify this additional driver as a `sparklyr.shell.driver-class-path` connection option. Since JDBC drivers are Java-based, the code is contained
-within a JAR (Java ARchive) file. As soon as you’re connected to Spark with the
-appropriate driver, you can use the jdbc:// protocol to access particular drivers and
-databases. Unless you are willing to download and configure MySQL on your own,
-skip executing the following statement:
+当Spark包不能提供连接时，可以考虑使用JDBC连接。JDBC是编程语言Java的接口，它定义了客户机访问数据库的方式。
+
+用`spark_read_jdbc()`和`spark_write_jdbc()`连接到远程数据库非常容易；你只需要能够访问适当的JDBC驱动程序，这有时是不值一提的，而有时则存在风险。为了简单起见，我们可以简单考虑一下如何实现到远程MySQL数据库的连接。
+
+首先，你需要从MySQL的开发人员网站下载合适的JDBC驱动程序，并这个额外的驱动程序指定为`sparklyr.shell.driver-class-path`连接选项。由于JDBC驱动程序是基于Java的，所以代码包含在JAR（Java存档）文你中。一旦你使用合适的驱动程序连接到Spark，就可以使用*jdbc://*协议访问特定的驱动程序和数据库。除非您愿意自己下载和配置MySQL，否则请跳过执行以下语句：
+
 ```{r}
 sc <- spark_connect(master = "local", version = "2.3", config = list(
 "sparklyr.shell.driver-class-path" =
@@ -3953,28 +3914,16 @@ url = "jdbc:mysql://localhost:3306/sparklyr",
 user = "root", password = "<password>",
 dbtable = "person"))
 ```
-If you are a customer of particular database vendors, making use of the vendor-provided resources is usually the best place to start looking for appropriate drivers.
 
-## Recap
+如果你是某个数据库供应商的客户，使用供应商提供的资源通常是选择合适驱动的最好起点。
 
-This chapter expanded on how and why you should use Spark to connect and process
-a variety of data sources through a new data storage model known as data lakes—a
-storage pattern that provides more flexibility than standard ETL processes by ena‐
-bling you to use raw datasets with, potentially, more information to enrich data analy‐
-sis and modeling.
-We also presented best practices for reading, writing, and copying data into and from
-Spark. We then returned to exploring the components of a data lake: file formats and
-152 | Chapter 8: Data
-file systems, with the former representing how data is stored, and the latter where the
-data is stored. You then learned how to tackle file formats and storage systems that
-require additional Spark packages, reviewed some of the performance trade-offs
-across file formats, and learned the concepts required to make use of storage systems
-(databases and warehouses) in Spark.
-While reading and writing datasets should come naturally to you, you might still hit
-resource restrictions while reading and writing large datasets. To handle these situa‐
-tions, Chapter 9 shows you how Spark manages tasks and data across multiple
-machines, which in turn allows you to further improve the performance of your
-analysis and modeling tasks.
+## 小结
+
+本章继续介绍了如何使用Spark来连接和处理各种数据源及其原因。这些连接使用一种新的数据存储模型，称为数据湖的存储模式，它提供了比标准ETL过程更大的灵活性，可以让你能够使用原始数据集更多的信息来丰富数据分析和建模。
+
+我们还介绍了在Spark中读取、写入和复制数据的最佳实践。然后我们又回来研究数据池的组成部分：文件格式和文件系统，前者表示数据的存储方式，后者表示数据的存储位置。然后，你学习了如何处理需要额外Spark包的文件格式和存储系统，以及一些跨文件格式的性能权衡问题，并学习了在Spark中使用存储系统（数据库和仓库）所需的概念。
+
+虽然读写数据集应该并不稀奇，但在读写大型数据集时，仍然会遇到资源限制。为了处理这些情况，第9章会向你展示Spark如何跨多台机器管理任务和数据，从而进一步提高分析和建模任务的性能。
 
 -------
 
