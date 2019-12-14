@@ -2699,7 +2699,7 @@ spark_path <- file.path(spark_home, "bin", "spark-class")
 # Start cluster manager master node
 system2(spark_path, "org.apache.spark.deploy.master.Master", wait = FALSE)
 ```
-![Figure 6-2. Spark单机网站](figures/6_2.png)
+![图6-2. Spark单机网站](figures/6_2.png)
 
 上一个命令初始化主节点。你可以通过localhost:8080访问主节点接口，如图6-3所示。注意，Spark主URL被指定为Spark://address:port。 你需要此URL来初始化工作节点。
 
@@ -2710,9 +2710,9 @@ system2(spark_path, "org.apache.spark.deploy.master.Master", wait = FALSE)
 system2(spark_path, c("org.apache.spark.deploy.worker.Worker",
 "spark://address:port"), wait = FALSE)
 ```
-![Figure 6-3. Spark单机网络接口](figures/6_3.png)
+![图6-3. Spark单机网络接口](figures/6_3.png)
 Spark单机中只注册了一个工作节点。点击这个工作节点的链接，查看这个节点的细节，例如内存和处理器，如图6-4所示。
-![Figure 6-4. Spark单机工作节点网络接口](figures/6_4.png)
+![图6-4. Spark单机工作节点网络接口](figures/6_4.png)
 
 在这个集群执行完计算之后，你需要停止主节点和工作节点。你可以使用`jps`命令来标识要终止的进程号。在下面的例子中，`15330`和`15353`是可以终止并结束集群的进程。要终止进程，可以在Windows中使用`system("Taskkill /PID ##### /F")`，在macOS或Linux中使用`system("kill -9 #####")`。
 
@@ -2740,7 +2740,7 @@ YARN提供了一个资源管理用户界面，可用于访问日志、监视可�
 
 由于YARN是Hadoop项目中的集群管理器，因此可以在Hadoop.apache.org上找到YARN的文档。你还可以参考Spark.apache.org上的““Running Spark on YARN”指南。
 
-![Figure 6-5. 运行`sparklyr`应用的YARN资源管理器](figures/6_5.png)
+![图6-5. 运行`sparklyr`应用的YARN资源管理器](figures/6_5.png)
 
 #### Apache Mesos
 
@@ -2753,7 +2753,7 @@ Mesos提供了一个web界面来管理正在运行的应用程序、资源等。
 Mesos是一个Apache项目，它的文档可以在Mesos.Apache.org上找到。如果你选择使用Mesos作为集群管理器，《Running Spark on Mesos》指南也是一个很好的资源。
 
 
-![Figure 6-6. 运行Spark和R的Mesos网络接口](figures/6_6.png)
+![图6-6. 运行Spark和R的Mesos网络接口](figures/6_6.png)
 
 ### 发行版
 
@@ -2766,7 +2766,7 @@ sparklyr, an R Interface for Apache Spark”下找到资源和文档。
 
 Cloudera提供Cloudera管理器网络接口来管理资源、服务、包、诊断等。图6-7显示了运行在Cloudera管理器中的Spark包，你可以稍后使用它连接R。
 
-![Figure 6-7. 运行Spark包的Cloudera管理器](figures/6_7.png)
+![图6-7. 运行Spark包的Cloudera管理器](figures/6_7.png)
 `sparklyr`通过了Cloudera认证，意味着Cloudera也会支持`sparklyr`，可以有效帮助使用Spark和R的组织。表6-1总结了当前认证的版本。
 
 表6-1. Cloudera认证d额`sparklyr`版本
@@ -2818,7 +2818,7 @@ rstudio-sparklyr/rstudio_sparklyr_emr5.sh,Args=["--user-pw", "<password>", \
 
 接着，你可以导航至Master Public DNS，并在端口8787下找到RStudio，例`如ec2-12-34-567-890.us-west-1.compute.amazonaws.com:8787`，然后使用用户名`hadoop`和密码`password`登陆进入。
 
-![Figure 6-8. 启动亚马逊EMR集群](figures/6_8.png)
+![图6-8. 启动亚马逊EMR集群](figures/6_8.png)
 
 你也可以使用网络界面启动亚马逊EMR集群。同一篇介绍性博文包含专门为亚马逊EMR设计的其他详细信息和步骤。
 
@@ -2896,7 +2896,7 @@ IBM云计算是一套面向业务的云计算服务。IBM云包括通过公共�
 
 在IBM云服务中，打开Watson Studio并创建一个数据科学项目，在项目设置下添加一个Spark集群，然后在Launch IDE菜单上启动RStudio。请注意，截至写书的时候，提供的`sparklyr`版本不是CRAN中提供的最新版本，因为`sparklyr`被修改了以便IBM云下运行。在任何情况下，请按照IBM的文档作为权威参考，在IBM云上运行R和Spark，特别是如何恰当的升级`sparklyr`。图6-11展示了启动Spark集群的IBM的云门户。
 
-![Figure 6-11. 使用R启动Spark集群的IBM Watson](figures/6_11.png)
+![图6-11. 使用R启动Spark集群的IBM Watson](figures/6_11.png)
 
 最新的定价信息可以在ibm.com/cloud/pricing获得。在表6-5中，计算成本使用每月成本对应的31天进行了归一。
 
@@ -2929,7 +2929,7 @@ G5 |64 |448 GB |9.298美元/小时
 
 Qubole成立于2013年，其使命是缩小数据的可访问性差距。Qubole为基于亚马逊、微软、谷歌和甲骨文云的大数据分析提供了一个自助服务平台。在Qubole，你可以启动Spark集群，支持通过Qubole笔记本或RStudio服务器使用。图6-13展示了一个用RStudio和`sparklyr`初始化的Qubole集群。
 
-![Figure 6-13. 用RStudio和`sparklyr`初始化的Qubole集群](figures/6_13.png)
+![图6-13. 用RStudio和`sparklyr`初始化的Qubole集群](figures/6_13.png)
 
 你可以在Qubole的定价页面上找到最新的定价信息。表6-7列出了截至写书的时候Qubole当前套餐的价格。注意，定价基于QCU/hr的成本，即“每小时Qubole计算单位”，而企业版本需要一份年度合同。
 
@@ -3574,61 +3574,32 @@ copy_to(sc, iris, overwrite = TRUE)
 
 ## 写入数据
 
-Some projects require that new data generated in Spark be written back to a remote
-source. For example, the data could be new predicted values returned by a Spark
-model. The job processes the mass generation of predictions, but then the predictions
-need to be stored. This section focuses on how you should use Spark for moving the
-data from Spark into an external destination.
-Many new users start by downloading Spark data into R, and then upload it to a tar‐
-get, as illustrated in图8-2. It works for smaller datasets, but it becomes ineffi‐
-cient for larger ones. The data typically grows in size to the point that it is no longer
-feasible for R to be the middle point.
-Writing Data | 141
+有些项目要求将Spark中生成的新数据写回远程的数据源。例如，数据可以是由Spark模型返回的新预测值。Spark作业会处理大量的预测生成任务，预测值需要存储。本节重点介绍如何使用Spark将数据从Spark传递到外部目的地。
 
-![Figure 8-2. Incorrect use of Spark when writing large datasets](figures/8_2.png)
+许多新用户首先会把Spark数据下载到R中，然后将其上传到目标数据地址，如图8-2所示。它适用于较小的数据集，对于较大的数据集效率会变得低下。数据通常会增长到R不再可行的程度。
 
-All efforts should be made to have Spark connect to the target location. This way,
-reading, processing, and writing happens within the same Spark session.
-As图8-3 shows, a better approach is to use Spark to read, process, and write to
-the target. This approach is able to scale as big as the Spark cluster allows, and pre‐
-vents R from becoming a choke point.
+![图8-2. 写入大型数据集时Spark的错误使用](figures/8_2.png)
 
-![Figure 8-3. Correct use of Spark when writing large datasets](figures/8_3.png)
+应尽一切努力将Spark连接到最终目标位置。这样，读、处理和写就发生在同一个Spark进程中。如图8-3所示，更好的方法是使用Spark来读取、处理和写入目标。这种方法能够扩展到Spark集群能力所及的范围，并防止R成为瓶颈。
 
-Consider the following scenario: a Spark job just processed predictions for a large
-dataset, resulting in a considerable amount of predictions. Choosing a method to
-write results will depend on the technology infrastructure you are working on. More
-specifically, it will depend on Spark and the target running, or not, in the same
-cluster.
-Back to our scenario, we have a large dataset in Spark that needs to be saved. When
-Spark and the target are in the same cluster, copying the results is not a problem; the
-data transfer is between RAM and disk of the same cluster or efficiently shuffled
-through a high-bandwidth connection.
-But what to do if the target is not within the Spark cluster? There are two options,
-and choosing one will depend on the size of the data and network speed:
+![图8-3. 写入大型数据集时Spark的正确使用](figures/8_3.png)
 
-* Spark transfer
-    In this case, Spark connects to the remote target location and copies the new
-data. If this is done within the same datacenter, or cloud provider, the data trans‐
-fer could be fast enough to have Spark write the data directly.
-* External transfer and otherwise
-    Spark can write the results to disk and transfers them via a third-party applica‐
-tion. Spark writes the results as files and then a separate job copies the files over.
-In the target location, you would use a separate process to transfer the data into
-the target location.
+考虑以下场景：一个Spark作业刚刚处理了一个大型数据集的预测任务，产生了大量的预测值。选择写入结果的方法取决于你正在使用的基础技术架构。更具体地说，它将取决于Spark和目标位置是否在同一集群中运行。
 
-It is best to recognize that Spark, R, and any other technology are tools. No tool can
-do everything, nor should you expect it to. Next we describe how to copy data into
-Spark or collect large datasets that don’t fit in memory, which you can use to transfer
-data across clusters or help initialize your distributed datasets.
+回到我们的场景，Spark中有一个需要保存的大型数据集。当Spark和目标位置在同一个集群中时，复制结果是没有问题的；数据传输是在同一集群的内存和磁盘之间进行的，或者通过高速连接高效的完成。但如果目标不在Spark集群内怎么办？有两个选项，需要根据数据大小和网络速度选择一个：
 
-## Copying Data
+* Spark传输
+    在这种情况下，Spark连接到远程目标位置并复制新数据。如果这是在同一个数据中心或云提供商内完成的，那么数据传输速度可能足够快，保证Spark可以直接写入数据。
+* 外部传输和其他方式
+    Spark可以将结果写入磁盘并通过第三方应用进行传输。Spark将结果作为文件写入，然后一个单独的作业完成文件复制。在目标位置，你可以使用单独的进程将数据传输到目标位置。
 
-Previous chapters `used copy_to()` as a handy helper to copy data into Spark; how‐
-ever, you can use `copy_to()` only to transfer in-memory datasets that are already
-loaded in memory. These datasets tend to be much smaller than the kind of datasets
-you would want to copy into Spark.
-For instance, suppose that we have a 3 GB dataset generated as follows:
+最好意识到Spark、R和任何其他技术都是工具。没有工具可以做任何事情，你也不应该期望它能做任何事。接下来我们将描述如何将数据复制到Spark或收集内存无法加载的大型数据集，这些数据集可用于跨集群传输数据或帮助初始化分布式数据集。 
+
+## 复制数据
+
+前几章使用`copy_to()`作为复制数据到Spark的便捷助手；但是，你只能使用`copy_to()`来传输已经加载到内存中的内存数据集。这些数据集往往比要复制到Spark中的数据集要小得多。
+
+例如，假设我们生成了一个3GB的数据集，如下所示：
 ```{r}
 dir.create("largefile.txt")
 write.table(matrix(rnorm(10 * 10^6), ncol = 10), "largefile.txt/1",
@@ -3636,16 +3607,12 @@ append = T, col.names = F, row.names = F)
 for (i in 2:30)
 file.copy("largefile.txt/1", paste("largefile.txt/", i))
 ```
-If we had only 2 GB of memory in the driver node, we would not be able to load this
-3 GB file into memory using `copy_to()`. Instead, when using the HDFS as storage in
-your cluster, you can use the `hadoop` command-line tool to copy files from disk into
-Spark from the terminal as follows. Notice that the following code works only in clus‐
-ters using HDFS, not in local environments.
+如果驱动节点中只有2GB内存，则无法使用`copy_to()`将此3GB文件加载到内存中。相反，当使用HDFS作为集群中的存储时，可以使用hadoop命令行工具将文件从磁盘复制到Spark中，如下所示。请注意，以下代码仅在使用HDFS的集群中有效，而在本地环境中无效。
+
 ```
 hadoop fs -copyFromLocal largefile.txt largefile.txt
 ```
-You then can read the uploaded file, as described in the “File Formats” on page 144
-section; for text files, you would run:
+然后你可以按照“文件格式”部分介绍的，读取上传的数据集。对于文本文件，你可以运行：
 ```{r}
 spark_read_text(sc, "largefile.txt", memory = FALSE)
 # Source: spark<largefile> [?? x 1]
@@ -3663,23 +3630,13 @@ spark_read_text(sc, "largefile.txt", memory = FALSE)
 10 0.6318328148434 -1.08741784644221 -0.550575696474202 0.971967251067794…
 # … with more rows
 ```
-`collect()` has a similar limitation in that it can collect only datasets that fit your
-driver memory; however, if you had to extract a large dataset from Spark through the
-Copying Data | 143
-driver node, you could use specialized tools provided by the distributed storage. For
-HDFS, you would run the following:
+`collect()`也有类似的限制，因为它只能收集适合驱动节点内存的数据集；但是，如果必须通过驱动节点从Spark中提取大型数据集，则可以使用分布式存储提供的专用工具。对于HDFS，你可以运行以下命令：
+
 ```
 hadoop fs -copyToLocal largefile.txt largefile.txt
 ```
-Alternatively, you can also collect datasets that don’t fit in memory by providing a
-callback to `collect()`. A callback is just an R function that will be called over each
-Spark partition. You then can write this dataset to disk or push to other clusters over
-the network.
-You could use the following code to collect 3 GB even if the driver node collecting
-this dataset had less than 3 GB of memory. That said, as Chapter 3 explains, you
-should avoid collecting large datasets into a single machine since this creates a signifi‐
-cant performance bottleneck. For conciseness, we will collect only the first million
-rows; feel free to remove `head(10^6)` if you have a few minutes to spare:
+或者，你也可以通过一个`collect()`的回调任务来收集不适合内存的数据集。回调只是一个R函数，它会在每个Spark分区上调用。然后你可以将数据集写入磁盘或通过网络推送到其他群集。即使收集数据集的驱动节点内存小于3GB，也可以使用以下代码。也就是说，正如第3章所介绍的，你应该避免将大型数据集收集到一台计算机中，因为这会造成一个明显的性能瓶颈。为了简洁起见，我们只收集前100万行；如果时间允许，可以放心移除`head(10^6)`：
+
 ```{r}
 dir.create("large")
 spark_read_text(sc, "largefile.txt", memory = FALSE) %>%
@@ -3688,16 +3645,14 @@ collect(callback = function(df, idx) {
 writeLines(df$line, paste0("large/large-", idx, ".txt"))
 })
 ```
-Make sure you clean up these large files and empty your recycle bin as well:
+确保你清除了这些大型文件，也清空了你的回收站：
 ```{r}
 unlink("largefile.txt", recursive = TRUE)
 unlink("large", recursive = TRUE)
 ```
-In most cases, data will already be stored in the cluster, so you should not need to
-worry about copying large datasets; instead, you can usually focus on reading and
-writing different file formats, which we describe next.
+在大多数情况下，数据已经存储在集群中，因此不必担心复制大型数据集；相反，你可以专注于读取和写入不同的文件格式，我们下面介绍这些格式。
 
-## File Formats
+## 文件格式
 
 Out of the box, Spark is able to interact with several file formats, like CSV, JSON,
 LIBSVM, ORC, and Parquet. Table 8-1 maps the file format to the function you
@@ -3843,7 +3798,7 @@ Next, we describe how to deal with formats that require external packages and
 customization.
 File Formats | 147
 
-![Figure 8-4. One-million-rows write benchmark between CSV, JSON, Parquet, and ORC](figures/8_4.png)
+![图8-4. One-million-rows write benchmark between CSV, JSON, Parquet, and ORC](figures/8_4.png)
 
 ### Others
 
@@ -4130,7 +4085,7 @@ Spark’s Scala API through `sparklyr` extensions or run custom distributed R co
 To effectively tune Spark, we will start by getting familiar with Spark’s computation
 graph and Spark’s event timeline. Both are accessible through Spark’s web interface.
 
-![Figure 9-1. Sorting distributed data with Apache Spark](figures/9_1.png)
+![图9-1. Sorting distributed data with Apache Spark](figures/9_1.png)
 
 ### Graph
 
@@ -4157,7 +4112,7 @@ row by row once.
     After the records arrived at the appropriate executor, they were sorted in this
 final stage.
 
-![Figure 9-2. Spark graph for a sorting query](figures/9_2.png)
+![图9-2. Spark graph for a sorting query](figures/9_2.png)
 
 From the query details, you then can open the last Spark job to arrive to the job
 details page, which you can expand by using “DAG Visualization” to create a graph
@@ -4165,7 +4120,7 @@ similar to图9-3. This graph shows a few additional details and the stages in th
 job. Notice that there are no arrows pointing back to previous steps, since Spark
 makes use of acyclic graphs.
 
-![Figure 9-3. Spark graph for a sorting job](figures/9_3.png)
+![图9-3. Spark graph for a sorting job](figures/9_3.png)
 
 Next, we dive into a Spark stage and explore its event timeline.
 
@@ -4179,7 +4134,7 @@ Select the first stage in the current job and expand the event timeline, which s
 look similar to图9-4. Notice that we explicitly requested three partitions, which
 are represented by three lanes in this visualization.
 
-![Figure 9-4. Spark event timeline](figures/9_4.png)
+![图9-4. Spark event timeline](figures/9_4.png)
 
 Since our machine is equipped with four CPUs, we can parallelize this computation
 even further by explicitly repartitioning data using `sdf_repartition()`, with the
@@ -4188,7 +4143,7 @@ result shown in图9-5:
 data %>% sdf_repartition(4) %>% arrange(id) %>% collect()
 ```
 
-![Figure 9-5. Spark event timeline with additional partitions](figures/9_5.png)
+![图9-5. Spark event timeline with additional partitions](figures/9_5.png)
 
 Figure 9-5 now shows four execution lanes with most time spent under Executor
 Computing Time, which shows us that this particular operation is making better use
@@ -4505,7 +4460,7 @@ ily the case that higher partitions produce faster computation; instead, partiti
 data is particular to your computing cluster and the data analysis operations being
 performed.
 
-![Figure 9-6. Computation speed with additional explicit partitions](figures/9_6.png)
+![图9-6. Computation speed with additional explicit partitions](figures/9_6.png)
 
 ## Caching
 
@@ -4535,7 +4490,7 @@ You can inspect which tables are cached by navigating to the Spark UI using
 `spark_web(sc)`, clicking the Storage tab, and then clicking on a specific RDD, as illus‐
 trated in图9-7.
 
-![Figure 9-7. Cached RDD in the Spark web interface](figures/9_7.png)
+![图9-7. Cached RDD in the Spark web interface](figures/9_7.png)
 
 Data loaded in memory will be released when the R session terminates, either explic‐
 itly or implicitly, with a restart or disconnection; however, to free up resources, you
@@ -4815,7 +4770,7 @@ users to combine the fast, scalable machine learning algorithms of H2O with the
 capabilities of Spark. You can think of Sparkling Water as a component bridging
 Spark with H2O and rsparkling as the R frontend for Sparkling Water, as depicted
 in图10-1.
-![Figure 10-1. H2O components with Spark and R](figures/10_1.png)
+![图10-1. H2O components with Spark and R](figures/10_1.png)
 
 First, install rsparkling and h2o as specified on the rsparkling documentation site.
 ```{r}
@@ -4861,7 +4816,7 @@ cars_h2o
 6 18.1 6 225 105 2.76 3.460 20.22 1 0 3 1
 [32 rows x 11 columns]
 ```
-![Figure 10-2. The H2O Flow interface using Spark with R](figures/10_2.png)
+![图10-2. The H2O Flow interface using Spark with R](figures/10_2.png)
 Then, you can use many of the modeling functions available in the `h2o` package with
 ease. For instance, we can fit a generalized linear model with ease:
 ```{r}
@@ -4970,7 +4925,7 @@ Seven Bridges of Königsberg in 1736. The problem was to devise a walk through t
 city that would cross each bridge once and only once.图10-3 presents the origi‐
 nal diagram.
 
-![Figure 10-3. The Seven Bridges of Königsberg from the Euler archive](figures/10_3.png)
+![图10-3. The Seven Bridges of Königsberg from the Euler archive](figures/10_3.png)
 Today, a graph is defined as an ordered pair $G = (V, E)$ , with V a set of vertices (nodes
 or points) and $E \subseteq \{ \{x, y\}|(x,y) \in V^2 \wedge   x\ne y\}$ a set of edges (links or lines), which
 are either an unordered pair for undirected graphs or an ordered pair for directed
@@ -5131,7 +5086,7 @@ end_cap = circle(2, 'mm'),
 start_cap = circle(2, 'mm')) +
 geom_node_point(size = 2, alpha = 0.4)
 ```
-![Figure 10-4. High school ggraph dataset with highest PageRank highlighted](figures/10_4.png)
+![图10-4. High school ggraph dataset with highest PageRank highlighted](figures/10_4.png)
 
 There are many more graph algorithms provided in `graphframes`—for example,
 breadth-first search, connected components, label propagation for detecting com‐
@@ -5148,7 +5103,7 @@ could help classify whether an employee is likely to leave given a set of factor
 satisfaction and overtime. When a decision tree is used to predict continuous vari‐
 ables instead of discrete outcomes—say, how likely someone is to leave a company—it
 is referred to as a regression tree.
-![Figure 10-5. A decision tree to predict job attrition based on known factors](figures/10_5.png)
+![图10-5. A decision tree to predict job attrition based on known factors](figures/10_5.png)
 
 While a decision tree representation is quite easy to understand and to interpret,
 finding out the decisions in the tree requires mathematical techniques like gradient
@@ -5261,7 +5216,7 @@ are linearly separable; however, they also revealed in their book Perceptrons th
 
 layering perceptrons would bring additional classification capabilities.3图10-6
 presents the original diagram showcasing a multilayered perceptron.
-![Figure 10-6. Layered perceptrons, as illustrated in the book Perceptrons](figures/10_6.png)
+![图10-6. Layered perceptrons, as illustrated in the book Perceptrons](figures/10_6.png)
 Before we start, let’s first install all the packages that we are about to use:
 ```{r}
 install.packages("sparktf")
@@ -5329,7 +5284,7 @@ training these models. OpenAI analyzed trends in the field of artificial intelli
 (AI) and cluster computing (illustrated in图10-7). It should be obvious from the
 figure that there is a trend in recent years to use distributed computing frameworks.
 
-![Figure 10-7. Training using distributed systems based on OpenAI analysis](figures/10_7.png)
+![图10-7. Training using distributed systems based on OpenAI analysis](figures/10_7.png)
 Training large-scale deep learning models is possible in Spark and TensorFlow
 through frameworks like Horovod. Today, it’s possible to use Horovod with Spark
 from R using the `reticulate` package, since Horovod requires Python and Open
@@ -5346,7 +5301,7 @@ thymine (T). Since the DNA of all humans is nearly identical, we need to store o
 the differences from the reference genome in the form of a variant call format (VCF)
 file.
 
-![Figure 10-8. The idealized human diploid karyotype showing the organization of the genome into chromosomes](figures/10_8.png)
+![图10-8. The idealized human diploid karyotype showing the organization of the genome into chromosomes](figures/10_8.png)
 `variantspark` is a framework based on Scala and Spark to analyze genome datasets.
 It is being developed by CSIRO Bioinformatics team in Australia. `variantspark` was
 tested on datasets with 3,000 samples, each one containing 80 million features in
@@ -5409,7 +5364,7 @@ scale_x_discrete(limits =
 importance_df[order(importance_df$importance), 1]$variable) +
 coord_flip()
 ```
-![Figure 10-9. Genomic importance analysis using variantspark](figures/10_9.png)
+![图10-9. Genomic importance analysis using variantspark](figures/10_9.png)
 This concludes a brief introduction to genomic analysis in Spark using the `variantspark` extension. Next, we move away from microscopic genes to macroscopic data‐
 sets that contain geographic locations across the world.
 
@@ -5439,7 +5394,7 @@ points_wkt <- copy_to(sc, points)
 There are various spatial operations defined in `geospark`, as depicted in图10-10.
 These operations allow you to control how geospatial data should be queried based
 on overlap, intersection, disjoint sets, and so on.
-![Figure 10-10. Spatial operations available in geospark](figures/10_10.png)
+![图10-10. Spatial operations available in geospark](figures/10_10.png)
 For instance, we can use these operations to find the polygons that contain a given set
 of points using `st_contains()`:
 ```{r}
@@ -5556,7 +5511,7 @@ tion of the distributed datasets. For instance, if we multiplied each element of
 tributed numeric dataset by 10, Spark would apply a mapping operation over each
 partition through multiple workers. A conceptual view of this process is illustrated in
 Figure 11-1.
-![Figure 11-1. Map operation when multiplying by 10](figures/11_1.png)
+![图11-1. Map operation when multiplying by 10](figures/11_1.png)
 This chapter presents how to define a custom `f(x)` mapping operation using
 `spark_apply()`; for the previous example, spark_apply() provides support to define
 `10 * x`, as follows:
@@ -5577,7 +5532,7 @@ The `f(x)` function must take an R DataFrame (or something that can be automati�
 cally transformed to one) as input and must also produce an R DataFrame as output,
 as shown in图11-2.
 
-![Figure 11-2. Expected function signature in `spark_apply()` mappings](figures/11_2.png)
+![图11-2. Expected function signature in `spark_apply()` mappings](figures/11_2.png)
 We can refer back to the original MapReduce example from Chapter 1, where the
 map operation was defined to split sentences into words and the total unique words
 were counted as the reduce operation.
@@ -5753,7 +5708,7 @@ purrr::map(c("versicolor", "virginica", "setosa"),
 ggplot2::ggplot(ggplot2::aes(x = Petal.Length, y = Petal.Width)) +
 ggplot2::geom_point())
 ```
-![Figure 11-3. Modeling over species in the iris dataset](figures/11_3.png)
+![图11-3. Modeling over species in the iris dataset](figures/11_3.png)
 This concludes our brief overview on how to perform modeling over several different
 partitionable datasets. A similar technique can be applied to perform modeling over
 the same dataset using different modeling parameters, as we cover next.
@@ -5892,7 +5847,7 @@ add_object(sphere(material = metal(color="orange"), z = +2)) %>%
 add_object(sphere(material = metal(color="orange"), x = -2))
 render_scene(scene, lookfrom = c(10, 5, 0), parallel = TRUE)
 ```
-![Figure 11-4. Ray tracing in Spark using R and rayrender](figures/11_4.png)
+![图11-4. Ray tracing in Spark using R and rayrender](figures/11_4.png)
 In higher resolutions, say 1920 x 1080, the previous example takes several minutes to
 render the single frame from图11-4; rendering a few seconds at 30 frames per
 second would take several hours in a single machine. However, we can reduce this
@@ -6063,7 +6018,7 @@ context = 100
 Figure 11-5 illustrates this example conceptually. Notice that the data partitions are
 still variable; however, the contextual parameter is distributed to all the nodes.
 
-![Figure 11-5. Map operation when multiplying with context](figures/11_5.png)
+![图11-5. Map operation when multiplying with context](figures/11_5.png)
 
 The grid search example used this parameter to pass a DataFrame to each worker
 node; however, since the context parameter is serialized as an R object, it can contain
@@ -6242,7 +6197,7 @@ row. Spark stores data by default by row, since it’s easier to partition; in c
 stores data by column. Therefore, something needs to transform both representations
 when data is transferred between Spark and R, as shown in图11-6.
 
-![Figure 11-6. Data transformation between Spark and R](figures/11_6.png)
+![图11-6. Data transformation between Spark and R](figures/11_6.png)
 
 This transformation from rows to columns needs to happen for each partition. In
 addition, data also must be transformed from Scala’s internal representation to R’s
@@ -6257,7 +6212,7 @@ nar storage is performed in parallel in Spark, which can be further optimized by
 the columnar storage formats presented in Chapter 8. The improved transformations
 are shown in图11-7.
 
-![Figure 11-7. Data transformation between Spark and R using Apache Arrow](figures/11_7.png)
+![图11-7. Data transformation between Spark and R using Apache Arrow](figures/11_7.png)
 Apache Arrow is not required but is strongly recommended while you are working
 with `spark_apply()`. It has been available since Spark 2.3.0; however, it requires sys‐
 tem administrators to install the Apache Arrow runtime in every node (see http://
@@ -6575,7 +6530,7 @@ In Spark, you create streams by defining a source, a transformation, and a sink;
 can think of these steps as reading, transforming, and writing a stream, as shown in
 Figure 12-1.
 
-![Figure 12-1. Working with Spark Streaming](figures/12_1.png)
+![图12-1. Working with Spark Streaming](figures/12_1.png)
 
 Let’s take a look at each of these a little more closely:
 
@@ -6627,7 +6582,7 @@ stream_view(stream)
 ```
 The result is shown in图12-2.
 
-![Figure 12-2. Monitoring a stream generating rows following a binomial distribution](figures/12_2.png)
+![图12-2. Monitoring a stream generating rows following a binomial distribution](figures/12_2.png)
 Notice that the rps rate in the destination stream is higher than that in the source
 stream. This is expected and desirable since Spark measures incoming rates from the
 source stream, but also actual row-processing times in the destination stream. For
@@ -6877,7 +6832,7 @@ reads from Kafka; in Kafka terminology, a consumer application subscribes to top
 Therefore, the most basic workflow we can accomplish with Kafka is one with a sin‐
 gle producer and a single consumer; this is illustrated in图12-3.
 
-![Figure 12-3. A basic Kaa workflow](figures/12_3.png)
+![图12-3. A basic Kaa workflow](figures/12_3.png)
 
 If you are new to Kafka, we don’t recommend you run the code from this section.
 However, if you’re really motivated to follow along, you will first need to install Kafka
@@ -6909,7 +6864,7 @@ are producers and consumers from the same topic are referred to as stream proces
 In图12-4, the stream processor reads topic A and then writes results to topic B.
 This allows for a given consumer application to read results instead of “raw” feed
 data.
-![Figure 12-4. A Kaa workflow using stream processors](figures/12_4.png)
+![图12-4. A Kaa workflow using stream processors](figures/12_4.png)
 
 Three modes are available when processing Kafka streams in Spark: `complete`,
 `update`, and `append.` The complete mode provides the totals for every group every
@@ -7010,7 +6965,7 @@ sparklyr::stream_generate_test(datasets::iris, "shiny/shiny-stream",
 rep(5, 10^3))
 ```
 
-![Figure 12-5. Progression of Spark reactive loading data into the Shiny app](figures/12_5.png)
+![图12-5. Progression of Spark reactive loading data into the Shiny app](figures/12_5.png)
 In this section you learned how easy it is to create a Shiny app that can be used for
 several different purposes, such as monitoring and dashboarding.
 In a more complex implementation, the source would more likely be a Kafka stream.
@@ -7128,7 +7083,7 @@ provided a Spark extension that supports this new file format. Last but not leas
 could write your own custom Scala code that makes use of any Java library, including
 Spark and its extensions. This is shown in图13-1.
 
-![Figure 13-1. Extending Spark using the Spark API or Spark extensions, or writing Scala code](figures/13_1.png)
+![图13-1. Extending Spark using the Spark API or Spark extensions, or writing Scala code](figures/13_1.png)
 We will focus first on extending Spark using the Spark API, since the techniques
 required to call the Spark API are also applicable while calling Spark extensions or
 custom Scala code.
@@ -7286,7 +7241,7 @@ your R package will contain R code and Scala code; however, the Scala code will 
 to be compiled as JARs (Java ARchive files) and included in your package.
 Figure 13-2 shows this structure.
 
-![Figure 13-2. R package structure when using Scala code](figures/13_2.png)
+![图13-2. R package structure when using Scala code](figures/13_2.png)
 As usual, the R code should be placed under a top-level R folder, Scala code under a
 java folder, and the compiled JARs under an inst/java folder. Though you are cer‐
 tainly welcome to manually compile the Scala code, you can use helper functions to
@@ -7315,7 +7270,7 @@ Since `spark_extension()` is registered as a custom project extension in RStudio
 can also create an R package that extends Spark using Scala code from the File menu;
 click New Project and then select “R Package using Spark” as shown in图13-3.
 
-![Figure 13-3. Creating a Scala extension package from RStudio](figures/13_3.png)
+![图13-3. Creating a Scala extension package from RStudio](figures/13_3.png)
 Once you are ready to compile your package JARs, you can simply run the following:
 ```{r}
 compile_package_jars()
@@ -7463,14 +7418,14 @@ labels = c("", "1M", "", "2M", "", "3M", "") )
 Download the R installer (see图A-1) and launch it for your Windows, Mac, or
 Linux platform.
 Supplemental Code References | 251
-![Figure A-1. The R Project for Statistical Computing](figures/A_1.png)
+![图A-1. The R Project for Statistical Computing](figures/A_1.png)
 
 #### Installing Java
 
 Download the Java installer (see图A-2) and launch it for your Windows, Mac, or
 Linux platform.
 252 | Appendix A: Supplemental Code References
-![Figure A-2. Java download page](figures/A_2.png)
+![图A-2. Java download page](figures/A_2.png)
 Starting with Spark 2.1, Java 8 is required; however, previous versions of Spark sup‐
 port Java 7. Regardless, we recommend installing Java Runtime Engine 8 (JRE 8).
 
@@ -7486,7 +7441,7 @@ make you much more productive and therefore, we recommend it. Download the
 RStudio installer (see图A-3), then launch it for your Windows, Mac, or Linux
 platform.
 
-![Figure A-3. RStudio download page](figures/A_3.png)
+![图A-3. RStudio download page](figures/A_3.png)
 After launching RStudio, you can use its console panel to execute the code provided
 in this chapter.
 
@@ -7504,7 +7459,7 @@ the help contents, and more.
     This pane allows you to connect to Spark, manage your active connection, and
 view the available datasets.
 
-![Figure A-4. RStudio overview](figures/A_4.png)
+![图A-4. RStudio overview](figures/A_4.png)
 
 ## Chapter 3
 
