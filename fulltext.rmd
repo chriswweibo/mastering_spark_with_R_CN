@@ -3654,41 +3654,34 @@ unlink("large", recursive = TRUE)
 
 ## 文件格式
 
-Out of the box, Spark is able to interact with several file formats, like CSV, JSON,
-LIBSVM, ORC, and Parquet. Table 8-1 maps the file format to the function you
-should use to read and write data in Spark.
-Table 8-1. Spark functions to read and write file formats
+Spark能够“开箱”就可以与多种文件格式交互，如CSV、JSON、LIBSVM、ORC和Parquet。表8-1将文件格式映射到Spark中用于读写数据的函数。
 
-Format |Read |Write
+表8-1. 用于读写文件格式的Spark函数
+
+格式 |读取|写入
 -----|------|------
 CSV |`spark_read_csv()` |`spark_write_csv()`
 JSON |`spark_read_json()` |`spark_write_json()`
 LIBSVM |`spark_read_libsvm()` |`spark_write_libsvm()`
 ORC |`spark_read_orc()` |`spark_write_orc()`
 Apache Parquet |`spark_read_parquet()` |`spark_write_parquet()`
-Text |`spark_read_text()` |`spark_write_text()`
+文本 |`spark_read_text()` |`spark_write_text()`
 
-The following sections will describe special considerations particular to each file for‐
-mat as well as some of the strengths and weaknesses of some popular file formats,
-starting with the well-known CSV file format.
+以下各节将从著名的CSV文件格式开始，介绍每种文件格式的特殊注意事项以及一些主流文件格式的优缺点。
 
 ### CSV
 
-The CSV format might be the most common file type in use today. It is defined by a
-text file separated by a given character, usually a comma. It should be pretty straight‐
-forward to read CSV files; however, it’s worth mentioning a couple techniques that
-can help you process CSVs that are not fully compliant with a well-formed CSV file.
-Spark offers the following modes for addressing parsing issues:
+CSV格式可能是目前使用的最常见的文件类型。它是由一个使用给定的字符（通常是逗号）进行分隔的文本文件。读取CSV文件应该非常简单；但是，值得一提的是，有两种技术可以帮助你处理与优质格式CSV文件不完全兼容的CSV。Spark提供了以下解决解析问题的模式：
 
-* Permissive
-    Inserts NULL values for missing tokens
-* Drop Malformed
-    Drops lines that are malformed
-* Fail Fast
-    Aborts if it encounters any malformed line
-You can use these in `sparklyr` by passing them inside the `options` argument. The fol‐
-lowing example creates a file with a broken entry. It then shows how it can be read
-into Spark:
+* 容忍缺失
+    为缺失部分插入NULL值
+* 舍弃不良结构
+    舍弃结构不正确的行
+* 快速报错
+    如果遇到结构不正确的行，马上放弃
+
+你可以在`sparklyr`的`options`参数中传值，使用它们。下面的示例创建了一个条目破坏的文件，展示如何将其读入Spark：
+
 ```{r}
 ## Creates bad test file
 writeLines(c("bad", 1, 2, 3, "broken"), "bad.csv")
@@ -3705,10 +3698,9 @@ options = list(mode = "DROPMALFORMED"))
 2 2
 3 3
 ```
-Spark provides an issue tracking column, which was hidden by default. To enable it,
-`add _corrupt_record` to the columns list. You can combine this with the use of the
-`PERMISSIVE` mode. All rows will be imported, invalid entries will receive an `NA`, and
-the issue will be tracked in the `_corrupt_record` column:
+
+Spark提供了一个问题跟踪列，该列在默认情况下是隐藏的。要启用它，使用`add _corrupt_record`给`columns`列表。你可以把这个方法与`PERMISSIVE`模式相结合。所有行都会导入，无效条目将返回`NA`，并在`_corrupt_record`中跟踪此问题：
+
 ```{r}
 spark_read_csv(
 sc,
@@ -3724,15 +3716,12 @@ options = list(mode = "PERMISSIVE") )
 3 3 NA
 4 NA broken
 ```
-Reading and storing data as CSVs is quite common and supported across most sys‐
-tems. For tabular datasets, it is still a popular option, but for datasets containing nes‐
-ted structures and nontabular data, JSON is usually preferred.
+
+在大多数系统中，以csv的形式读取和存储数据是非常常见，而且是广泛支持的。对于表格式数据集，它仍然是一个流行的选项，但是对于包含嵌套结构和非表格式数据的数据集，JSON通常是首选的。
 
 ### JSON
 
-JSON is a file format originally derived from JavaScript that has grown to be
-language-independent and very popular due to its flexibility and ubiquitous support.
-Reading and writing JSON files is quite straightforward:
+JSON是一种源自JavaScript的文件格式。由于其灵活性和广泛支持，它已经变得独立于语言并且非常流行。读取和写入JSON文件非常简单：
 ```{r}
 writeLines("{'a':1, 'b': {'f1': 2, 'f3': 3}}", "data.json")
 simple_json <- spark_read_json(sc, "data.json")
@@ -3742,12 +3731,8 @@ simple_json
  <dbl> <list>
 1 1 <list [2]>
 ```
-However, when you deal with a dataset containing nested fields like the one from this
-example, it is worth pointing out how to extract nested fields. One approach is to use
-a JSON path, which is a domain-specific syntax commonly used to extract and query
-JSON files. You can use a combination of `get_json_object()` and `to_json()` to spec‐
-ify the JSON path you are interested in. To extract f1 you would run the following
-transformation:
+但是，当你处理包含嵌套字段的数据集（如本例中的数据集）时，值得一提的是如何提取嵌套字段。一种方法是使用JSON路径，这是一种领域相关的语法，通常用于提取和查询JSON文件。你可以使用`get_json_object()`和 `to_json()`的组合来指定感兴趣的json路径。要提取`f1`，你可以运行以下转换：
+
 ```{r}
 simple_json %>% dplyr::transmute(z = get_json_object(to_json(b), '$.f1'))
 # Source: spark<?> [?? x 3]
@@ -3755,29 +3740,22 @@ simple_json %>% dplyr::transmute(z = get_json_object(to_json(b), '$.f1'))
  <dbl> <list> <chr>
 1 1 <list [2]> 2
 ```
-Another approach is to install `sparkly.nested` from CRAN with `install.packages("sparklyr.nested")` and then unnest nested data with `sdf_unnest()`:
+另一个方法是使用`install.packages("sparklyr.nested")`从CRAN安装`sparkly.nested`，然后使用`sdf_unnest()`p拍平嵌套的数据：
 ```{r}
 sparklyr.nested::sdf_unnest(simple_json, "b")
 # Source: spark<?> [?? x 3]
  a f1 f3
-146 | Chapter 8: Data
  <dbl> <dbl> <dbl>
 1 1 2 3
 ```
-While JSON and CSVs are quite simple to use and versatile, they are not optimized
-for performance; however, other formats like ORC, AVRO, and Parquet are.
+虽然JSON和csv使用起来非常简单且通用，但它们并没有针对性能进行优化；而其他格式（如ORC、AVRO和Parquet）则进行了优化。
 
 ### Parquet
 
-Apache Parquet, Apache ORC, and Apache AVRO are all file formats designed with
-performance in mind. Parquet and ORC store data in columnar format, while AVRO
-is row-based. All of them are binary file formats, which reduces storage space and
-improves performance. This comes at the cost of making them a bit more difficult to
-read by external systems and libraries; however, this is usually not an issue when used
-as intermediate data storage within Spark.
-To illustrate this,图8-4 plots the result of running a 1-million-row write-speed
-benchmark using the bench package; feel free to use your own benchmarks over
-meaningful datasets when deciding which format best fits your needs:
+Apache Parquet、Apache ORC和Apache AVRO都是为了性能而设计的文件格式。Parquet和ORC以列格式存储数据，而AVRO是基于行的。它们都是二进制文件格式，这会减少存储空间并提高性能。这是以外部系统和库更难读取它们为代价的；然而，当在Spark中用作中间数据存储时，这通常不是问题。
+
+为了说明这一点，图8-4描绘了使用`bench`程序包运行100万行写速度基准的结果；在决定哪种格式最适合你的需要时，可以在有意义的数据集上使用自己的基准：
+
 ```{r}
 numeric <- copy_to(sc, data.frame(nums = runif(10^6)))
 bench::mark(
@@ -3788,33 +3766,26 @@ ORC = spark_write_parquet(numeric, "data.orc", mode = "overwrite"),
 iterations = 20
 ) %>% ggplot2::autoplot()
 ```
-From now on, be sure to disconnect from Spark whenever we present a new
-`spark_connect()` command:
+从现在开始，确保你从Spark断开了连接：
 ```{r}
 spark_disconnect(sc)
 ```
-This concludes the introduction to some of the out-of-the-box supported file formats.
-Next, we describe how to deal with formats that require external packages and
-customization.
-File Formats | 147
+以上就是一些开箱即用的广泛支持的文件格式介绍。接下来，我们将介绍如何处理需要外部包和定制的格式。
 
-![图8-4. One-million-rows write benchmark between CSV, JSON, Parquet, and ORC](figures/8_4.png)
+![图8-4. 使用CSV，JSON，Parquet和ORC写入100万行的基准表现](figures/8_4.png)
 
-### Others
+### 其他
 
-Spark is a very flexible computing platform. It can add functionality by using exten‐
-sion programs, called packages. You can access a new source type or file system by
-using the appropriate package.
-Packages need to be loaded into Spark at connection time. To load the package, Spark
-needs its location, which could be inside the cluster, in a file share, or the internet.
-In `sparklyr`, the package location is passed to `spark_connect()`. All packages should
-be listed in the `sparklyr.connect.packages` entry of the connection configuration.
-It is possible to access data source types that we didn’t previously list. Loading the
-appropriate default package for Spark is the first of two steps The second step is to
-actually read or write the data. The `spark_read_source()` and
-`spark_write_source()` functions do that. They are generic functions that can use the
-libraries imported by a default package.
-For instance, we can read XML files as follows:
+Spark是一个非常灵活的计算平台。它可以通过使用扩展程序包来添加功能。你可以使用适当的包访问新的源类型或文件系统。
+
+连接时需要将程序包加载到Spark中。要加载包，Spark需要它的位置，它可能在集群内、共享文件中或internet中。
+
+在`sparklyr`中，程序包位置传递给`spark_connect()`。所有包都应列在连接配置的`sparklyr.connect.packages`项中。
+
+可以访问以前未列出的数据源类型。加载Spark的默认包是两个步骤中的第一步，第二步是实际读取或写入数据。`spark_read_source()`和`spark_write_source()`函数会执行此操作。它们是通用函数，可以使用默认包导入的库。
+
+例如，我们可以按如下方式读取XML文件：
+
 ```{r}
 sc <- spark_connect(master = "local", version = "2.3", config = list(
 sparklyr.connect.packages = "com.databricks:spark-xml_2.11:0.5.0"))
@@ -3825,19 +3796,12 @@ spark_read_source(sc, "simple_xml", "simple.xml", "xml")
  <chr>
 1 Hello World
 ```
-which you can also write back to XML with ease, as follows:
+你也可以轻松的写入XML，代码如下：
 ```{r}
 tbl(sc, "simple_xml") %>%
 spark_write_source("xml", options = list(path = "data.xml"))
 ```
-In addition, there are a few extensions developed by the R community to load addi‐
-tional file formats, such as `sparklyr.nested` to assist with nested data,
-spark.sas7bdat to read data from SAS, sparkavro to read data in AVRO format, and
-sparkwarc to read WARC files, which use extensibility mechanisms introduced in
-Chapter 10. Chapter 11 presents techniques to use R packages to load additional file
-formats, and Chapter 13 presents techniques to use Java libraries to complement this
-further. But first, let’s explore how to retrieve and store files from several different file
-systems.
+此外，R社区还开发了一些扩展来加载其他文件格式，例如`sparklyr.nested`用于帮助嵌套数据，`spark.sas7bdat`用于从SAS读取数据，`sparkavro`用于以AVRO格式读取数据，`sparkwarc`用于读取WARC文件，这些扩展使用了第10章中介绍的扩展机制。第11章介绍了使用R包加载其他文件格式的技术，第13章介绍了使用Java库做了进一步补充。但首先，让我们探讨如何从几个不同的文件系统中检索和存储文件。
 
 ## File Systems
 
