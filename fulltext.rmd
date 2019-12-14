@@ -3807,9 +3807,9 @@ spark_write_source("xml", options = list(path = "data.xml"))
 
 Spark默认为当前运行它的文件系统。在YARN管理的集群中，默认的文件系统是HDFS。*/home/user/file.csv*的示例路径将从集群的HDFS文件夹（而不是Linux文件夹）读取。操作系统的文件系统将用于其他部署，如独立部署和`sparklyr`的本地部署。
 
-文件系统协议可以在读取或写入时更改。你可以通过`sparklyr`函数的`path`参数来实现这一点。例如，*file://home/user/file.csv*的完整路径强制使用本地操作系统的文件系统。
+文件系统协议可以在读取或写入时更改。你可以通过`sparklyr`函数的`path`参数来实现这一点。例如，*file://home/user/file.csv* 的完整路径强制使用本地操作系统的文件系统。
 
-还有许多其他文件系统协议，例如Databricks的文件系统的*_dbfs://_*、Amazon的S3服务的*_s3a://_*、Microsoft Azure存储的*_wasb://_*和Google存储的*_gs://_*。
+还有许多其他文件系统协议，例如Databricks的文件系统的*\_dbfs://\_*、Amazon的S3服务的*\_s3a://\_*、Microsoft Azure存储的*\_wasb://\_*和Google存储的*\_gs://\_*。
 
 Spark并没有直接为所有这些组件提供支持；相反，它们是根据需要配置的。例如，访问“s3a”协议需要向`sparklyr.connect.packages`配置添加一个包，而连接和指定适当的请求凭据可能需要使用`AWS_ACCESS_KEY_ID`和
 `AWS_SECRET_ACCESS_KEY`环境变量。
@@ -3837,10 +3837,6 @@ my_file <- spark_read_csv(sc, "my-file", path = "s3a://my-bucket/my-file.csv")
 
 打开Spark连接后，可以方便地访问Hive表。通过在SQL语句中引用表，使用`DBI`访问该表的数据：
 
-In YARN managed clusters, Spark provides a deeper integration with Apache Hive.
-Hive tables are easily accessible after opening a Spark connection.
-You can access a Hive table’s data using DBI by referencing the table in a SQL
-statement:
 ```{r}
 sc <- spark_connect(master = "local", version = "2.3")
 spark_read_csv(sc, "test", "data-csv/", memory = FALSE)
