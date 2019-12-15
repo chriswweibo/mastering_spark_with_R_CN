@@ -3928,112 +3928,68 @@ dbtable = "person"))
 > Chaos isn’t a pit. Chaos is a ladder.
 > —Petyr Baelish
 
-In previous chapters, we’ve assumed that computation within a Spark cluster works
-efficiently. While this is true in some cases, it is often necessary to have some knowl‐
-edge of the operations Spark runs internally to fine-tune configuration settings that
-will make computations run efficiently. This chapter explains how Spark computes
-data over large datasets and provides details on how to optimize its operations.
-For instance, in this chapter you’ll learn how to request more compute nodes and
-increase the amount of memory, which, if you remember from Chapter 2, defaults to
-only 2 GB in local instances. You will learn how Spark unifies computation through
-partitioning, shuffling, and caching. As mentioned a few chapters back, this is the last
-chapter describing the internals of Spark; after you complete this chapter, we believe
-that you will have the intermediate Spark skills necessary to be productive at using
-Spark.
-In Chapters 10–12 we explore exciting techniques to deal with specific modeling,
-scaling, and computation problems. However, we must first understand how Spark
-performs internal computations, what pieces we can control, and why.
-Overview
-Spark performs distributed computation by configuring, partitioning, executing,
-shuffling, caching, and serializing data, tasks, and resources across multiple
-machines:
+在前面的章节中，我们假设Spark中的计算是有效的。虽然这个假设在一些情况下是成立的，但通常需要对Spark内部运行的操作有一些了解，以便微调配置，从而使计算高效运行。本章介绍Spark如何计算大型数据集上的数据，并提供有关如何优化操作的详细信息。
 
-* Configuring requests the cluster manager for resources: total machines, memory,
-and so on.
-* Partitioning splits the data among various machines. Partitions can be either
-implicit or explicit.
-* Executing means running an arbitrary transformation over each partition.
-* Shuffling redistributes data to the correct machine.
-* Caching preserves data in memory across different computation cycles.
-* Serializing transforms data to be sent over the network to other workers or back
-to the driver node.
+例如，在本章中，你将学习如何请求更多的计算节点以及增加内存，如果你还记得第2章的内容，则在本地实例中默认为只有2GB。你将了解Spark如何通过分区、洗牌和缓存来统一计算。就像前几章提到的，这是介绍Spark内部机制的最后一章；在完成本章之后，我们相信你会具备使用Spark所必需的中级技能。
 
-To illustrate each concept, let’s create three partitions with unordered integers and
-then sort them using `arrange()`:
+在第10-12章中，我们会探索一些令人兴奋的技术，可以处理具体建模、可扩展性和计算问题。首先，我们必须了解Spark如何执行内部计算，我们可以控制哪些部分，以及为什么。
+
+## 概述
+
+Spark通过在多台计算机上配置、分区、执行、洗牌、缓存和序列化数据、任务和资源来执行分布式计算：
+
+* 配置需要集群管理器提供资源：全部机器，内存等。
+* 分区在不同的机器之间分割数据。分区可以是隐式的，也可以是显式的。
+* 执行意味着在每个分区上运行任意转换。
+* 洗牌将数据重新分发到正确的机器。
+* 缓存会跨不同的计算周期将数据保存在内存中。
+* 序列化转换要通过网络发送给其他工作节点或返回到驱动节点的数据。
+
+要说明每一个概念，让我们创建一个无序整数的三个分区，并使用`arrange()`进行排序：
 ```{r}
 data <- copy_to(sc,
 data.frame(id = c(4, 9, 1, 8, 2, 3, 5, 7, 6)),
 repartition = 3)
 data %>% arrange(id) %>% collect()
 ```
-Figure 9-1 shows how this sorting job would conceptually work across a cluster of
-machines. First, Spark would configure the cluster to use three worker machines. In
-this example, the numbers 1 through 9 are partitioned across three storage instances.
-Since the data is already partitioned, each worker node loads this implicit partition;
-for instance, 4, 9, and 1 are loaded in the first worker node. Afterward, a task is dis‐
-tributed to each worker to apply a transformation to each data partition in each
-worker node; this task is denoted by `f(x)`. In this example, `f(x)` executes a sorting
-operation within a partition. Since Spark is general, execution over a partition can be
-as simple or complex as needed.
-The result is then shuffled to the correct machine to finish the sorting operation
-across the entire dataset, which completes a stage. A stage is a set of operations that
-Spark can execute without shuffling data between machines. After the data is sorted
-across the cluster, the sorted results can be optionally cached in memory to avoid
-rerunning this computation multiple times.
-Finally, a small subset of the results is serialized, through the network connecting the
-cluster machines, back to the driver node to print a preview of this sorting example.
-Notice that while图9-1 describes a sorting operation, a similar approach applies
-to filtering or joining datasets and analyzing and modeling data at scale. Spark pro‐
-vides support to perform custom partitions, custom shuffling, and so on, but most of
-these lower-level operations are not exposed in `sparklyr`; instead, `sparklyr` makes
-those operations available through higher-level commands provided by data analysis
-tools like `dplyr` or `DBI`, modeling, and by using many extensions. For those few cases
-in which you might need to implement low-level operations, you can always use
-Spark’s Scala API through `sparklyr` extensions or run custom distributed R code.
 
-To effectively tune Spark, we will start by getting familiar with Spark’s computation
-graph and Spark’s event timeline. Both are accessible through Spark’s web interface.
+图9-1显示了这个排序作业在理论上是如何跨一个机器集群工作的。首先，Spark会将集群配置为使用三台工作节点。在本例中，数字1到9被划分为三个存储实例。因为数据已经分区，所以每个工作节点都加载这个隐式分区；例如，4、9和1加载在第一个工作节点中。然后，将一个任务分发给每个工作节点，对每个工作节点中的每个数据分区应用转换；此任务用`f(x)`表示。在本例中，`f(x)`在分区内执行排序操作。由于Spark是通用的，所以分区上的执行可以根据需要变得简单或复杂。
 
-![图9-1. Sorting distributed data with Apache Spark](figures/9_1.png)
+然后将结果打乱传入正确的机器，以完成整个数据集的排序操作，从而完成一个阶段。*阶段*是一组操作，Spark可以执行这些操作，而无需在机器之间对数据洗牌。在集群中对数据进行排序之后，可以选择将排序后的结果*缓存*在内存中，以避免多次重新运行这个计算任务。
 
-### Graph
+最后，通过连接集群计算机的网络将一小部分结果*序列化*，并将结果返回到驱动节点以打印此排序示例的预览。
 
-Spark describes all computation steps using a Directed Acyclic Graph (DAG), which
-means that all computations in Spark move computation forward without repeating
-previous steps, which helps Spark optimize computations effectively.
-The best way to understand Spark’s computation graph for a given operation—sort‐
-ing for our example—is to open the last completed query on the SQL tab in Spark’s
-web interface.图9-2 shows the resulting graph for this sorting operation, which
-contains the following operations:
+注意，虽然图9-1描述了排序操作，但类似的方法也适用于筛选或连接数据集以及大规模数据的分析和建模。Spark提供了执行自定义分区、自定义洗牌等的支持，但这些较低级别的操作大多没有在`sparklyr`中开放；相反，`sparklyr`通过数据分析工具,`如dplyr`或`DBI`,建模和使用许多扩展提供的更高级别的命令使这些操作可用。对于那些可能需要实现低级操作的少数情况，你始终可以通过`sparklyr`扩展使用Spark的Scala API或运行自定义的分布式R代码。
 
-* WholeStageCodegen
-    This block specifies that the operations it contains were used to generate com‐
-puter code that was efficiently translated to byte code. There is usually a small
-cost associated with translating operations into byte code, but this is a worthwhile
-price to pay since the operations then can be executed much faster from Spark. In
-general, you can ignore this block and focus on the operations that it contains.
-* InMemoryTableScan
-    This means that the original dataset data was stored in memory and traversed
-row by row once.
-* Exchange
-    Partitions were exchanged—that is, shuffled—across executors in your cluster.
-* Sort
-    After the records arrived at the appropriate executor, they were sorted in this
-final stage.
+为了有效地调试Spark，我们首先熟悉Spark的计算图和Spark的事件时间线。两者都可以通过Spark的web界面访问。
 
-![图9-2. Spark graph for a sorting query](figures/9_2.png)
+![图9-1. 使用Apache Spark对分布式数据排序](figures/9_1.png)
 
-From the query details, you then can open the last Spark job to arrive to the job
-details page, which you can expand by using “DAG Visualization” to create a graph
-similar to图9-3. This graph shows a few additional details and the stages in this
-job. Notice that there are no arrows pointing back to previous steps, since Spark
-makes use of acyclic graphs.
+### 计算图
 
-![图9-3. Spark graph for a sorting job](figures/9_3.png)
+Spark使用有向无环图（DAG）描述所有计算步骤，这意味着Spark中的所有计算都向前移动而不重复前面的步骤，这有助于Spark有效地优化计算。
 
-Next, we dive into a Spark stage and explore its event timeline.
+在我们的示例中，理解给定操作，例如示例中的排序任务的Spark计算图的最佳方法是打开Spark的web接口中SQL选项卡上最后完成的查询。图9-2显示了排序操作的最终计算图，其中包含以下操作：
 
-### Timeline
+
+* `WholeStageCodegen`
+    此模块确定，它包含的操作用于生成高效转换至字节码的计算机代码。将操作转换为字节码通常会带来很小的成本，但这是值得付出的代价，因为在Spark中可以更快地执行操作。通常，你以忽略这个模块并将焦点放在它包含的操作上。
+* `InMemoryTableScan`
+    这个意思是，原始数据集存储在内存中并一次性按行转换。
+* `Exchange`
+    分区是交换过的，也就是说，是被集群中的执行器执行过洗牌操作。
+* `Sort`
+    当记录到达合适的执行器，它们在这个最终阶段完成排序。
+
+![图9-2. 排序查询的Spark计算图](figures/9_2.png)
+
+从查询的详细信息中，你可以打开最后一个Spark作业，到达作业详细信息页面。你可以使用“DAG Visualization”来展开该页面，以创建类似于图9-3的图形。此图显示了作业中的一些额外细节和阶段。注意，没有箭头指向之前的步骤，因为Spark使用了非循环图。
+
+![图9-3. 排序作业的Spark计算图](figures/9_3.png)
+
+下面，我们会继续深入介绍Spark阶段并研究它的事件时间线。
+
+### 时间线
 
 The event timeline is a great summary of how Spark is spending computation cycles
 over each stage. Ideally, you want to see this timeline consisting of mostly CPU usage
