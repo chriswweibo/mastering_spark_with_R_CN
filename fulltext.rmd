@@ -3991,55 +3991,38 @@ Spark使用有向无环图（DAG）描述所有计算步骤，这意味着Spark�
 
 ### 时间线
 
-The event timeline is a great summary of how Spark is spending computation cycles
-over each stage. Ideally, you want to see this timeline consisting of mostly CPU usage
-since other tasks can be considered overhead. You also want to see Spark using all the
-CPUs across all the cluster nodes available to you.
-Select the first stage in the current job and expand the event timeline, which should
-look similar to图9-4. Notice that we explicitly requested three partitions, which
-are represented by three lanes in this visualization.
+*事件时间线*是有关Spark跨每个阶段的计算周期开销的一个良好汇总。理想情况下，你希望看到这个时间线主要由CPU使用量组成，因为其他任务可以被视为开销。你还希望看到Spark使用所有可用集群节点上的所有cpu。
 
-![图9-4. Spark event timeline](figures/9_4.png)
+选择当前作业中的第一个阶段并展开事件时间线，它应该类似于图9-4。注意，我们显式地请求了三个分区，它们在这个可视化中由三个道表示。
 
-Since our machine is equipped with four CPUs, we can parallelize this computation
-even further by explicitly repartitioning data using `sdf_repartition()`, with the
-result shown in图9-5:
+![图9-4. Spark事件时间线](figures/9_4.png)
+
+由于我们的机器配备了四个CPU，我们可以使用`sdf_repartition()`显式地重新分区数据来进一步实现并行化计算，结果如图9-5所示：
+
 ```{r}
 data %>% sdf_repartition(4) %>% arrange(id) %>% collect()
 ```
 
-![图9-5. Spark event timeline with additional partitions](figures/9_5.png)
+![图9-5. 带有额外分区的事件时间线](figures/9_5.png)
 
-Figure 9-5 now shows four execution lanes with most time spent under Executor
-Computing Time, which shows us that this particular operation is making better use
-of our compute resources. When you are working with clusters, requesting more
-compute nodes from your cluster should shorten computation time. In contrast, for
-timelines that show significant time spent shuffling, requesting more compute nodes
-might not shorten time and might actually make everything slower. There is no con‐
-crete set of rules to follow to optimize a stage; however, as you gain experience under‐
-standing this timeline over multiple operations, you will develop insights as to how to
-properly optimize Spark operations.
+图9-5展示了四个执行通道，其中在执行器计算时间上花费的时间最多，这表明这个特定的操作正在更好地利用我们的计算资源。当使用集群时，请求集群上更多计算节点应该会缩短计算时间。与此相反，对于那些展示花了大量时间进行洗牌的时间线，请求更多的计算节点可能不会缩短时间，实际上还可能会使所有操作都变慢。我们并没有一套具体的规则用来优化一个阶段；但是，随着在多个操作中获得时间线的经验，你会深入了解如何正确优化Spark操作。
 
-## Configuring
+## 配置
 
-When tuning a Spark application, the most common resources to configure are
-memory and cores, specifically:
+在调试Spark应用程序时，最常见的配置资源是内存和内核，特别是：
 
-* Memory in driver
-    The amount of memory required in the driver node
-* Memory per worker
-    The amount of memory required in the worker nodes
-* Cores per worker
-    The number of CPUs required in the worker nodes
-* Number of workers
-    The number of workers required for this session
+* 驱动节点的内存
+     驱动节点所需的内存量
+* 每个工作节点的内存
+     工作节点所需的内存量
+* 每个工作节点的内核数
+     工作节点所需的CPU数
+* 工作节点数
+     此会进程所需的工作节点数
     
-> It is recommended to request significantly more memory for the
-driver than the memory available over each worker node. In most
-cases, you will want to request one core per worker.
+> 建议为驱动节点请求远多于每个工作节点上可用的内存的内存量。在大多数情况下，你需要为每个工作节点请求一个内核。
 
-In local mode there are no workers, but we can still configure memory and cores to
-use through the following:
+本地模式中没有工作节点，但是我们依然可以使用下列代码配置内存和内核：
 ```{r}
 # Initialize configuration with defaults
 config <- spark_config()
@@ -4050,14 +4033,11 @@ config["sparklyr.connect.cores.local"] <- 2
 # Connect to local cluster with custom configuration
 sc <- spark_connect(master = "local", config = config)
 ```
-When using the Spark Standalone and the Mesos cluster managers, all the available
-memory and cores are assigned by default; therefore, there are no additional configu‐
-ration changes required, unless you want to restrict resources to allow multiple users
-to share this cluster. In this case, you can use `total-executor-cores` to restrict the
-total executors requested. The Spark Standalone and Spark on Mesos guides provide
-additional information on sharing clusters.
-When running under YARN Client, you would configure memory and cores as
-follows:
+
+使用Spark单机和Mesos群集管理器时，默认情况下会分配所有可用内存和内核；因此，不需要更改其他配置，除非你希望限制资源以便允许多个用户共享群集。在这种情况下，你可以使用`total-executor-cores`来限制请求的执行器总数。Spark单机和Mesos管理下的Spark指南提供了有关共享集群的其他信息。
+
+在YARN客户端下运行时，你可以按照以下方式配置内存和内核：
+
 ```{r}
 # Memory in driver
 config["sparklyr.shell.driver-memory"] <- "2g"
@@ -4068,28 +4048,24 @@ config["sparklyr.shell.executor-cores"] <- 1
 # Number of workers
 config["sparklyr.shell.num-executors"] <- 3
 ```
-When using YARN in cluster mode you can use `sparklyr.shell.driver-cores` to
-configure total cores requested in the driver node. The Spark on YARN guide pro‐
-vides additional configuration settings that can benefit you.
-There are a few types of configuration settings:
+在集群模式下使用YARN时，可以使用`sparklyr.shell.driver-cores`配置在驱动节点中请求的总内核数。Spark on YARN guide提供了额外的配置设置，可以帮助你。
 
-* Connect
-    These settings are set as parameters to spark_connect(). They are common settings used while connecting.
-* Submit
-    These settings are set while `sparklyr` is being submitted to Spark through spark￾submit; some are dependent on the cluster manager being used.
-* Runtime
-    These settings configure Spark when the Spark session is created. They are independent of the cluster manager and specific to Spark.
-* sparklyr
-    Use these to configure `sparklyr` behavior. These settings are independent of the
-cluster manager and particular to R.
+有几种类型的配置：
 
-The following subsections present extensive lists of all the available settings. It is not
-required that you fully understand them all while tuning Spark, but skimming
-through them could prove useful in the future for troubleshooting issues. If you pre‐
-fer, you can skip these subsections and use them instead as reference material as
-needed.
+* *连接*
+     这些设置用作`spark_connect()`的参数。它们是连接时使用的常见设置。
+* *提交*
+     这些设置是在`sparklyr`通过`spark-submit`提交到Spark时使用的；有些设置取决于所使用的集群管理器。
+* *运行时*
+     这些设置会在创建Spark进程时配置Spark。它们独立于集群管理器，并且关联具体的Spark。
+* *`sparklyr`*
+     使用这些来配置`sparklyr`行为。这些设置独立于集群管理器，并且专属于R。
 
-### Connect Settings
+
+下面的章节会提供所有可用设置的详细列表。在调试Spark时，并不要求你完全理解它们，但是浏览一遍对以后的故障排除有帮助。你可以跳过这些章节，根据需要把它们用作参考资料。
+
+
+### 连接设置
 
 You can use the parameters listed in Table 9-1 with `spark_connect()`. They configure
 high-level settings that define the connection method, Spark’s installation path, and
