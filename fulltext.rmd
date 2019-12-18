@@ -4123,53 +4123,48 @@ spark_home_dir() %>% file.path("bin", "spark-submit") %>% system2()
 
 通常，任何`spark-submit`设置都通过`sparklyr.shell.X`来配置，其中X是`spark-submit`参数不带`--`前缀的名称。
 
-### Runtime Settings
+### 运行时设置
 
-As mentioned, some Spark settings configure the session runtime. The runtime set‐
-tings are a superset of the submit settings given that it is usually helpful to retrieve the
-current configuration even if a setting can’t be changed.
-To list the Spark settings set in your current Spark session, you can run the following:
+正如提到的，一些Spark设置会配置进程的运行时。运行时设置是提交设置的超集，因为即使不能更改设置，检索当前配置通常也是有帮助的。
+
+要列出当前Spark会话中的Spark设置，可以运行以下命令：
+
 ```{r}
 spark_session_config(sc)
 ```
-Table 9-4 describes the runtime settings.
+表9-4 描述了运行时设置。
 
-Table 9-4. Setting available to configure the Spark session
+表9-4. 配置Spark进程时的可用设置
 
-Name |Value
+名称 |取值
 ------|-----
 `spark.master` |local[4]
 `spark.sql.shuffle.partitions` |4
 `spark.driver.port` |62314
 `spark.submit.deployMode` |`client`
 `spark.executor.id` |`driver`
-`spark.jars` |/Library/…/sparklyr/java/sparklyr-2.3-2.11.jar
-`spark.app.id` |local-1545518234395
+`spark.jars` |*/Library/…/sparklyr/java/sparklyr-2.3-2.11.jar*
+`spark.app.id` |`local-1545518234395`
 `spark.env.SPARK_LOCAL_IP` |127.0.0.1
 `spark.sql.catalogImplementation` |`hive`
 `spark.spark.port.maxRetries` |128
 `spark.app.name` |`sparklyr`
-`spark.home` |/Users/…/spark/spark-2.3.2-bin-hadoop2.7
+`spark.home` |*/Users/…/spark/spark-2.3.2-bin-hadoop2.7*
 `spark.driver.host` |`localhost`
 
-However, there are many more configuration settings available in Spark, as described
-in the Spark Configuration guide. It’s beyond the scope of this book to describe them
-all, so, if possible, take some time to identify the ones that might be of interest to your
-particular use cases.
+但是，Spark中还有更多的配置，如Spark配置指南中所述。这超出了本书的范围，所以，如果可能的话，可以花点时间来确定那些可能对你的特定用例有关的配置。
 
-### sparklyr Settings
 
-Apart from Spark settings, there are a few settings particular to `sparklyr`。 You usually
-don’t use these settings while tuning Spark; instead, they are helpful while trouble‐
-shooting Spark from R. For instance, you can use `sparklyr.log.console = TRUE` to
-output the Spark logs into the R console; this is ideal while troubleshooting but too
-noisy otherwise. Here’s how to list the settings (results are presented in Table 9-5):
+### `sparklyr`设置
+
+除了Spark设置，还有一些专门的`sparklyr`设置。通常在调试Spark时不使用这些设置；而在从R排除Spark故障时很有用。例如，可以使用`sparklyr.log.console = TRUE`将Spark日志输出到R控制台；这在排除故障时是可取的，但在其他情况下有点烦人。下面介绍了如何列出设置（结果如表9-5所示）：
+
 ```{r}
 spark_config_settings()
 ```
-Table 9-5. Settings available to configure the `sparklyr` package
+表9-5. 配置`sparklyr`程序包的可用设置
 
-Name |Description
+名称 |描述
 -----|-----
 `sparklyr.apply.packages`|Configures default value for packages parameter in `spark_apply()`.
 `sparklyr.apply.rlang` |Experimental feature. Turns on improved serialization for `spark_apply()`.
@@ -4226,7 +4221,7 @@ Name |Description
 `sparklyr.yarn.cluster.lookup.username` |The username used to filter YARN cluster jobs while searching for submitted one.
 `sparklyr.yarn.cluster.start.timeout` |Total seconds before giving up waiting for YARN cluster application to get registered.
 
-## Partitioning
+## 分区
 
 As mentioned in Chapter 1, MapReduce and Spark were designed with the purpose
 of performing computations against data stored across many machines. The subset of
@@ -4237,7 +4232,7 @@ tive to run computations where the data is already located. However, there are c
 for which you will want to set an explicit partition to help Spark make more efficient
 use of your cluster resources.
 
-### Implicit Partitions
+### 隐式分区
 
 As Chapter 8 explained, Spark can read data stored in many formats and different
 storage systems; however, since shuffling data is an expensive operation, Spark exe‐
@@ -4256,7 +4251,7 @@ While in most cases the default partitions work just fine, there are cases for w
 you will need to be explicit about the partitions you choose.
 Partitioning | 167
 
-### Explicit Partitions
+### 显式分区
 
 There will be times when you have many more or far fewer compute instances than
 data partitions. In both cases, it can help to repartition data to match your cluster
@@ -4297,7 +4292,7 @@ performed.
 
 ![图9-6. Computation speed with additional explicit partitions](figures/9_6.png)
 
-## Caching
+## 缓存
 
 Recall from Chapter 1 that Spark was designed to be faster than its predecessors by
 using memory instead of disk to store data. This is formally known as a Spark resil‐
@@ -4334,7 +4329,7 @@ can use `tbl_uncache()`:
 tbl_uncache(sc, "iris")
 ```
 
-### Checkpointing
+### 检查点
 
 Checkpointing is a slightly different type of caching; while it also saves data, it will
 additionally break the graph computation lineage. For example, if a cached partition
@@ -4355,7 +4350,7 @@ iris_tbl %>% sdf_checkpoint()
 Notice that checkpointing truncates the computation lineage graph, which can speed
 up performance if the same intermediate result is used multiple times.
 
-### Memory
+### 内存
 
 Memory in Spark is categorized into reserved, user, execution, or storage:
 
@@ -4393,7 +4388,7 @@ However, note that Spark will borrow execution memory from storage and vice vers
 if needed and if possible; therefore, in practice, there should be little need to tune the
 memory settings.
 
-## Shuffling
+## 重洗
 
 Shuffling is the operation that redistributes data across machines; it is usually expen‐
 sive and therefore something you should try to minimize. You can easily identify
@@ -4412,7 +4407,7 @@ sdf_broadcast() %>%
 left_join(sdf_len(sc, 100))
 ```
 
-## Serialization
+## 序列化
 
 Serialization is the process of translating data and tasks into a format that can be
 transmitted between machines and reconstructed on the receiving end.
@@ -4426,7 +4421,7 @@ config$spark.serializer <- "org.apache.spark.serializer.KryoSerializer"
 sc <- spark_connect(master = "local", config = config)
 ```
 
-## Configuration Files
+## 配置文件
 
 Configuring the `spark_config()` settings before connecting is the most common
 approach while tuning Spark. However, after you identify the parameters in your
@@ -4458,7 +4453,7 @@ files is that a system administrator can change the default configuration by cha
 the value of the `R_CONFIG_ACTIVE` environment variable. See the GitHub rstudio/
 config repo for additional information.
 
-## Recap
+## 小结
 
 This chapter provided a broad overview of Spark internals and detailed configuration
 settings to help you speed up computation and enable high computation loads. It pro‐
