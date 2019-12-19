@@ -4166,22 +4166,22 @@ spark_config_settings()
 
 名称 |描述
 -----|-----
-`sparklyr.apply.packages`|Configures default value for packages parameter in `spark_apply()`.
-`sparklyr.apply.rlang` |Experimental feature. Turns on improved serialization for `spark_apply()`.
-`sparklyr.apply.serializer` |Configures the version `spark_apply()` uses to serialize the closure.
-`sparklyr.apply.schema.infer` |Number of rows collected to infer schema when column types specified in `spark_apply()`.
-`sparklyr.arrow` |Use Apache Arrow to serialize data?
-`sparklyr.backend.interval` |Total seconds `sparklyr` will check on a backend operation.
-`sparklyr.backend.timeout` |Total seconds before `sparklyr` will give up waiting for a backend operation to complete.
-`sparklyr.collect.batch` |Total rows to collect when using batch collection; defaults to 100,000.
-`sparklyr.cancellable` |Cancel Spark jobs when the R session is interrupted?
-`sparklyr.connect.aftersubmit` |R function to call after `spark-submit` executes.
-`sparklyr.connect.app.jar` |The path to the `sparklyr JAR` used in `spark_connect()`.
-`sparklyr.connect.cores.local` |Number of cores to use in `spark_connect(master = "local")`, defaults to `parallel::detectCores()`.
-`sparklyr.connect.csv.embedded` |Regular expression to match against versions of Spark that require package extension to support CSVs.
-`sparklyr.connect.csv.scala11` |Use Scala 2.11 JARs when using embedded `CSV JARS` in Spark 1.6.X.
-`sparklyr.connect.jars` |Additional JARs to include while submitting application to Spark.
-`sparklyr.connect.master` |The cluster master as `spark_connect()` master parameter; note that the `spark.master` setting is usually preferred.
+`sparklyr.apply.packages`|配置`spark_apply()`程序包参数的默认值。
+`sparklyr.apply.rlang` |实验功能。启用可以改善`spark_apply()`的序列化。
+`sparklyr.apply.serializer` |配置`spark_apply()`使用的版本，以便序列化闭包。
+`sparklyr.apply.schema.infer` |当`spark_apply()`给定列类型，用于推断模式的行数。
+`sparklyr.arrow` |是否使用Apache Arrow序列化数据？
+`sparklyr.backend.interval` |`sparklyr`确认后端操作的总秒数。
+`sparklyr.backend.timeout` |`sparklyr`不再等待后端操作完成之前的总秒数。
+`sparklyr.collect.batch` |使用批收集是要收集的总行数，默认为100,000。
+`sparklyr.cancellable` |当R进程被打断时，是否要取消Spark作业？
+`sparklyr.connect.aftersubmit` |`spark-submit`执行后要调用的R函数。
+`sparklyr.connect.app.jar` |`spark_connect()`中的`sparklyr JAR`路径。
+`sparklyr.connect.cores.local` |`spark_connect(master = "local")`使用的内核数，默认Wi为`parallel::detectCores()`。
+`sparklyr.connect.csv.embedded` |匹配Spark版本号的正则表达，需要程序包扩展支持CSV。
+`sparklyr.connect.csv.scala11` |当Spark 1.6.X使用嵌入的`CSV JARS`时，使用Scala 2.11 JAR]。
+`sparklyr.connect.jars` |在给Spark提交应用时，包含的其他的JAR。
+`sparklyr.connect.master` |作为`spark_connect()`的`master`参数的集群主节点。注意通常选择`spark.master`的设置。
 `sparklyr.connect.packages` |Spark packages to include when connecting to Spark.
 `sparklyr.connect.ondisconnect` |R function to call after `spark_disconnect()`.
 `sparklyr.connect.sparksubmit` |Command executed instead of `spark-submit` when connecting.
