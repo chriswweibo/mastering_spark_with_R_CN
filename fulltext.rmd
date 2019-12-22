@@ -4182,11 +4182,11 @@ spark_config_settings()
 `sparklyr.connect.csv.scala11` |当Spark 1.6.X使用嵌入的`CSV JARS`时，使用Scala 2.11 JAR]。
 `sparklyr.connect.jars` |在给Spark提交应用时，包含的其他的JAR。
 `sparklyr.connect.master` |作为`spark_connect()`的`master`参数的集群主节点。注意通常选择`spark.master`的设置。
-`sparklyr.connect.packages` |Spark packages to include when connecting to Spark.
-`sparklyr.connect.ondisconnect` |R function to call after `spark_disconnect()`.
-`sparklyr.connect.sparksubmit` |Command executed instead of `spark-submit` when connecting.
-`sparklyr.connect.timeout` |Total seconds before giving up connecting to the `sparklyr` gateway while initializing.
-`sparklyr.dplyr.period.splits` |Should `dplyr` split column names into database and table?
+`sparklyr.connect.packages` |连接Spark时包含的Spark程序包。
+`sparklyr.connect.ondisconnect` |完成`spark_disconnect()`后调用的R函数。
+`sparklyr.connect.sparksubmit` |连接时除使用`spark-submit`外的命令。
+`sparklyr.connect.timeout` |初始化时，放弃连接`sparklyr`通道前的总秒数。
+`sparklyr.dplyr.period.splits` |`dplyr`是否应该把列名分割成数据库和表？
 `sparklyr.extensions.catalog` |Catalog PATH where extension JARs are located. Defaults to `TRUE`; `FALSE` to disable.
 `sparklyr.gateway.address` |The address of the driver machine.
 `sparklyr.gateway.config.retries` |Number of retries to retrieve port and address from config; useful when using functions to query port or address in Kubernetes.
