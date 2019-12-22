@@ -4187,10 +4187,10 @@ spark_config_settings()
 `sparklyr.connect.sparksubmit` |连接时除使用`spark-submit`外的命令。
 `sparklyr.connect.timeout` |初始化时，放弃连接`sparklyr`通道前的总秒数。
 `sparklyr.dplyr.period.splits` |`dplyr`是否应该把列名分割成数据库和表？
-`sparklyr.extensions.catalog` |Catalog PATH where extension JARs are located. Defaults to `TRUE`; `FALSE` to disable.
-`sparklyr.gateway.address` |The address of the driver machine.
-`sparklyr.gateway.config.retries` |Number of retries to retrieve port and address from config; useful when using functions to query port or address in Kubernetes.
-`sparklyr.gateway.interval` |Total of seconds sparkyr will check on a gateway connection.
+`sparklyr.extensions.catalog` |存放扩展JAR的目录`PATH`。默认为`TRUE`；可以改成`FALSE`。
+`sparklyr.gateway.address` |驱动机器的地址。
+`sparklyr.gateway.config.retries` |获取配置文件中端口和地址的重试次数。使用函数查询Kubernetes中的端口或地址时很有用。.
+`sparklyr.gateway.interval` |`sparklyr`检查通道连接的总秒数。
 `sparklyr.gateway.port` |The port the `sparklyr` gateway uses in the driver machine.
 `sparklyr.gateway.remote` |Should the `sparklyr` gateway allow remote connections? This is required in YARN cluster, for example.
 `sparklyr.gateway.routing` |Should the `sparklyr` gateway service route to other sessions? Consider disabling in Kubernetes.
