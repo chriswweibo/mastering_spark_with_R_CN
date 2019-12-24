@@ -4005,7 +4005,7 @@ data %>% sdf_repartition(4) %>% arrange(id) %>% collect()
 
 ![图9-5. 带有额外分区的事件时间线](figures/9_5.png)
 
-图9-5展示了四个执行通道，其中在执行器计算时间上花费的时间最多，这表明这个特定的操作正在更好地利用我们的计算资源。当使用集群时，请求集群上更多计算节点应该会缩短计算时间。与此相反，对于那些展示花了大量时间进行重洗的时间线，请求更多的计算节点可能不会缩短时间，实际上还可能会使所有操作都变慢。我们并没有一套具体的规则用来优化一个阶段；但是，随着在多个操作中获得时间线的经验，你会深入了解如何正确优化Spark操作。
+图9-5展示了四个执行网关，其中在执行器计算时间上花费的时间最多，这表明这个特定的操作正在更好地利用我们的计算资源。当使用集群时，请求集群上更多计算节点应该会缩短计算时间。与此相反，对于那些展示花了大量时间进行重洗的时间线，请求更多的计算节点可能不会缩短时间，实际上还可能会使所有操作都变慢。我们并没有一套具体的规则用来优化一个阶段；但是，随着在多个操作中获得时间线的经验，你会深入了解如何正确优化Spark操作。
 
 ## 配置
 
@@ -4185,18 +4185,18 @@ spark_config_settings()
 `sparklyr.connect.packages` |连接Spark时包含的Spark程序包。
 `sparklyr.connect.ondisconnect` |完成`spark_disconnect()`后调用的R函数。
 `sparklyr.connect.sparksubmit` |连接时除使用`spark-submit`外的命令。
-`sparklyr.connect.timeout` |初始化时，放弃连接`sparklyr`通道前的总秒数。
+`sparklyr.connect.timeout` |初始化时，放弃连接`sparklyr`网关前的总秒数。
 `sparklyr.dplyr.period.splits` |`dplyr`是否应该把列名分割成数据库和表？
 `sparklyr.extensions.catalog` |存放扩展JAR的目录`PATH`。默认为`TRUE`；可以改成`FALSE`。
 `sparklyr.gateway.address` |驱动机器的地址。
 `sparklyr.gateway.config.retries` |获取配置文件中端口和地址的重试次数。使用函数查询Kubernetes中的端口或地址时很有用。.
-`sparklyr.gateway.interval` |`sparklyr`检查通道连接的总秒数。
-`sparklyr.gateway.port` |驱动机器上`sparklyr`通道使用的端口。
-`sparklyr.gateway.remote` |`sparklyr`通道是否允许远程连接？例如，YARN集群中需要这个参数。
-`sparklyr.gateway.routing` |`sparklyr`通道服务是否要发送到其他进程？可以在Kubernetes中关闭。
-`sparklyr.gateway.service` |当最后的连接断开后，`sparklyr`通道是否继续作为服务运行而不中断？
-`sparklyr.gateway.timeout` |初始化后，放弃连接`sparklyr`通道前的总秒数。
-`sparklyr.gateway.wait` |重试连接`sparklyr`通道前的等待时间。
+`sparklyr.gateway.interval` |`sparklyr`检查网关连接的总秒数。
+`sparklyr.gateway.port` |驱动机器上`sparklyr`网关使用的端口。
+`sparklyr.gateway.remote` |`sparklyr`网关是否允许远程连接？例如，YARN集群中需要这个参数。
+`sparklyr.gateway.routing` |`sparklyr`网关服务是否要发送到其他进程？可以在Kubernetes中关闭。
+`sparklyr.gateway.service` |当最后的连接断开后，`sparklyr`网关是否继续作为服务运行而不中断？
+`sparklyr.gateway.timeout` |初始化后，放弃连接`sparklyr`网关前的总秒数。
+`sparklyr.gateway.wait` |重试连接`sparklyr`网关前的等待时间。
 `sparklyr.livy.auth` |Livy连接的认证方式。
 `sparklyr.livy.headers` |Livy连接的其它HTTP文件头。
 `sparklyr.livy.sources` |连接的时候，`sparklyr`源文件是否需要sourced？如果不需要，则手动注册`sparklyr` JAR。
@@ -4213,7 +4213,7 @@ spark_config_settings()
 `sparklyr.web.spark` |Spark网络接口的URL。
 `sparklyr.web.yarn` |YARN网络接口的URL。
 `sparklyr.worker.gateway.address`|工作机器的地址，绝大多数情况下是`localhost`。
-`sparklyr.worker.gateway.port` |驱动机器上`sparklyr`通道使用的端口。
+`sparklyr.worker.gateway.port` |驱动机器上`sparklyr`网关使用的端口。
 `sparklyr.yarn.cluster.accepted.timeout` |放弃等待YARN机器模式下集群资源的总秒数。
 `sparklyr.yarn.cluster.hostaddress.timeout` |放弃等待YARN机器模式下集群分配主机地址的总秒数。
 `sparklyr.yarn.cluster.lookup.byname` |在搜索提交的任务时，当前用户名是否要用来过滤YARN集群作业？
@@ -4417,89 +4417,40 @@ sc <- spark_connect(master = "local")
 
 ## 概述
 
-In Chapter 1, we presented the R community as a vibrant group of individuals collab‐
-orating with each other in many ways—for example, moving open science forward by
-creating R packages that you can install from CRAN. In a similar way, but at a much
-smaller scale, the R community has contributed extensions that increase the function‐
-ality initially supported in Spark and R. Spark itself also provides support for creating
-Spark extensions and, in fact, many R extensions make use of Spark extensions.
-Extensions are constantly being created, so this section will be outdated at some given
-point in time. In addition, we might not even be aware of many Spark and R exten‐
-sions. However, at the very least we can track the extensions that are available in
-CRAN by looking at the “reverse imports” for `sparklyr` in CRAN. Extensions and R
-packages published in CRAN tend to be the most stable since when a package is pub‐
-lished in CRAN, it goes through a review process that increases the overall quality of
-a contribution.
-While we wish we could present all the extensions, we’ve instead scoped this chapter
-to the extensions that should be the most interesting to you. You can find additional
-extensions at the github.com/r-spark organization or by searching repositories on
-GitHub with the `sparklyr` tag.
+在第1章中，我们把R社区呈现为一个充满活力的群体，其中的每个人在许多方面相互协作，例如，通过创建可以从CRAN安装的R包来推动开放科学的发展。以类似的，但规模要小得多的方式，R社区提供了扩展，扩大了Spark和R最初支持的功能。Spark本身也支持创建Spark扩展。事实上，许多R扩展都使用Spark的扩展。
+
+人们经常创建扩展，所以本章节在某个时间点后就过时了。此外，我们甚至可能不知道许多Spark和R扩展。然而，我们至少可以通过查看CRAN中`sparklyr`的“反向导入”来跟踪CRAN中可用的扩展。在CRAN中发布的扩展和R包往往是最稳定的，因为当一个包在CRAN中发布时，它会经过一个评审过程，从而提高贡献的总体质量。
+
+虽然我们希望能够展示所有的扩展，但是我们将本节限制在你最感兴趣的扩展。你可以在github.com/r-spark部分或通过搜索带有`sparklyr`标记的GitHub仓库找到其他扩展。
 
 * `rsparkling`
-    The rsparkling extensions allow you to use H2O and Spark from R. This exten‐
-sion is what we would consider advanced modeling in Spark. While Spark’s built￾in modeling library, Spark MLlib, is quite useful in many cases, H2O’s modeling
-capabilities can compute additional statistical metrics and can provide perfor‐
-mance and scalability improvements over Spark MLlib. We have neither per‐
-formed detailed comparisons nor benchmarks between MLlib and H2O; this is
-something you will need to research on your own to create a complete picture of
-when to use H2O’s capabilities.
+    `rsparkling`扩展允许你使用R中的H2O和Spark。此扩展是我们将在Spark中考虑的高级建模方案。虽然Spark的内置建模库Spark MLlib在许多情况下都非常有用，但H2O的建模功能可以计算额外的统计指标，并且可以比Spark MLlib提供更多性能和可扩展性改进。我们既没有对MLlib和H2O进行详细的比较，也没有进行基准测试；这是你需要自己研究的内容，以便全面了解何时使用H2O的功能。
 * `graphframes`
-    The graphframes extensions adds support to process graphs in Spark. A graph is
-a structure that describes a set of objects in which some pairs of the objects are in
-some sense related. As you learned in Chapter 1, ranking web pages was an early
-motivation to develop precursors to Spark powered by MapReduce; web pages
-happen to form a graph if you consider a link between pages as the relationship
-between each pair of pages. Computing operations likes PageRank over graphs
-can be quite useful in web search and social networks, for example.
+    `graphframes`扩展增加了对Spark中处理图的支持。图是描述一组对象的结构，其中某些对象对在某种意义上是相关的。正如在第1章中所看到的，对网页进行排名是开发由MapReduce驱动的Spark初期版本的早期动机；如果你将页面之间的链接视为每对页面之间的关系，则网页碰巧会形成一个图。例如，图上的PageRank等计算操作在web搜索和社交网络中非常有用。
 * `sparktf`
-    The `sparktf` extension provides support to write TensorFlow records in Spark.
-TensorFlow is one of the leading deep learning frameworks, and it is often used
-with large amounts of numerical data represented as TensorFlow records, a file
-format optimized for TensorFlow. Spark is often used to process unstructured
-and large-scale datasets into smaller numerical datasets that can easily fit into a
-GPU. You can use this extension to save datasets in the TensorFlow record file
-format.
+   `sparktf`扩展提供了在Spark中编写TensorFlow记录的支持。TensorFlow是领先的深度学习框架之一，它经常与表示为TensorFlow记录的大量数值数据一起使用，而TensorFlow记录是一种为TensorFlow优化的文件格式。Spark通常用于将非结构化的大规模数据集处理成较小的数值数据集，以便可以很容易地导入GPU。你可以使用这个扩展保存TensorFlow记录文件格式的数据集。
 * `xgboost`
-The `xgboost` extension brings the well-known XGBoost modeling library to the
-world of large-scale computing. XGBoost is a scalable, portable, and distributed
-library for gradient boosting. It became well known in the machine learning
-competition circles after its use in the winning solution of the Higgs Boson
-Machine Learning Challenge and has remained popular in other Kaggle competi‐
-tions since then.
+    `xgboost`扩展将著名的XGBoost建模库带到了大规模计算领域。XGBoost是一个可扩展的、可移植的、分布式的梯度增强库。它在解决希格斯玻色子机器学习挑战中获胜后，在机器学习竞赛圈内广为人知，此后在其他kaggle竞赛中一直很受欢迎。
 * `variantspark`
-The `variantspark` extension provides an interface to use Variant Spark, a scala‐
-ble toolkit for genome-wide association studies (GWAS). It currently provides
-functionality to build random forest models, estimating variable importance, and
-reading variant call format (VCF) files. While there are other random forest
-implementations in Spark, most of them are not optimized to deal with GWAS
-datasets, which usually come with thousands of samples and millions of
-variables.
+    `variantspark`扩展提供了一个使用Variant Spark这一用于全基因组关联研究（GWAS）的可扩展工具包的接口。它目前提供了构建随机林模型、估计变量重要性和读取变异判读格式（VCF）文件的功能。虽然Spark中还有其他一些随机森林实现，但大多数都没有针对处理GWAS数据集的优化，这些数据集通常包含数千个样本和数百万个变量。
 * `geospark`
-The `geospark` extension enables us to load and query large-scale geographic
-datasets. Usually datasets containing latitude and longitude points or complex
-areas are defined in the well-known text (WKT) format, a text markup language
-for representing vector geometry objects on a map.
-Before you learn how and when to use each extension, we should first briefly explain
-how you can use extensions with R and Spark.
-First, a Spark extension is just an R package that happens to be aware of Spark. As
-with any other R package, you will first need to install the extension. After you’ve
-installed it, it is important to know that you will need to reconnect to Spark before
-the extension can be used. So, in general, here’s the pattern you should follow:
+   `geospark`扩展使我们能够加载和查询大型地理数据集。通常，包含经纬度点或复杂区域的数据集是 well-known text（WKT）格式定义的，WKT是一种文本标记语言，用于表示地图上的矢量几何对象。
+
+
+在学习如何以及何时使用每个扩展之前，我们应该首先简要介绍如何使用R和Spark扩展。
+
+首先，Spark扩展是接受Spark的R包。与其他任何R包一样，你首先需要安装扩展。安装好后，一定要知道在使用扩展之前需要重新连接到Spark。所以，一般来说，你应该遵循以下模式：
+
 ```{r}
 library(sparkextension)
 library(sparklyr)
 sc <- spark_connect(master = "<master>")
 ```
-Notice that `sparklyr` is loaded after the extension to allow the extension to register
-properly. If you had to install and load a new extension, you would first need to dis‐
-connect using `spark_disconnect(sc)`, restart your R session, and repeat the preced‐
-ing steps with the new extension.
-It’s not difficult to install and use Spark extensions from R; however, each extension
-can be a world of its own, so most of the time you will need to spend time under‐
-standing what the extension is, when to use it, and how to use it properly. The first
-extension you will learn about is the rsparkling extension, which enables you to use
-H2O in Spark with R.
-* H2O
+注意，`sparklyr`是在扩展之后加载的，以允许扩展正确注册。如果必须安装并加载新扩展，则首先需要使用`spark_disconnect(sc)`断开连接，重新启动R进程，并对新扩展重复前面的步骤。
+
+安装和使用R中的Spark扩展并不困难；每个扩展都可以独立掌握，所以大部分时间你需要花时间了解扩展是什么、何时使用以及如何正确使用它。你将学习的第一个扩展是`rsparkling`扩展，它让你能够在Spark和R中使用H2O。
+
+## H2O
     H2O, created by H2O.ai, is open source software for large-scale modeling that allows
 you to fit thousands of potential models as part of discovering patterns in data. You
 can consider using H2O to complement or replace Spark’s default modeling algo‐
