@@ -4191,65 +4191,57 @@ spark_config_settings()
 `sparklyr.gateway.address` |驱动机器的地址。
 `sparklyr.gateway.config.retries` |获取配置文件中端口和地址的重试次数。使用函数查询Kubernetes中的端口或地址时很有用。.
 `sparklyr.gateway.interval` |`sparklyr`检查通道连接的总秒数。
-`sparklyr.gateway.port` |The port the `sparklyr` gateway uses in the driver machine.
-`sparklyr.gateway.remote` |Should the `sparklyr` gateway allow remote connections? This is required in YARN cluster, for example.
-`sparklyr.gateway.routing` |Should the `sparklyr` gateway service route to other sessions? Consider disabling in Kubernetes.
-`sparklyr.gateway.service` |Should the `sparklyr` gateway be run as a service without shutting down when the last connection disconnects?
-`sparklyr.gateway.timeout` |Total seconds before giving up connecting to the `sparklyr` gateway after initialization.
-`sparklyr.gateway.wait` |Total seconds to wait before retrying to contact the `sparklyr` gateway.
-`sparklyr.livy.auth` |Authentication method for Livy connections.
-`sparklyr.livy.headers` |Additional HTTP headers for Livy connections.
-`sparklyr.livy.sources` |Should `sparklyr` sources be sourced when connecting? If false, manually register `sparklyr JARs`.
-`sparklyr.log.invoke` |Should every call to `invoke()` be printed in the console? Can be set to `callstack` to log call stack.
-`sparklyr.log.console` |Should driver logs be printed in the console?
-`sparklyr.progress` |Should job progress be reported to RStudio?
-`sparklyr.progress.interval` |Total of seconds to wait before attempting to retrieve job progress in Spark.
-`sparklyr.sanitize.column.names` |Should partially unsupported column names be cleaned up?
-`sparklyr.stream.collect.timeout` |Total seconds before stopping collecting a stream sample in `sdf_collect_stream()`.
-`sparklyr.stream.validate.timeout` |Total seconds before stopping to check if stream has errors while being created.
-`sparklyr.verbose` |Use verbose logging across all `sparklyr` operations?
-`sparklyr.verbose.na` |Use verbose logging when dealing with NAs?
-`sparklyr.verbose.sanitize` |Use verbose logging while sanitizing columns and other objects?
-`sparklyr.web.spark` |The URL to Spark’s web interface.
-`sparklyr.web.yarn` |The URL to YARN’s web interface.
-`sparklyr.worker.gateway.address`|The address of the worker machine, most likely `localhost`.
-`sparklyr.worker.gateway.port` |The port the `sparklyr` gateway uses in the driver machine.
-`sparklyr.yarn.cluster.accepted.timeout` |Total seconds before giving up waiting for cluster resources in YARN cluster mode.
-`sparklyr.yarn.cluster.hostaddress.timeout` |Total seconds before giving up waiting for the cluster to assign a host address in YARN cluster mode.
-`sparklyr.yarn.cluster.lookup.byname` |Should the current username be used to filter YARN cluster jobs while searching for submitted one?
-`sparklyr.yarn.cluster.lookup.prefix` |Application name prefix used to filter YARN cluster jobs while searching for submitted one.
-`sparklyr.yarn.cluster.lookup.username` |The username used to filter YARN cluster jobs while searching for submitted one.
-`sparklyr.yarn.cluster.start.timeout` |Total seconds before giving up waiting for YARN cluster application to get registered.
+`sparklyr.gateway.port` |驱动机器上`sparklyr`通道使用的端口。
+`sparklyr.gateway.remote` |`sparklyr`通道是否允许远程连接？例如，YARN集群中需要这个参数。
+`sparklyr.gateway.routing` |`sparklyr`通道服务是否要发送到其他进程？可以在Kubernetes中关闭。
+`sparklyr.gateway.service` |当最后的连接断开后，`sparklyr`通道是否继续作为服务运行而不中断？
+`sparklyr.gateway.timeout` |初始化后，放弃连接`sparklyr`通道前的总秒数。
+`sparklyr.gateway.wait` |重试连接`sparklyr`通道前的等待时间。
+`sparklyr.livy.auth` |Livy连接的认证方式。
+`sparklyr.livy.headers` |Livy连接的其它HTTP文件头。
+`sparklyr.livy.sources` |连接的时候，`sparklyr`源文件是否需要sourced？如果不需要，则手动注册`sparklyr` JAR。
+`sparklyr.log.invoke` |每一次调用`invoke()`是否要打印到控制台？可以设置为`callstack`来给调用栈记录日志。
+`sparklyr.log.console` |驱动节点的日志是否要打印到控制台？
+`sparklyr.progress` |作业进度是否要返回给RStudio？
+`sparklyr.progress.interval` |尝试获取Spark作业进度前的总等待秒数。
+`sparklyr.sanitize.column.names` |部分不支持的列名是否需要清除？
+`sparklyr.stream.collect.timeout` |停止收集`sdf_collect_stream()`中流式样本的总秒数。
+`sparklyr.stream.validate.timeout` |确认作业流在创建过程中是否出错之前的的总秒数。
+`sparklyr.verbose` |所有的`sparklyr`操作是否都使用详细日志记录？
+`sparklyr.verbose.na` |是否在处理NA的时候使用详细日志记录？
+`sparklyr.verbose.sanitize` |是否在清洗列和其他对象的时候使用详细日志记录？
+`sparklyr.web.spark` |Spark网络接口的URL。
+`sparklyr.web.yarn` |YARN网络接口的URL。
+`sparklyr.worker.gateway.address`|工作机器的地址，绝大多数情况下是`localhost`。
+`sparklyr.worker.gateway.port` |驱动机器上`sparklyr`通道使用的端口。
+`sparklyr.yarn.cluster.accepted.timeout` |放弃等待YARN机器模式下集群资源的总秒数。
+`sparklyr.yarn.cluster.hostaddress.timeout` |放弃等待YARN机器模式下集群分配主机地址的总秒数。
+`sparklyr.yarn.cluster.lookup.byname` |在搜索提交的任务时，当前用户名是否要用来过滤YARN集群作业？
+`sparklyr.yarn.cluster.lookup.prefix` |在搜索提交的任务时，用于过滤YARN集群作业的应用名称的前缀。
+`sparklyr.yarn.cluster.lookup.username` |在搜索提交的任务时，用于过滤YARN集群作业的用户名。
+`sparklyr.yarn.cluster.start.timeout` |放弃等待YARN集群y应用完成注册之前的总秒数。
 
 ## 分区
 
-As mentioned in Chapter 1, MapReduce and Spark were designed with the purpose
-of performing computations against data stored across many machines. The subset of
-the data available for computation over each compute instance is known as a
-partition.
-By default, Spark computes over each existing implicit partition since it’s more effec‐
-tive to run computations where the data is already located. However, there are cases
-for which you will want to set an explicit partition to help Spark make more efficient
-use of your cluster resources.
+如第一章介绍的，MapReduce和Spark的设计目的是对存储在许多机器上的数据进行计算。每个计算实例上用于计算的数据子集称为分区。
+
+默认情况下，Spark对每个现有隐式分区进行计算，因为对位置已定的数据进行计算更高效。但是，在某些情况下，你需要设置一个显式分区，以帮助Spark更有效地利用集群资源。
+
 
 ### 隐式分区
 
-As Chapter 8 explained, Spark can read data stored in many formats and different
-storage systems; however, since shuffling data is an expensive operation, Spark exe‐
-cutes tasks reusing the partitions in the storage system. Therefore, these partitions are
-implicit to Spark since they are already well defined and expensive to rearrange.
-There is always an implicit partition for every computation in Spark defined by the
-distributed storage system, even for operations which you wouldn’t expect that create
-partitions, like `copy_to()`.
-You can explore the number of partitions a computation will require by using
-`sdf_num_partitions()`:
+正如第8章介绍的，Spark可以读取以多种格式和不同存储系统存储的数据；但是，由于数据洗牌是一项成本较高的操作，Spark会执行重用存储系统分区的任务。因此，这些分区对Spark是隐式的，因为它们已经很好地完成了定义，并且重新组织的话代价也很高。
+
+Spark中由分布式存储系统定义的每一个计算都有一个隐式分区，甚至对于你可能不曾料到的创建分区，例如`copy_to()`的操作也是如此。
+
+您可以使用`sdf_num_partitions()`，来查看计算所需的分区个数：
+
 ```{r}
 sdf_len(sc, 10) %>% sdf_num_partitions()
 [1] 2
 ```
-While in most cases the default partitions work just fine, there are cases for which
-you will need to be explicit about the partitions you choose.
-Partitioning | 167
+
+虽然在大多数情况下，默认分区的效果已经很好，但在某些情况下，你还需要对所选分区进行显式的说明。
 
 ### 显式分区
 
