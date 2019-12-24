@@ -4409,28 +4409,13 @@ sc <- spark_connect(master = "local")
 > I try to know as many people as I can. You never know which one you’ll need.
 > —Tyrion Lannister
 
-In Chapter 9, you learned how Spark processes data at large scale by allowing users to
-configure the cluster resources, partition data implicitly or explicitly, execute com‐
-mands across distributed compute nodes, shuffle data across them when needed,
-cache data to improve performance, and serialize data efficiently over the network.
-You also learned how to configure the different Spark settings used while connecting,
-submitting a job, and running an application, as well as particular settings applicable
-only to R and R extensions that we present in this chapter.
-Chapters 3, 4, and 8 provided a foundation to read and understand most datasets.
-However, the functionality that was presented was scoped to Spark’s built-in features
-and tabular datasets. This chapter goes beyond tabular data and explores how to ana‐
-lyze and model networks of interconnected objects through graph processing, analyze
-genomics datasets, prepare data for deep learning, analyze geographic datasets, and
-use advanced modeling libraries like H2O and XGBoost over large-scale datasets.
-The combination of all the content presented in the previous chapters should take
-care of most of your large-scale computing needs. However, for those few use cases
-for which functionality is still lacking, the following chapters provide tools to extend
-Spark yourself—through custom R transformation, custom Scala code, or a recent
-new execution mode in Spark that enables analyzing real-time datasets. However,
-before reinventing the wheel, let’s examine some of the extensions available in Spark.
-175
+在第9章中，你学到了Spark如何通过允许用户配置集群资源、隐式或显式地分区数据、跨分布式计算节点执行命令、在需要时跨节点重洗数据、缓存数据以提高性能，以及通过网络高效地序列化数据来处理大规模数据。你还学习了如何配置连接、提交作业和运行应用程序时使用的不同Spark设置，以及仅适用于本章介绍的R和R扩展的特定设置。
 
-## Overview
+第3，4章和第8章为阅读和理解大多数数据集提供了基础。然而，提供的功能限定在Spark的内置特性和表格数据集。本章突破表格数据，探讨如何通过图处理来分析和建模互联对象的网络，分析基因组学数据集，为深度学习准备数据，分析地理数据集，以及在大规模数据集上使用高级建模库（如H2O和XGBoost）。
+
+前几章中介绍的所有内容应该能够满足你的大部分大规模计算需求。但是，对于那些仍然缺乏功能支持的少数用例，下面的章节提供了一些工具来扩展Spark，例如可以通过自定义R转换、自定义Scala代码或Spark中最新的执行模式，从而能够分析实时数据集。然而，在重新发明轮子之前，让我们来看看Spark中的一些扩展。
+
+## 概述
 
 In Chapter 1, we presented the R community as a vibrant group of individuals collab‐
 orating with each other in many ways—for example, moving open science forward by
