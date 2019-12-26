@@ -4451,45 +4451,30 @@ sc <- spark_connect(master = "<master>")
 安装和使用R中的Spark扩展并不困难；每个扩展都可以独立掌握，所以大部分时间你需要花时间了解扩展是什么、何时使用以及如何正确使用它。你将学习的第一个扩展是`rsparkling`扩展，它让你能够在Spark和R中使用H2O。
 
 ## H2O
-    H2O, created by H2O.ai, is open source software for large-scale modeling that allows
-you to fit thousands of potential models as part of discovering patterns in data. You
-can consider using H2O to complement or replace Spark’s default modeling algo‐
-rithms. It is common to use Spark’s default modeling algorithms and transition to
-H2O when Spark’s algorithms fall short or when advanced functionality (like addi‐
-tional modeling metrics or automatic model selection) is desired.
-We can’t do justice to H2O’s great modeling capabilities in a single paragraph;
-explaining H2O properly would require a book in and of itself. Instead, we would like
-to recommend reading Darren Cook’s Practical Machine Learning with H2O
-(O’Reilly) to explore in-depth H2O’s modeling algorithms and features. In the mean‐
-time, you can use this section as a brief guide to get started using H2O in Spark with
-R.
-To use H2O with Spark, it is important to know that there are four components
-involved: H2O, Sparkling Water, `rsparkling`, and Spark. Sparkling Water allows
-users to combine the fast, scalable machine learning algorithms of H2O with the
-capabilities of Spark. You can think of Sparkling Water as a component bridging
-Spark with H2O and rsparkling as the R frontend for Sparkling Water, as depicted
-in图10-1.
-![图10-1. H2O components with Spark and R](figures/10_1.png)
+    由H2O.ai创建的H2O是一个用于大规模建模的开源软件，它允许你在发现数据模式时拟合数千个潜在的模型。你可以考虑使用H2O来补充或替换Spark的默认建模算法。通常使用Spark的默认建模算法，并在Spark的算法不足或需要高级功能（如其他建模指标或自动模型选择）时过渡到H2O。
+  
+我们无法在一个段落中就公正地介绍H2O强大的建模能力；合理地解释H2O需要一本书。我们建议阅读Darren Cook的《使用H2O的实用机器学习》（O'Reilly），深入探讨H2O的建模算法和特性。同时，你可以使用这一节作为一个简单的指南，开始在R中在Spark中使用R和H2O。
 
-First, install rsparkling and h2o as specified on the rsparkling documentation site.
+要使用Spark和H2O，需要知道有四个组件：H2O，Sparkling Water，`rsparkling`和Spark。Sparking Water允许用户将快速、可扩展的H2O机器学习算法与Spark的功能结合起来。你可以将起Sparkling Water视为连接Spark与H2O的部分，`rsparkling`视为Sparkling Water的R前端，如图10-1所示。
+
+![图10-1. 使用Spark和R的H2O组件](figures/10_1.png)
+
+首先，按照`rsparkling`文档网站的介绍，安装`rsparkling`和`h2o`。
 ```{r}
 install.packages("h2o", type = "source",
 repos = "http://h2o-release.s3.amazonaws.com/h2o/rel-yates/5/R")
 install.packages("rsparkling", type = "source",
 repos = "http://h2o-release.s3.amazonaws.com/sparkling-water/rel-2.3/31/R")
 ```
-It is important to note that you need to use compatible versions of Spark, Sparkling
-Water, and H2O as specified in their documentation; we present instructions for
-Spark 2.3, but using different Spark versions will require you to install different ver‐
-sions. So let’s start by checking the version of H2O by running the following:
+需要注意的是，你需要使用文档中指定的兼容版本的Spark、Sparking Water和H2O；我们提供了Spark 2.3的说明，但使用不同的Spark版本需要你安装不同的H2O版本。因此，让我们首先通过运行以下命令来检查H2O的版本：
+
 ```{r}
 packageVersion("h2o")
 ## [1] '3.24.0.5'
 packageVersion("rsparkling")
 ## [1] '2.3.31'
 ```
-We then can connect with the supported Spark versions as follows (you will have to
-adjust the master parameter for your particular cluster):
+然后，我们可以按照如下代码，连接支持的Spark版本（你需要调整`master`参数，以便支持你的特定的集群）：
 ```{r}
 library(rsparkling)
 library(sparklyr)
@@ -4498,11 +4483,9 @@ sc <- spark_connect(master = "local", version = "2.3",
 config = list(sparklyr.connect.timeout = 3 * 60))
 cars <- copy_to(sc, mtcars)
 ```
-H2O provides a web interface that can help you monitor training and access much of
-H2O’s functionality. You can access the web interface (called H2O Flow) through
-`h2o_flow(sc)`, as shown in图10-2.
-When using H2O, you will need to convert your Spark DataFrame into an H2O Data‐
-Frame through `as_h2o_frame`:
+H2O提供了一个web界面，可以帮助你监控训练过程并访问H2O的大部分功能。你可以通过`h2o_flow(sc)`访问web界面（称为H2O流），如图10-2所示。
+
+使用H2O时，您需要使用`as_h2o_frame`将Spark数据框转换为H2O数据数据框：
 ```{r}
 cars_h2o <- as_h2o_frame(sc, cars)
 cars_h2o
@@ -4515,18 +4498,16 @@ cars_h2o
 6 18.1 6 225 105 2.76 3.460 20.22 1 0 3 1
 [32 rows x 11 columns]
 ```
-![图10-2. The H2O Flow interface using Spark with R](figures/10_2.png)
-Then, you can use many of the modeling functions available in the `h2o` package with
-ease. For instance, we can fit a generalized linear model with ease:
+![图10-2. 使用Spark和R的H2O流界面](figures/10_2.png)
+接着，你可以轻松地使用`h2o`中的许多建模函数。例如，我们可以毫不费力的拟合一个广义线性模型：
 ```{r}
 model <- h2o.glm(x = c("wt", "cyl"),
 y = "mpg",
 training_frame = cars_h2o,
 lambda_search = TRUE)
 ```
-H2O provides additional metrics not necessarily available in Spark’s modeling algo‐
-rithms. The model that we just fit, `Residual Deviance`, is provided in the model,
-while this would not be a standard metric when using Spark MLlib.
+H2O提供了一些对于Spark建模算法并不适用的额外指标。我们刚刚拟合模型提供了`Residual Deviance`，而使用Spark MLlib时，这不是一个标准度量。
+
 ```{r}
 model
 ...
@@ -4542,8 +4523,7 @@ Residual Deviance :192.5659
 Residual D.o.F. :29
 AIC :156.2425
 ```
-Then, you can run prediction over the generalized linear model (GLM). A similar
-approach would work for many other models available in H2O:
+然后，你可以在广义线性模型（GLM）上做预测。类似的方法在H2O的许多其他模型上都适用：
 ```{r}
 predictions <- as_h2o_frame(sc, copy_to(sc, data.frame(wt = 2, cyl = 6)))
 h2o.predict(model, predictions)
@@ -4551,18 +4531,17 @@ h2o.predict(model, predictions)
 1 24.05984
 [1 row x 1 column]
 ```
-You can also use H2O to perform automatic training and tuning of many models,
-meaning that H2O can choose which model to use for you using AutoML:
+你也可以使用H2O进行模型的自动训练和调试。这意味着H2O可以通过AutoML选择你要用的模型：
 ```{r}
 automl <- h2o.automl(x = c("wt", "cyl"), y = "mpg",
 training_frame = cars_h2o,
 max_models = 20,
 seed = 1)
 ```
-For this particular dataset, H2O determines that a deep learning model is a better fit
-than a GLM.1
- Specifically, H2O’s AutoML explored using XGBoost, deep learning,
-GLM, and a Stacked Ensemble model:
+对于这个特定的数据集，H2O确定深度学习模型比GLM更适合[^22]。具体来说，H2O的AutoML使用XGBoost、深度学习、GLM和堆叠集成模型等模型探索数据：
+
+[^22]: AutoML使用交叉验证，而GLM不使用。
+
 ```{r}
 automl@leaderboard
 model_id mean_residual_dev… rmse mse mae rmsle
@@ -4573,9 +4552,8 @@ model_id mean_residual_dev… rmse mse mae rmsle
 5 StackedEnsemble… 7.304556 2.702694 7.304556 1.938982 0.1304792
 6 XGBoost_3_… 7.313948 2.704431 7.313948 2.088791 0.1348819
 ```
-Rather than using the leaderboard, you can focus on the best model through
-`automl@leader`; for example, you can glance at the particular parameters from this
-deep learning model as follows:
+与使用排行榜不同，你可以通过`automl@leader`专注于最佳模型；例如，你可以按如下方式查看深度学习模型中的特定参数：
+
 ```{r}
 tibble::tibble(parameter = names(automl@leader@parameters),
 value = as.character(automl@leader@parameters))
@@ -4603,21 +4581,19 @@ value = as.character(automl@leader@parameters))
 19 x c("cyl", "wt")
 20 y mpg
 ```
-You can then predict using the leader as follows:
+你可以使用最佳模型进行预测，代码如下：
 ```{r}
 h2o.predict(automl@leader, predictions)
  predict
 1 30.74639
 [1 row x 1 column]
 ```
-Many additional examples are available, and you can also request help from the offi‐
-cial GitHub repository for the `rsparkling` package.
-The next extension, `graphframes`, allows you to process large-scale relational data‐
-sets. Before you start using it, make sure to disconnect with `spark_disconnect(sc)`
-and restart your R session since using a different extension requires you to reconnect
-to Spark and reload `sparklyr`。
 
-## Graphs
+还有许多其他示例，你也可以从官方GitHub仓库请求`rsparkling`包的帮助。
+
+下一个扩展`graphframes`允许你处理大型关系数据集。在开始使用之前，请确保使用`spark_disconnect(sc)`断开连接并重新启动R进程，因为使用不同的扩展需要重新连接Spark并重新载入`sparklyr`。
+
+## 图模型
 
 The first paper in the history of graph theory was written by Leonhard Euler on the
 Seven Bridges of Königsberg in 1736. The problem was to devise a walk through the
