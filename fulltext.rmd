@@ -15,122 +15,55 @@ opts_chunk$set(tidy=T, message=FALSE, fig.align='center', eval=F)
 ```
 
 
-# Foreword
-
-Apache Spark is a distributed computing platform built on extensibility: Spark’s APIs
-make it easy to combine input from many data sources and process it using diverse
-programming languages and algorithms to build a data application. R is one of the
-most powerful languages for data science and statistics, so it makes a lot of sense to
-connect R to Spark. Fortunately, R’s rich language features enable simple APIs for
-calling Spark from R that look similar to running R on local data sources. With a bit
-of background about both systems, you will be able to invoke massive computations
-in Spark or run your R code in parallel from the comfort of your favorite R program‐
-ming environment.
-This book explores using Spark from R in detail, focusing on the `sparklyr` package
-that enables support for `dplyr` and other packages known to the R community. It
-covers all of the main use cases in detail, ranging from querying data using the Spark
-engine to exploratory data analysis, machine learning, parallel execution of R code,
-and streaming. It also has a self-contained introduction to running Spark and moni‐
-toring job execution. The authors are exactly the right people to write about this
-topic—Javier, Kevin, and Edgar have been involved in `sparklyr` development since
-the project started. I was excited to see how well they’ve assembled this clear and
-focused guide about using Spark with R.
-I hope that you enjoy this book and use it to scale up your R workloads and connect
-them to the capabilities of the broader Spark ecosystem. And because all of the infra‐
-structure here is open source, don’t hesitate to give the developers feedback about
-making these tools better.
-— Matei Zaharia
-Assistant Professor at Stanford University,
-Chief Technologist at Databricks,
-and original creator of Apache Spark
-
 # 序
 
-In a world where information is growing exponentially, leading tools like Apache
-Spark provide support to solve many of the relevant problems we face today. From
-companies looking for ways to improve based on data-driven decisions, to research
-organizations solving problems in health care, finance, education, and energy, Spark
-enables analyzing much more information faster and more reliably than ever before.
-Various books have been written for learning Apache Spark; for instance, Spark: The
-Definitive Guide is a comprehensive resource, and Learning Spark is an introductory
-book meant to help users get up and running (both are from O’Reilly). However, as of
-this writing, there is neither a book to learn Apache Spark using the R computing lan‐
-guage nor a book specifically designed for the R user or the aspiring R user.
-There are some resources online to learn Apache Spark with R, most notably the
-spark.rstudio.com site and the Spark documentation site at spark.apache.org. Both
-sites are great online resources; however, the content is not intended to be read from
-start to finish and assumes you, the reader, have some knowledge of Apache Spark, R,
-and cluster computing.
-The goal of this book is to help anyone get started with Apache Spark using R. Addi‐
-tionally, because the R programming language was created to simplify data analysis, it
-is also our belief that this book provides the easiest path for you to learn the tools
-used to solve data analysis problems with Spark. The first chapters provide an intro‐
-duction to help anyone get up to speed with these concepts and present the tools
-required to work on these problems on your own computer. We then quickly ramp
-up to relevant data science topics, cluster computing, and advanced topics that should
-interest even the most experienced users.
-Therefore, this book is intended to be a useful resource for a wide range of users,
-from beginners curious to learn Apache Spark, to experienced readers seeking to
-understand why and how to use Apache Spark from R.
-This book has the following general outline:
-xiiiIntroduction
-In the first two chapters, Chapter 1, Introduction, and Chapter 2, Getting Started,
-you learn about Apache Spark, R and the tools to perform data analysis with
-Spark and R.
-Analysis
-In Chapter 3, Analysis, you learn how to analyze, explore, transform, and visual‐
-ize data in Apache Spark with R.
-Modeling
-In the Chapter 4, Modeling and Chapter 5, Pipelines, you learn how to create stat‐
-istical models with the purpose of extracting information, predicticting out‐
-comes, and automating this process in production-ready workflows.
-Scaling
-Up to this point, the book has focused on performing operations on your per‐
-sonal computer and with limited data formats. Chapter 6, Clusters, Chapter 7,
-Connections, Chapter 8, Data, and Chapter 9, Tuning, introduce distributed com‐
-puting techniques required to perform analysis and modeling across many
-machines and data formats to tackle the large-scale data and computation prob‐
-lems for which Apache Spark was designed.
-Extensions
-Chapter 10, Extensions, describes optional components and extended functional‐
-ity applicable to specific, relevant use cases. You learn about alternative modeling
-frameworks, graph processing, preprocessing data for deep learning, geospatial
-analysis, and genomics at scale.
-Advanced
-The book closes with a set of advanced chapters, Chapter 11, Distributed R,
-Chapter 12, Streaming, and Chapter 13, Contributing; these will be of greatest
-interest to advanced users. However, by the time you reach this section, the con‐
-tent won’t seem as intimidating; instead, these chapters will be equally relevant,
-useful, and interesting as the previous ones.
-The first group of chapters, 1–5, provides a gentle introduction to performing data
-science and machine learning at scale. If you are planning to read this book while also
-following along with code examples, these are great chapters to consider executing
-the code line by line. Because these chapters teach all of the concepts using your per‐
-sonal computer, you won’t be taking advantage of multiple computers, which Spark
-was designed to use. But worry not: the next set of chapters will teach this in detail!
-The second group of chapters, 6–9, introduces fundamental concepts in the exciting
-world of cluster computing using Spark. To be honest, they also introduce some of
-the not-so-fun parts of cluster computing, but believe us, it’s worth learning the con‐
-cepts we present. Besides, the overview sections in each chapter are especially
-xiv | Prefaceinteresting, informative, and easy to read, and help you develop intuitions as to how
-cluster computing truly works. For these chapters, we actually don’t recommend exe‐
-cuting the code line by line—especially not if you are trying to learn Spark from start
-to finish. You can always come back and execute code after you have a proper Spark
-cluster. If you already have a cluster at work or you are really motivated to get one,
-however, you might want to use Chapter 6 to pick one and then Chapter 7 to connect
-to it.
-The third group of chapters, 10–13, presents tools that should be quite interesting to
-most readers and will make it easier to follow along. Many advanced topics are pre‐
-sented, and it is natural to be more interested in some topics than others; for instance,
-you might be interested in analyzing geographic datasets, or perhaps you’re more
-interested in processing real-time datasets, or maybe you’d like to do both! Based on
-your personal interests or problems at hand, we encourage you to execute the code
-examples that are most relevant to you. All of the code in these chapters is written to
-be executed on your personal computer, but you are also encouraged to use proper
-Spark clusters given that you’ll have the tools required to troubleshoot issues and
-tune large-scale computations.
+Apache Spark是一个基于可扩展性构建的分布式计算平台：Spark的api使来自多个数据源的输入变得很容易，并使用多种编程语言和算法来处理它以构建数据应用程序。R是数据科学和统计学中最强大的语言之一，因此将R与Spark连接起来非常有意义。幸运的是，R丰富的语言特性使得从R调用Spark的api看起来于在本地数据源上运行R类似。有了这两个系统的背景知识，你将能够在Spark中调用大量计算，或者从你最喜欢的R编程环境中并行运行R代码。
+本书详细探讨了在R中使用Spark的方法，重点介绍了`sparklyr`包，它支持`dplyr`和R社区已知的其他包。它详细涵盖了所有的主要用例，从使用Spark引擎查询数据到探索性数据分析、机器学习、R代码的并行执行和流式处理。它还对运行Spark和监视作业执行进行了自洽的介绍。作者正是写这个话题的合适人员。Javier，Kevin和Edgar一直参与`sparklyr`开发项目。我很兴奋地看到他们把这本关于使用Spark和R的清晰而集中的指南组装得多么好。
 
-## Formatting
+我希望你喜欢这本书，并使用它来提你您的R工作量，并将它们与更广泛的Spark生态系统的功能连接起来。而且因为这里的所有基础模块都是开源的，所以可以毫不犹豫地向开发人员反馈如何改进这些工具。
+
+— Matei Zaharia
+斯坦福大学助理教授，Databricks首先技术专家，Apache Spark发明者
+
+-------------
+
+# 前言
+
+在信息呈指数级增长的世界中，Apache Spark等先进工具为解决我们今天面临的许多相关问题提供了支持。从基于数据驱动决策寻找改进方法的公司，到解决医疗、金融、教育和能源问题的研究机构，Spark比以往任何时候都能更快、更可靠地分析更多信息。
+
+人们编写了各种各样的书籍来学习Apache Spark。例如，《Spark: The
+Definitive Guide》是一个综合性的资源，《Learning Spark》是一本介绍性的书籍，旨在帮助用户熟悉和运行Spark（两者都来自O'Reilly）。然而，在撰写本文时，既没有使用R计算语言学习Apache Spark的书籍，也没有专门为R用户或潜在的R用户设计的书籍。
+
+
+有一些在线资源可以学习R语言中的Apache Spark。最著名的是Spark.rstudio.com网站和Spark.Apache.org上的Spark文档网站。这两个网站都是很好的在线资源；但是，上边的内容不打算让你从头到尾的阅读。它们都假设读者对Apache Spark、R和集群计算有一定的了解。
+
+这本书的目的是帮助所有人通过R使用Apache Spark。另外，由于R编程语言是为了简化数据分析而创建的，我们也相信这本书可以为你提供学习用Spark解决数据分析问题的工具的最简单途径。第一章提供了一个介绍，帮助快速理解这些概念，并介绍了在自己的计算机上处理这些问题所需的工具。然后，我们会快速进入相关的数据科学主题、集群计算和高级主题。即使是最有经验的用户也会感兴趣。
+
+因此，本书旨在成为一个对广大用户有用的资源，从渴望学习Apache Spark初学者，到寻求理解为什么和如何通过R使用apachespark的有经验的读者。
+
+本书结构如下：
+
+* 介绍
+在前两章，第一章简介和第二章入门中，你将了解Apache Spark，R以及使用Spark和R执行数据分析的工具。
+* 分析
+在第3章分析中，你将学习如何使用R在Apache Spark中分析、探索、转换和可视化数据。
+* 建模
+在第4章建模和第5章管道中，你将学习如何创建统计模型，以便在生产环境的工作流中提取信息、预测结果和自动化过程。
+* 规模化
+到目前为止，这本书的重点是在你的个人电脑上执行操作和有限的数据格式。第6章集群，第7章连接，第8章数据，以及第9章调试，介绍了跨多台机器和数据格式执行分析和建模所需的分布式计算技术，以解决Apache Spark关注的大规模数据和计算问题。
+* 扩展
+第10章扩展，描述了适用于特定相关用例的可选模块和扩展功能。拟将学习其他建模框架、图处理、用于深入学习的预处理数据、地理空间分析和大规模基因组学。
+* 高级技术
+本书结尾是介绍一系列高级技术的章节，包括第11章分布式R，第12章流式计算，第13章社区贡献；这些内容是高级用户最感兴趣的。但是，当你学到本节时，其实并没有那么吓人；相反，这些章节将与前面的章节一样相关、有用和有趣。
+
+
+第一组章节，1-5，简单地介绍了如何大规模执行数据科学和机器学习。如果你打算阅读这本书，同时也跟随代码示例，这些是考虑逐行执行代码的好章节。因为这些章节教你个人电脑涉及的所有概念。你不会利用多台电脑，而Spark却是为使用这些电脑而设计的。但别担心：下一章将详细介绍这一点！
+
+第二组章节，6-9，介绍了使用Spark进行集群计算的令人激动的世界中的基本概念。事实上，他们还介绍了集群计算中一些不那么有趣的部分。但是相信我们，这些概念还是值得学习的。此外，每章中的概述部分都特别有趣、信息丰富、易于阅读，并有助于你直观地了解集群计算是如何工作的。对于这些章节，我们实际上并不建议逐行执行代码，尤其是在尝试从头到尾学习Spark的情况下。在拥有一个合适的Spark集群之后，你总是可以回过头来执行代码。但是，如果你已经有一个可以工作的集群，或者你真的很想得到一个集群，那么你可能需要使用第6章来选择一个集群，然后使用第7章来连接它。
+
+第三组章节，10-13，展示了对大多数读者来说应该很有趣的工具，并且会使后续的操作更容易。这里有很多高级话题，一些主题自然比其他主题更感有意思；例如，你可能对分析地理数据集感兴趣，或者你对处理实时数据集更感兴趣，或者你希望两者兼得！基于个人兴趣或手头的问题，我们鼓励你执行与最相关的代码示例。这些章节中的所有代码都是为了在个人计算机上执行而编写的，但我们也鼓励你使用合适的Spark集群，因为你会拥有解决问题和优化大规模计算所需的工具。
+
+## 格式化
 
 Tables generated from code are formatted as follows:
 
@@ -153,7 +86,7 @@ only provide code to render a basic plot that won’t match the formatting we ap
 If you are interested in learning more about visualization in R, consider specialized
 books like R Graphics Cookbook (O’Reilly).
 
-## Acknowledgments
+## 致谢
 
 We thank the package authors that enabled Spark with R: Javier Luraschi, Kevin Kuo,
 Kevin Ushey, and JJ Allaire (sparklyr); Romain François and Hadley Wickham
@@ -200,7 +133,7 @@ mined by context.
 This element signifies a tip or suggestion.
 This element signifies a general note.
 
-## Using Code Examples
+## 使用代码示例
 
 Supplemental material (code examples, exercises, etc.) is available for download at
 https://github.com/r-spark/the-r-in-spark.
@@ -229,7 +162,7 @@ online learning platform gives you on-demand access to live training courses, in
 and video from O’Reilly and 200+ other publishers. For more information, please
 visit http://oreilly.com.
 
-## How to Contact Us
+## 如何联系我们
 
 Please address comments and questions concerning this book to the publisher:
 O’Reilly Media, Inc.
@@ -4827,7 +4760,7 @@ $ probability_Yes <dbl> 0.24606191, 0.97521925, 0.08485363, 0.85643125, 0.927375
 
 感知器是Frank Rosenblatt提出的一种数学模型[^23]，他把感知器发展成为一种假想的神经系统的理论。感知器将刺激映射到数值输入，数值输入加权到阈值函数中，阈值函数仅在存在足够的刺激时激活，数学表示如下：
 
-[^23]: Rosenblatt F (1958). “The perceptron: a probabilistic model for information storage and organization in the brain.” Psychological review.
+[^23]:Rosenblatt F (1958). “The perceptron: a probabilistic model for information storage and organization in the brain.” Psychological review.
 
 $$
 f(x) =
@@ -4839,7 +4772,7 @@ $$
 
 Minsky和Papert发现，一个感知器只能对线性可分的数据集进行分类；然而，他们在其著作《Perceptrons》中也揭示了分层感知器将带来额外的分类能力[^24]。图10-6给出了多层感知器最初的样子。
 
-[^24]： Minsky M, Papert SA (2017). Perceptrons: An introduction to computational geometry. MIT press.
+[^24]:Minsky M, Papert SA (2017). Perceptrons: An introduction to computational geometry. MIT press.
 
 ![图10-6. 《Perceptrons》中描述的多层感知机](figures/10_6.png)
 
@@ -4852,7 +4785,7 @@ install.packages("tfdatasets")
 
 使用Spark，我们可以创建一个多层感知器分类器，该分类器使用`ml_multilayer_perceptron_classifier()`和梯度下降来对大型数据集进行分类和预测。Geoff Hinton将梯度下降引入分层感知器[^25]。
 
-[^25]：Ackley DH, Hinton GE, Sejnowski TJ (1985). “A learning algorithm for Boltzmann machines.” Cognitive science.
+[^25]:Ackley DH, Hinton GE, Sejnowski TJ (1985). “A learning algorithm for Boltzmann machines.” Cognitive science.
 
 ```{r}
 library(sparktf)
@@ -4894,7 +4827,7 @@ spark_write_tfrecord(path = "tfrecord")
 ```
 使用Keras或TensorFlow训练数据集后，可以使用`tfdatasets`包加载它。你还需要使用`install_tensorflow()` 安装TensorFlow运行时，并自行安装Python。要了解更多关于使用Keras训练深度学习模型的信息，建议阅读使用《Deep Learning with R》[^26]。
 
-[^26]： Chollet F, Allaire J (2018). Deep Learning with R. Manning Publications.
+[^26]:Chollet F, Allaire J (2018). Deep Learning with R. Manning Publications.
 
 
 ```{r}
@@ -5072,41 +5005,20 @@ XGBoost和深度学习部分提供了使用梯度下降的备选建模技术：�
 > Not like this. Not like this. Not like this.
 > —Cersei Lannister
 
-In previous chapters, you learned how to perform data analysis and modeling in local
-Spark instances and proper Spark clusters. In Chapter 10 specifically, we examined
-how to make use of the additional functionality provided by the Spark and R com‐
-munities at large. In most cases, the combination of Spark functionality and exten‐
-sions is more than enough to perform almost any computation. However, for those
-cases in which functionality is lacking in Spark and their extensions, you could con‐
-sider distributing R computations to worker nodes yourself.
-You can run arbitrary R code in each worker node to run any computation—you can
-run simulations, crawl content from the web, transform data, and so on. In addition,
-you can also make use of any package available in CRAN and private packages avail‐
-able in your organization, which reduces the amount of code that you need to write
-to help you remain productive.
-If you are already familiar with R, you might be tempted to use this approach for all
-Spark operations; however, this is not the recommended use of `spark_apply()`. Pre‐
-vious chapters provided more efficient techniques and tools to solve well-known
-problems; in contrast, `spark_apply()` introduces additional cognitive overhead,
-additional troubleshooting steps, performance trade-offs, and, in general, additional
-complexity you should avoid. Not to say that `spark_apply()` should never be used;
-rather, `spark_apply()` is reserved to support use cases for which previous tools and
-techniques fell short.
+在前面的章节中，你学习了如何在本地Spark实例和合适的Spark集群中执行数据分析和建模。在第10章中，我们专门研究了如何利用Spark和R社区提供的额外功能。在大多数情况下，Spark功能和扩展的结合足以执行几乎所有的计算。但是，对于Spark及其扩展缺少功能的情况，可以考虑自己将R计算分发给工作节点。
 
-## Overview
+你可以在每个工作节点中运行任意R代码来运行任何计算，可以运行模拟、从web抓取内容、转换数据等。此外，你还可以使用CRAN中可用的任何包和你所在组织中可用的私有包，这将减少编写的代码量，以帮助维持生产效率。
 
-Chapter 1 introduced MapReduce as a technique capable of processing large-scale
-datasets. It also described how Apache Spark provided a superset of operations to
-perform MapReduce computations easily and more efficiently. Chapter 9 presented
-insights into how Spark works by applying custom transformations over each parti‐
-tion of the distributed datasets. For instance, if we multiplied each element of a dis‐
-tributed numeric dataset by 10, Spark would apply a mapping operation over each
-partition through multiple workers. A conceptual view of this process is illustrated in
-Figure 11-1.
-![图11-1. Map operation when multiplying by 10](figures/11_1.png)
-This chapter presents how to define a custom `f(x)` mapping operation using
-`spark_apply()`; for the previous example, spark_apply() provides support to define
-`10 * x`, as follows:
+如果你已经熟悉R，那么可能会尝试将此方法用于所有Spark操作；但是，这不在是建议使用`spark_apply()`。前几章提供了更有效的技术和工具来解决众所周知的问题；相反，`spark_apply()`引入了额外的认知开销、额外的故障排除步骤、性能权衡，并且通常应该避免更多的复杂性。并不是说不应该使用`spark_apply()`，而是保留`spark_apply()`来对付以前的工具和技术所不能满足的用例。
+
+
+## 概述
+
+第1章介绍了MapReduce可以作为一种能够处理大规模数据集的技术。它还描述了Apache Spark如何提供一个操作超集，以便更轻松、更高效地执行MapReduce计算。第9章通过对分布式数据集的每个分区应用自定义转换，深入了解了Spark是如何工作的。例如，如果我们将一个分布式数值数据集的每个元素乘以10，Spark将通过多个工作节点在每个分区上应用一个映射操作。这个过程的概念图如图11-1所示。
+
+![图11-1. 乘以10的映射操作](figures/11_1.png)
+
+本章介绍如何使用`spark_apply()`定义一个自定义的`f(x)`映射操作；对于之前的例子，`spark_apply()`支持定义`10 * x`，如下所示：
 ```{r}
 sdf_len(sc, 3) %>% spark_apply(~ 10 * .x)
 # Source: spark<?> [?? x 1]
@@ -5116,22 +5028,16 @@ sdf_len(sc, 3) %>% spark_apply(~ 10 * .x)
 2 20
 3 30
 ```
-Notice that `~ 10 * .x` is plain R code executed across all worker nodes. The `~` opera‐
-tor is defined in the `rlang` package and provides a compact definition of a function
-equivalent to `function(.x) 10 * .x`; this compact form is also known as an anony‐
-mous function, or lambda expression.
-The `f(x)` function must take an R DataFrame (or something that can be automati‐
-cally transformed to one) as input and must also produce an R DataFrame as output,
-as shown in图11-2.
+注意`~ 10 * .x`是跨所有工作节点执行的普通R代码。`~`运算符在`rlang`包中定义，并提供与函数`function(.x) 10 * .x`等效的函数的简洁定义；这种简洁形式也称为匿名函数或lambda表达式。
 
-![图11-2. Expected function signature in `spark_apply()` mappings](figures/11_2.png)
-We can refer back to the original MapReduce example from Chapter 1, where the
-map operation was defined to split sentences into words and the total unique words
-were counted as the reduce operation.
-In R, we could make use of the `unnest_tokens()` function from the `tidytext` R
-package, which you would need to install from CRAN before connecting to Spark.
-You can then use `tidytext` with `spark_apply()` to tokenize those sentences into a
-table of words:
+`f(x)`函数必须以一个R数据框（或可以自动转换为数据框一个的对象）作为输入，以及生成一个R数据框作为输出，如图11-2所示。
+
+![图11-2. `spark_apply()`映射中的期望函数样式](figures/11_2.png)
+
+我们可以参考第一章中最初的MapReduce示例，其中map操作被定义为将句子拆分为单词，并且对所有唯一单词技术当为reduce操作。
+
+在R中，我们可以使用`tidytext`包中的`unnest_tokens()`函数。在连接到Spark之前，你需要从CRAN安装该函数。然后，可以使用`tidytext`和`spark_apply()`将这些句子切分为一个单词表：
+
 ```{r}
 sentences <- copy_to(sc, data_frame(text = c("I like apples", "I like bananas")))
 sentences %>%
@@ -5146,8 +5052,7 @@ spark_apply(~tidytext::unnest_tokens(.x, word, text))
 5 like
 6 bananas
 ```
-We can complete this MapReduce example by performing the reduce operation with
-`dplyr`, as follows:
+我们可以通过`dplyr`运行reduce操作完成MapReduce，代码如下：
 ```{r}
 sentences %>%
 spark_apply(~tidytext::unnest_tokens(., word, text)) %>%
@@ -5161,14 +5066,13 @@ summarise(count = count())
 3 like 2
 4 bananas 1
 ```
-The rest of this chapter will explain in detail the use cases, features, caveats, consider‐
-ations, and troubleshooting techniques required when you are defining custom mappings through `spark_apply()`.
 
-> The previous sentence tokenizer example can be more efficiently
-implemented using concepts from previous chapters, specifically
-through `sentences %>% ft_tokenizer("text", "words") %>% transmute(word = explode(words))`.
+本章的其余部分将详细解释通过`spark_apply()`自定义映射时所需的用例、特性、注意事项、关注点和故障排除技术。
 
-## Use Cases
+
+> 之前的句子切分示例可以使用之前章节的理念，更高效的实现，即通过`sentences %>% ft_tokenizer("text", "words") %>% transmute(word = explode(words))`。
+
+## 用例
 
 Now that we’ve presented an example to help you understand how spark_apply()
 works, we’ll cover a few practical use cases for it:
