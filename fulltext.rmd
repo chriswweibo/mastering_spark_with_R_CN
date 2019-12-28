@@ -4825,9 +4825,9 @@ $ probability_Yes <dbl> 0.24606191, 0.97521925, 0.08485363, 0.85643125, 0.927375
 
 ## 深度学习
 
-感知器是Frank Rosenblatt提出的一种数学模型[^22]，他把感知器发展成为一种假想的神经系统的理论。感知器将刺激映射到数值输入，数值输入加权到阈值函数中，阈值函数仅在存在足够的刺激时激活，数学表示如下：
+感知器是Frank Rosenblatt提出的一种数学模型[^23]，他把感知器发展成为一种假想的神经系统的理论。感知器将刺激映射到数值输入，数值输入加权到阈值函数中，阈值函数仅在存在足够的刺激时激活，数学表示如下：
 
-[^22]: Rosenblatt F (1958). “The perceptron: a probabilistic model for information storage and organization in the brain.” Psychological review.
+[^23]: Rosenblatt F (1958). “The perceptron: a probabilistic model for information storage and organization in the brain.” Psychological review.
 
 $$
 f(x) =
@@ -4837,9 +4837,9 @@ f(x) =
 \end{cases}
 $$
 
-Minsky和Papert发现，一个感知器只能对线性可分的数据集进行分类；然而，他们在其著作《Perceptrons》中也揭示了分层感知器将带来额外的分类能力[^23]。图10-6给出了多层感知器最初的样子。
+Minsky和Papert发现，一个感知器只能对线性可分的数据集进行分类；然而，他们在其著作《Perceptrons》中也揭示了分层感知器将带来额外的分类能力[^24]。图10-6给出了多层感知器最初的样子。
 
-[^23]： Minsky M, Papert SA (2017). Perceptrons: An introduction to computational geometry. MIT press.
+[^24]： Minsky M, Papert SA (2017). Perceptrons: An introduction to computational geometry. MIT press.
 
 ![图10-6. 《Perceptrons》中描述的多层感知机](figures/10_6.png)
 
@@ -4850,9 +4850,9 @@ install.packages("sparktf")
 install.packages("tfdatasets")
 ```
 
-使用Spark，我们可以创建一个多层感知器分类器，该分类器使用`ml_multilayer_perceptron_classifier()`和梯度下降来对大型数据集进行分类和预测。Geoff Hinton将梯度下降引入分层感知器[^24]。
+使用Spark，我们可以创建一个多层感知器分类器，该分类器使用`ml_multilayer_perceptron_classifier()`和梯度下降来对大型数据集进行分类和预测。Geoff Hinton将梯度下降引入分层感知器[^25]。
 
-[^24]：Ackley DH, Hinton GE, Sejnowski TJ (1985). “A learning algorithm for Boltzmann machines.” Cognitive science.
+[^25]：Ackley DH, Hinton GE, Sejnowski TJ (1985). “A learning algorithm for Boltzmann machines.” Cognitive science.
 
 ```{r}
 library(sparktf)
@@ -4892,48 +4892,34 @@ ft_string_indexer_model(
 labels = c("setosa", "versicolor", "virginica") ) %>%
 spark_write_tfrecord(path = "tfrecord")
 ```
-After you have trained the dataset with Keras or TensorFlow, you can use the `tfdatasets` package to load it. You will also need to install the TensorFlow runtime by using
-`install_tensorflow()` and install Python on your own. To learn more about train‐
-ing deep learning models with Keras, we recommend reading Deep Learning with R.5
+使用Keras或TensorFlow训练数据集后，可以使用`tfdatasets`包加载它。你还需要使用`install_tensorflow()` 安装TensorFlow运行时，并自行安装Python。要了解更多关于使用Keras训练深度学习模型的信息，建议阅读使用《Deep Learning with R》[^26]。
+
+[^26]： Chollet F, Allaire J (2018). Deep Learning with R. Manning Publications.
+
+
 ```{r}
 tensorflow::install_tensorflow()
 tfdatasets::tfrecord_dataset("tfrecord/part-r-00000")
 <DatasetV1Adapter shapes: (), types: tf.string>
 ```
-Training deep learning models in a single local node with one or more GPUs is often
-enough for most applications; however, recent state-of-the-art deep learning models
-train using distributed computing frameworks like Apache Spark. Distributed com‐
-puting frameworks are used to achieve higher petaflops each day the systems spends
-training these models. OpenAI analyzed trends in the field of artificial intelligence
-(AI) and cluster computing (illustrated in图10-7). It should be obvious from the
-figure that there is a trend in recent years to use distributed computing frameworks.
 
-![图10-7. Training using distributed systems based on OpenAI analysis](figures/10_7.png)
-Training large-scale deep learning models is possible in Spark and TensorFlow
-through frameworks like Horovod. Today, it’s possible to use Horovod with Spark
-from R using the `reticulate` package, since Horovod requires Python and Open
-MPI, this goes beyond the scope of this book. Next, we will introduce a different
-Spark extension in the domain of genomics.
+使用一个或多个GPU在单个本地节点上训练深度学习模型对于大多数应用程序来说通常已经足够了；但是，最近最先进的深度学习模型使用Apache Spark等分布式计算框架进行训练。分布式计算框架被用来实现更高的千万亿次浮点运算，支持系统每天都在训练这些模型。OpenAI分析了人工智能（AI）和集群计算领域的趋势（如图10-7所示）。从图中可以明显看出，近年来有使用分布式计算框架的趋势。
 
-## Genomics
+![图10-7. 基于OpenAI分析使用分布式系统的训练](figures/10_7.png)
 
-The human genome consists of two copies of about 3 billion base pairs of DNA
-within the 23 chromosome pairs.图10-8 shows the organization of the genome
-into chromosomes. DNA strands are composed of nucleotides, each composed of one
-of four nitrogen-containing nucleobases: cytosine (C), guanine (G), adenine (A), or
-thymine (T). Since the DNA of all humans is nearly identical, we need to store only
-the differences from the reference genome in the form of a variant call format (VCF)
-file.
+通过像Horovod这样的框架，Spark和TensorFlow可以训练大规模的深度学习模型。今天，可以通过`reticulate`在R中使用Horovod和Spark，因为Horovod需要Python和Open MPI，这超出了本书的范围。接下来，我们将介绍一个基因组学领域的不同的Spark扩展。
 
-![图10-8. The idealized human diploid karyotype showing the organization of the genome into chromosomes](figures/10_8.png)
-`variantspark` is a framework based on Scala and Spark to analyze genome datasets.
-It is being developed by CSIRO Bioinformatics team in Australia. `variantspark` was
-tested on datasets with 3,000 samples, each one containing 80 million features in
-either unsupervised clustering approaches or supervised applications, like classifica‐
-tion and regression. `variantspark` can read VCF files and run analyses while using
-familiar Spark DataFrames.
-To get started, install variantspark from CRAN, connect to Spark, and retrieve a vsc
-connection to variantspark:
+
+## 基因组学
+
+人类基因组由23对染色体中约30亿对碱基DNA的两个拷贝组成。图10-8展示了基因组形成染色体。DNA链由核苷酸组成，每个核苷酸由四个含氮碱基中的一个组成：胞嘧啶（C）、鸟嘌呤（G）、腺嘌呤（A）或胸腺嘧啶（T）。由于所有人类的DNA几乎是相同的，我们只需要以一个变异判读格式（VCF）文件的形式存储与参考基因组的差异。
+
+![图10-8. 理想化的人类二倍体核型，显示基因组形成染色体](figures/10_8.png)
+
+`variantspark`是一个基于Scala和Spark的分析基因组数据集的框架。它是由澳大利亚的CSIRO生物信息学团队开发的。variantspark在3000个样本的数据集上进行了测试，每个样本包含8000万个非监督聚类方法或监督应用（如分类和回归）的特征。`variantspark`可以读取VCF文件并运行分析，同时使用熟悉的Spark数据框。
+
+首先，从CRAN安装`variantspark`，连接到Spark，然后得到`variantspark`的vsc连接：
+
 ```{r}
 library(variantspark)
 library(sparklyr)
@@ -4941,17 +4927,15 @@ sc <- spark_connect(master = "local", version = "2.3",
 config = list(sparklyr.connect.timeout = 3 * 60))
 vsc <- vs_connect(sc)
 ```
-We can start by loading a VCF file:
+我们可以开始加载VCF文件：
 ```{r}
 vsc_data <- system.file("extdata/", package = "variantspark")
 hipster_vcf <- vs_read_vcf(vsc, file.path(vsc_data, "hipster.vcf.bz2"))
 hipster_labels <- vs_read_csv(vsc, file.path(vsc_data, "hipster_labels.txt"))
 labels <- vs_read_labels(vsc, file.path(vsc_data, "hipster_labels.txt"))
 ```
-`variantspark` uses random forest to assign an importance score to each tested var‐
-iant reflecting its association to the interest phenotype. A variant with higher impor‐
-tance score implies it is more strongly associated with the phenotype of interest. You
-can compute the importance and transform it into a Spark table, as follows:
+`variantspark`使用随机森林为每个测试的变异分配一个重要分数，反映其与兴趣表型的关联。一个重要度得分较高的变异意味着它与感兴趣的表型有更紧密的联系。你可以计算重要性并将其转换为Spark表，如下所示：
+
 ```{r}
 importance_tbl <- vs_importance_analysis(vsc, hipster_vcf,
 labels, n_trees = 100) %>%
@@ -4972,8 +4956,7 @@ importance_tbl
 10 2_109511579 0
 # … with more rows
 ```
-You then can use `dplyr` and `ggplot2` to transform the output and visualize it (see
-Figure 10-9):
+然后，你可以使用`dplyr`和`ggplot2` 转换输出，并分析（见图10-9）：
 ```{r}
 library(dplyr)
 library(ggplot2)
@@ -4988,25 +4971,27 @@ scale_x_discrete(limits =
 importance_df[order(importance_df$importance), 1]$variable) +
 coord_flip()
 ```
-![图10-9. Genomic importance analysis using variantspark](figures/10_9.png)
-This concludes a brief introduction to genomic analysis in Spark using the `variantspark` extension. Next, we move away from microscopic genes to macroscopic data‐
-sets that contain geographic locations across the world.
+![图10-9. 使用`variantspark`的基因组重要性分析](figures/10_9.png)
 
-## Spatial
+最后我们在Spark中使用`variantspark`扩展，简要介绍了基因组分析。接下来，我们将从微观基因转移到宏观数据集，这些数据集包含世界各地的地理位置。
 
-`geospark` enables distributed geospatial computing using a grammar compatible with
-`dplyr` and `sf`, which provides a set of tools for working with geospatial vectors.
-You can install geospark from CRAN, as follows:
+
+## 空间数据
+
+`geospark`使用与`dplyr`和`sf`兼容的语法支持分布式地理空间计算，该语法提供了一组用于处理地理空间矢量的工具。
+
+你可以从CRAN安装`geospark`，如下所示：
+
 ```{r}
 install.packages("geospark")
 ```
-Then, initialize the geospark extension and connect to Spark:
+然后，初始化`geospark`扩展并连接到Spark：
 ```{r}
 library(geospark)
 library(sparklyr)
 sc <- spark_connect(master = "local", version = "2.3")
 ```
-Next, we load a spatial dataset containing polygons and points:
+接着，加载一个包含多边形和点的空间数据集：
 ```{r}
 polygons <- system.file("examples/polygons.txt", package="geospark") %>%
 read.table(sep="|", col.names = c("area", "geom"))
@@ -5015,12 +5000,13 @@ read.table(sep = "|", col.names = c("city", "state", "geom"))
 polygons_wkt <- copy_to(sc, polygons)
 points_wkt <- copy_to(sc, points)
 ```
-There are various spatial operations defined in `geospark`, as depicted in图10-10.
-These operations allow you to control how geospatial data should be queried based
-on overlap, intersection, disjoint sets, and so on.
-![图10-10. Spatial operations available in geospark](figures/10_10.png)
-For instance, we can use these operations to find the polygons that contain a given set
-of points using `st_contains()`:
+`geospark`中定义了各种空间操作，如图10-10所示。
+
+这些操作允许你控制基于重叠、相交、不相交集等的地理空间数据查询过程。
+
+![图10-10. `geospark`上的空间操作](figures/10_10.png)
+
+例如，我们可以使用这些操作,借助`st_contains()`找出包含给定点集合的多边形：
 ```{r}
 library(dplyr)
 polygons_wkt <- mutate(polygons_wkt, y = st_geomfromwkt(geom))
@@ -5040,33 +5026,30 @@ summarise(cnt = n())
 4 texas area TX 10
 5 dakota area SD 1
 ```
-You can also plot these datasets by collecting a subset of the entire dataset or aggre‐
-gating the geometries in Spark before collecting them. One package you should look
-into is sf.
-We close this chapter by presenting a couple of troubleshooting techniques applicable
-to all extensions.
 
-## Troubleshooting
+你还可以通过收集整个数据集的子集或在收集之前在Spark中聚合几何图形来绘制这些数据集。一个包值得学习的包是`sf`。
 
-When you are using a new extension for the first time, we recommend increasing the
-connection timeout (given that Spark will usually need to download extension depen‐
-dencies) and changing logging to verbose to help you troubleshoot when the down‐
-load process does not complete:
+本章末尾将介绍适用于所有扩展的两种故障排除技术。
+
+
+## 故障排除
+
+当你第一次使用新扩展时，我们建议增加连接超时（考虑到Spark通常需要下载扩展依赖项），并将日志记录更改为详细记录，以帮助你在未完成下载过程时进行故障排除：
+
 ```{r}
 config <- spark_config()
 config$sparklyr.connect.timeout <- 3 * 60
 config$sparklyr.log.console = TRUE
 sc <- spark_connect(master = "local", config = config)
 ```
-In addition, you should know that Apache IVY is a popular dependency manager
-focusing on flexibility and simplicity, and is used by Apache Spark for installing
-extensions. When the connection fails while you are using an extension, consider
-clearing your IVY cache by running the following:
+
+此外，你应该知道Apache IVY是一种流行的依赖管理器，侧重于灵活性和简单性，并被Apache Spark用于安装扩展。当使用扩展连接失败时，考虑通过运行以下命令清除IVY缓存：
+
 ```{r}
 unlink("~/.ivy2", recursive = TRUE)
 ```
-In addition, you can also consider opening GitHub issues from the following exten‐
-sions repositories to get help from the extension authors:
+
+此外，你还可以考虑从以下扩展仓库中打开GitHub问题，以获得扩展作者的帮助：
 
 * `rsparkling`
 * `sparkxgb`
@@ -5074,28 +5057,13 @@ sions repositories to get help from the extension authors:
 * `variantspark`
 * `geospark`
 
-## Recap
+## 小结
 
-This chapter provided a brief overview on using some of the Spark extensions avail‐
-able in R, which happens to be as easy as installing a package. You then learned how
-to use the rsparkling extension, which provides access to H2O in Spark, which in
-turn provides additional modeling functionality like enhanced metrics and the ability
-to automatically select models. We then jumped to graphframes, an extension to help
-you process relational datasets that are formally referred to as graphs. You also
-learned how to compute simple connection metrics or run complex algorithms like
-PageRank.
-The XGBoost and deep learning sections provided alternate modeling techniques that
-use gradient descent: the former over decision trees, and the latter over deep multi‐
-layered perceptrons where we can use Spark to preprocess datasets into records that
-later can be consumed by TensorFlow and Keras using the `sparktf` extension. The
-last two sections introduced extensions to process genomic and spatial datasets
-through the `variantspark` and `geospark` extensions.
-These extensions, and many more, provide a comprehensive library of advanced
-functionality that, in combination with the analysis and modeling techniques presen‐
-ted, should cover most tasks required to run in computing clusters. However, when
-functionality is lacking, you can consider writing your own extension, which is what
-we discuss in Chapter 13, or you can apply custom transformations over each parti‐
-tion using R code, as we describe in Chapter 11.
+本章简要介绍了使用R中提供的一些Spark扩展，与安装软件包一样简单。然后，你学习了如何使用`rsparkling`扩展，该扩展提供了Spark中的H请求访问，进而提供了其他建模功能，如增强度量和自动选择模型的能力。然后我们跳到`graphframes`，这个扩展可以帮助你处理图的关系数据集。你还学习了如何计算简单的连接度量或运行复杂的算法，如`PageRank`。
+
+XGBoost和深度学习部分提供了使用梯度下降的备选建模技术：前者基于决策树，后者基于多层感知器，我们可以使用Spark将数据集预处理为记录，然后使用`sparktf`扩展支持TensorFlow和Keras使用。最后两部分介绍了通过`variantspark`和`geospark`扩展来处理基因组和空间数据集的能力。
+
+这些扩展，以及更多的扩展，提供了一个具备高级功能的综合库。结合所介绍的分析和建模技术，这些扩展应该涵盖在计算集群运行中所需的大多数任务。然而，当缺少功能时，你可以考虑编写自己的扩展，这是我们在第13章中讨论的，或者如马上在第11章看到的，你可以使用R代码对每个分区进行自定义转换。
 
 ------
 
