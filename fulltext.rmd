@@ -4595,21 +4595,14 @@ h2o.predict(automl@leader, predictions)
 
 ## 图模型
 
-The first paper in the history of graph theory was written by Leonhard Euler on the
-Seven Bridges of Königsberg in 1736. The problem was to devise a walk through the
-city that would cross each bridge once and only once.图10-3 presents the origi‐
-nal diagram.
+图论史上的第一篇论文是由列昂哈德·欧拉于1736年写的关于柯尼斯堡七桥问题。问题是要设计一条穿过这座城市的步行道，穿过每座桥且只穿过一次。图10-3展示了原始图表。
 
-![图10-3. The Seven Bridges of Königsberg from the Euler archive](figures/10_3.png)
-Today, a graph is defined as an ordered pair $G = (V, E)$ , with V a set of vertices (nodes
-or points) and $E \subseteq \{ \{x, y\}|(x,y) \in V^2 \wedge   x\ne y\}$ a set of edges (links or lines), which
-are either an unordered pair for undirected graphs or an ordered pair for directed
-graphs. The former describes links where the direction does not matter, and the latter
-describes links where it does.
-As a simple example, we can use the highschool dataset from the ggraph package,
-which tracks friendship among high school boys. In this dataset, the vertices are the
-students and the edges describe pairs of students who happen to be friends in a par‐
-ticular year:
+![图10-3. 欧拉的柯尼斯堡七桥](figures/10_3.png)
+
+今天，一个图被定义为一个有序对$G = (V, E)$，其中$V$是顶点（节点或散点），$E \subseteq \{ \{x, y\}|(x,y) \in V^2 \wedge   x\ne y\}$是边（连接或线）的集合。它们可以是无向图的一个无序对，也可以是有向图的有序对。前者的连接方向不重要，而而后者的连接方向是有意义的。
+
+作为一个简单的例子，我们可以使用`ggraph`包中的`highschool`数据集，它记录了高中男生之间的朋友关系。在这个数据集中，顶点是学生，边描述了在某个年份是朋友关系的学生对：
+
 ```{r}
 install.packages("ggraph")
 install.packages("igraph")
@@ -4629,22 +4622,17 @@ ggraph::highschool
 10 4 5 1957
 # … with 496 more rows
 ```
-While the high school dataset can easily be processed in R, even medium-size graph
-datasets can be difficult to process without distributing this work across a cluster of
-machines, for which Spark is well suited. Spark supports processing graphs through
-the `graphframes` extension, which in turn uses the GraphX Spark component.
-GraphX is Apache Spark’s API for graphs and graph-parallel computation. It’s compa‐
-rable in performance to the fastest specialized graph-processing systems and provides
-a growing library of graph algorithms.
-A graph in Spark is also represented as a DataFrame of edges and vertices; however,
-our format is slightly different since we will need to construct a DataFrame for verti‐
-ces. Let’s first install the `graphframes` extension:
+
+虽然高中数据集可以很容易地在R中处理，但是如果不将工作分布到非常适合的Spark机器集群中，即使是中等大小的图形数据集也很难处理。Spark支持通过`graphframes`扩展来处理图形，而`graphframes`扩展又使用GraphX Spark组件。GraphX是Apache Spark用于图和图并行计算的API。它在性能上可以与最快的专用图形处理系统相媲美，并提供了一个不断增长的图算法库。
+
+Spark中的图也表示为边和顶点的数据框；但是，我们的格式略有不同，因为我们需要为顶点构造一个数据框。首先安装`graphframes`扩展：
+
 ```{r}
 install.packages("graphframes")
 ```
-Next, we need to connect, copying the `highschool` dataset and transforming the
-graph to the format that this extension expects. Here, we scope this dataset to the
-friendships of the year 1957:
+
+接下来，我们需要连接，复制`highschool`数据集并将图转换为扩展所期望的格式。在这里，我们将这个数据集的范围限定在到1957年的朋友关系：
+
 ```{r}
 library(graphframes)
 library(sparklyr)
@@ -4659,7 +4647,7 @@ to_tbl <- highschool_tbl %>% distinct(to) %>% transmute(id = to)
 vertices_tbl <- distinct(sdf_bind_rows(from_tbl, to_tbl))
 edges_tbl <- highschool_tbl %>% transmute(src = from, dst = to)
 ```
-The `vertices_tbl` table is expected to have a single `id` column:
+`vertices_tbl`表需要有一个`id`列：
 ```{r}
 vertices_tbl
 # Source: spark<?> [?? x 1]
@@ -4677,7 +4665,7 @@ vertices_tbl
 10 71
 # … with more rows
 ```
-And the `edges_tbl` is expected to have `src` and `dst` columns:
+`edges_tbl`需要有`src`和`dst`列：
 ```{r}
 edges_tbl
 # Source: spark<?> [?? x 2]
@@ -4695,13 +4683,12 @@ edges_tbl
 10 4 5
 # … with more rows
 ```
-You can now create a GraphFrame:
+现在你可以创建一GraphFrame：
 ```{r}
 graph <- gf_graphframe(vertices_tbl, edges_tbl)
 ```
-We now can use this graph to start analyzing this dataset. For instance, we’ll find out
-how many friends on average every boy has, which is referred to as the degree or
-valency of a vertex:
+现在我们可以使用这个图分析数据集。例如，我们会找出每个男孩平均有多少朋友，这被称为顶点的*度*或*价*：
+
 ```{r}
 gf_degrees(graph) %>% summarise(friends = mean(degree))
 # Source: spark<?> [?? x 1]
@@ -4709,9 +4696,8 @@ gf_degrees(graph) %>% summarise(friends = mean(degree))
  <dbl>
 1 6.94
 ```
-We then can find what the shortest path to some specific vertex (a boy for this data‐
-set). Since the data is anonymized, we can just pick the boy identified as 33 and find
-how many degrees of separation exist between them:
+然后我们可以找到哪一条是到某个特定顶点的最短路径（这个数据集中的一个男孩）。由于数据是匿名的，我们可以挑选一个编号为33的男孩，发现他们之间存在多少分离度：
+
 ```{r}
 gf_shortest_paths(graph, 33) %>%
 filter(size(distances) > 0) %>%
@@ -4728,13 +4714,11 @@ select(id, distance)
  6 23 4
  7 36 1
  8 26 2
-Graphs | 185
  9 33 0
 10 18 5
 # … with more rows
 ```
-Finally, we can also compute PageRank over this graph, which was presented in
-Chapter 1’s discussion of Google’s page ranking algorithm:
+最后，我们也可以计算这个图的PageRank值，它在第一章讨论谷歌网页排序算法中提到过。
 ```{r}
 gf_graphframe(vertices_tbl, edges_tbl) %>%
 gf_pagerank(reset_prob = 0.15, max_iter = 10L)
@@ -4749,8 +4733,7 @@ Edges:
  $ dst <dbl> 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,…
  $ weight <dbl> 0.25000000, 0.25000000, 0.25000000, 0.25000000, 0.25000000,…
 ```
-To give you some insights into this dataset,图10-4 plots this chart using the
-ggraph and highlights the highest PageRank scores for the following dataset:
+为了让你理解数据集，图10-4使用`ggraph`画出了这个图，并高亮了下列数据集的最高PageRank得分：
 ```{r}
 highschool_tbl %>%
 igraph::graph_from_data_frame(directed = FALSE) %>%
@@ -4761,57 +4744,35 @@ end_cap = circle(2, 'mm'),
 start_cap = circle(2, 'mm')) +
 geom_node_point(size = 2, alpha = 0.4)
 ```
-![图10-4. High school ggraph dataset with highest PageRank highlighted](figures/10_4.png)
+![图10-4. 最高PageRank得分高亮的`highschool`数据集`ggraph`可视化](figures/10_4.png)
 
-There are many more graph algorithms provided in `graphframes`—for example,
-breadth-first search, connected components, label propagation for detecting com‐
-munities, strongly connected components, and triangle count. For questions on this
-extension refer to the official GitHub repository. We now present a popular gradient-boosting framework—make sure to disconnect and restart before trying the next
-extension.
+`graphframes`还提供了更多的图算法，例如广度优先搜索、连接分支、用于检测社区的标签传递、强连接分支和三角形计数。有关此扩展的问题，请参阅官方GitHub仓库。我们现在提供一个流行的梯度提升框架。确保在尝试下一个扩展之前断开连接并重新启动。
+
 
 ## XGBoost
 
-A decision tree is a flowchart-like structure in which each internal node represents a
-test on an attribute, each branch represents the outcome of the test, and each leaf
-node represents a class label. For example,图10-5 shows a decision tree that
-could help classify whether an employee is likely to leave given a set of factors like job
-satisfaction and overtime. When a decision tree is used to predict continuous vari‐
-ables instead of discrete outcomes—say, how likely someone is to leave a company—it
-is referred to as a regression tree.
-![图10-5. A decision tree to predict job attrition based on known factors](figures/10_5.png)
+*决策树*是一种类似流程图的结构，其中每个内部节点表示一个属性上的测试，每个分支表示测试的结果，每个叶节点表示一个类标签。例如，图10-5展示了一个决策树，该树可以帮助解决在给定一组因素（如工作满意度和加班）情况下员工是否可能离职的分类问题。当决策树被用来预测连续变量而不是离散结果时，比如某人离开公司的可能性有多大，它被称为*回归树*。
 
-While a decision tree representation is quite easy to understand and to interpret,
-finding out the decisions in the tree requires mathematical techniques like gradient
-descent to find a local minimum. Gradient descent takes steps proportional to the
-negative of the gradient of the function at the current point. The gradient is repre‐
-sented by $\nabla$, and the learning rate by $\gamma$. You simply start from a given state an
-and
-compute the next iteration an + 1 by following the direction of the gradient:
+![图10-5. 基于已知因素的预测离职的决策树](figures/10_5.png)
+
+虽然决策树表示很容易理解和解释，但要找出树中的决策，需要像梯度下降这样的数学技术才能找到局部最小值。梯度下降与当前点处函数梯度的负方向成比例。梯度用$\nabla$表示，学习率用$\gamma$表示。你只需从给定的状态$a_n$开始，然后按照梯度的方向计算下一次迭代
 $$a_{n + 1} = a_n − \gamma \nabla F(a_n)$$
-XGBoost is an open source software library that provides a gradient-boosting frame‐
-work. It aims to provide scalable, portable, and distributed gradient boosting for
-training gradient-boosted decision trees (GBDT) and gradient-boosted regression
 
-trees (GBRT). Gradient-boosted means XGBoost uses gradient descent and boosting,
-which is a technique that chooses each predictor sequentially.
-sparkxgb is an extension that you can use to train XGBoost models in Spark; how‐
-ever, be aware that currently Windows is unsupported. To use this extension, first
-install it from CRAN:
+XGBoost是一个开源软件库，它提供了一个梯度提升框架。它旨在为训练梯度提升决策树（GBDT）和梯度提升回归树（GBRT）提供可扩展、可移植和分布式的梯度提升方法。梯度提升意味着XGBoost使用梯度下降和梯度提升，这是一种按顺序选择每个预测器的技术。
+
+`sparkxgb`是一个扩展，你可以使用它在Spark中训练XGBoost模型；但是，请注意，当前不支持Windows。要使用此扩展，请首先从CRAN安装它：
+
 ```{r}
 install.packages("sparkxgb")
 ```
-Then, you need to import the sparkxgb extension followed by your usual Spark con‐
-nection code, adjusting master as needed:
+然后，你需要导入`sparkxgb`扩展，然后执行常用的Spark连接代码，按需调整`master`：
 ```{r}
 library(sparkxgb)
 library(sparklyr)
 library(dplyr)
 sc <- spark_connect(master = "local", version = "2.3")
 ```
-For this example, we use the attrition dataset from the rsample package, which you
-would need to install by using `install.packages("rsample")`. This is a fictional
-dataset created by IBM data scientists to uncover the factors that lead to employee
-attrition:
+在本例中，我们使用`rsample`包中的`attrition`数据集，你需要使用`install.packages("rsample")`来安装它。这是一个虚构的数据集，由IBM数据科学家创建，以揭示导致员工离职的原因：
 ```{r}
 attrition <- copy_to(sc, rsample::attrition)
 attrition
