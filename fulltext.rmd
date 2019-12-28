@@ -4800,14 +4800,8 @@ attrition
 # WorkLifeBalance <chr>, YearsAtCompany <int>, YearsInCurrentRole <int>,
 # YearsSinceLastPromotion <int>, YearsWithCurrManager <int>
 ```
-To build an XGBoost model in Spark, use `xgboost_classifier()`. We will compute
-attrition against all other features by using the `Attrition ~ .` formula and specify 2
+要在Spark中构建XGBoost模型，使用`xgboost_classifier()`。我们使用`Attrition ~ .`公式计算所有其他特性对离职的影响，并指定为2类，因为离职属性只记录员工是离开还是留下。然后，可以使用`ml_predict()`对大规模数据集进行预测：
 
-2 Rosenblatt F (1958). “The perceptron: a probabilistic model for information storage and organization in the
-brain.” Psychological review.
-for the number of classes since the attrition attribute tracks only whether an
-employee leaves or stays. Then, you can use `ml_predict()` to predict over large-scale
-datasets:
 ```{r}
 xgb_model <- xgboost_classifier(attrition,
 Attrition ~ .,
@@ -4826,20 +4820,15 @@ $ predicted_label <chr> "No", "Yes", "No", "Yes", "Yes", "Yes", "Yes", "Yes", "Y
 $ probability_No <dbl> 0.753938094, 0.024780750, 0.915146366, 0.143568754, 0.07…
 $ probability_Yes <dbl> 0.24606191, 0.97521925, 0.08485363, 0.85643125, 0.927375…
 ```
-XGBoost became well known in the competition circles after its use in the winning
-solution of the Higgs Machine Learning Challenge, which uses the ATLAS experi‐
-ment to identify the Higgs boson. Since then, it has become a popular model and
-used for a large number of Kaggle competitions. However, decision trees could prove
-limiting especially in datasets with nontabular data like images, audio, and text, which
-you can better tackle with deep learning models—should we remind you to discon‐
-nect and restart?
+在Higgs机器学习挑战赛的胜出解决方案中使用XGBoost后，XGBoost在竞赛圈中广为人知，该方案使用ATLAS实验来识别Higgs玻色子。从此，XGBoost已经成为一种流行的模式，并用于大量的kaggle比赛。然而，决策树被证明能力很有限，特别是在具有非表格接数据（如图像、音频和文本）的数据集中。而这些问题使用深度学习技术会更好。提醒一下，记得断开连接并重新启动。
 
-## Deep Learning
 
-A perceptron is a mathematical model introduced by Frank Rosenblatt,2 who devel‐
-oped it as a theory for a hypothetical nervous system. The perceptron maps stimuli to
-numeric inputs that are weighted into a threshold function that activates only when
-enough stimuli is present, mathematically:
+## 深度学习
+
+感知器是Frank Rosenblatt提出的一种数学模型[^22]，他把感知器发展成为一种假想的神经系统的理论。感知器将刺激映射到数值输入，数值输入加权到阈值函数中，阈值函数仅在存在足够的刺激时激活，数学表示如下：
+
+[^22]: Rosenblatt F (1958). “The perceptron: a probabilistic model for information storage and organization in the brain.” Psychological review.
+
 $$
 f(x) =
 \begin{cases}
@@ -4847,19 +4836,24 @@ f(x) =
 0 & otherwise
 \end{cases}
 $$
-Minsky and Papert found out that a single perceptron can classify only datasets that
-are linearly separable; however, they also revealed in their book Perceptrons that
 
-layering perceptrons would bring additional classification capabilities.3图10-6
-presents the original diagram showcasing a multilayered perceptron.
-![图10-6. Layered perceptrons, as illustrated in the book Perceptrons](figures/10_6.png)
-Before we start, let’s first install all the packages that we are about to use:
+Minsky和Papert发现，一个感知器只能对线性可分的数据集进行分类；然而，他们在其著作《Perceptrons》中也揭示了分层感知器将带来额外的分类能力[^23]。图10-6给出了多层感知器最初的样子。
+
+[^23]： Minsky M, Papert SA (2017). Perceptrons: An introduction to computational geometry. MIT press.
+
+![图10-6. 《Perceptrons》中描述的多层感知机](figures/10_6.png)
+
+开始之前，首先安装要使用的所有程序包：
+
 ```{r}
 install.packages("sparktf")
 install.packages("tfdatasets")
 ```
-Using Spark we can create a multilayer perceptron classifier with `ml_multilayer_perceptron_classifier()` and gradient descent to classify and predict over large data‐
-sets. Gradient descent was introduced to layered perceptrons by Geoff Hinton.4
+
+使用Spark，我们可以创建一个多层感知器分类器，该分类器使用`ml_multilayer_perceptron_classifier()`和梯度下降来对大型数据集进行分类和预测。Geoff Hinton将梯度下降引入分层感知器[^24]。
+
+[^24]：Ackley DH, Hinton GE, Sejnowski TJ (1985). “A learning algorithm for Boltzmann machines.” Cognitive science.
+
 ```{r}
 library(sparktf)
 library(sparklyr)
@@ -4882,21 +4876,15 @@ $ predicted_label <chr> "No", "No", "No", "No", "No", "No", "No", "No", "No", �
 $ probability_No <dbl> 0.8439275, 0.8439275, 0.8439275, 0.8439275, 0.8439275,…
 $ probability_Yes <dbl> 0.1560725, 0.1560725, 0.1560725, 0.1560725, 0.1560725,…
 ```
-Notice that the columns must be numeric, so you will need to manually convert them
-with the feature transforming techniques presented in Chapter 4. It is natural to try to
-add more layers to classify more complex datasets; however, adding too many layers
-will cause the gradient to vanish, and other techniques will need to use these deep lay‐
-ered networks, also known as deep learning models.
-Deep learning models solve the vanishing gradient problem by making use of special
-activation functions, dropout, data augmentation and GPUs. You can use Spark to
-retrieve and preprocess large datasets into numerical-only datasets that can fit in a
-GPU for deep learning training. TensorFlow is one of the most popular deep learning
-frameworks. As mentioned previously, it supports a binary format known as Tensor‐
-Flow records.
-You can write TensorFlow records using the `sparktf` in Spark, which you can prepare
-to process in GPU instances with libraries like Keras or TensorFlow.
-You can then preprocess large datasets in Spark and write them as TensorFlow
-records using `spark_write_tf()`:
+
+注意，列必须是数值型的，因此需要使用第4章中介绍的特征转换技术手动转换它们。尝试添加更多的层来分类更复杂的数据集是很自然的；但是，添加太多的层将导致梯度散失，其他技术需要使用这些深层网络，也称为深层学习模型。
+
+深度学习模型利用特殊的激活函数、dropout、数据增强和GPU来解决梯度散失问题。你可以使用Spark检索大型数据集，并将其预处理为只包含数值的数据集，这些数据集可以在GPU中进行深度学习训练。TensorFlow是最流行的深度学习框架之一。如前所述，它支持称为TensorFlow记录的二进制格式。
+
+你可以使用Spark中的`sparktf`编写TensorFlow记录，并准备在GPU实例中使用Keras或TensorFlow等库来处理这些记录。
+
+然后，可以在Spark中预处理大型数据集，并使用`spark_write_tf()`将它们作为TensorFlow记录写入：
+
 ```{r}
 copy_to(sc, iris) %>%
 ft_string_indexer_model(
