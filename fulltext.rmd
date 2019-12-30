@@ -5074,34 +5074,20 @@ summarise(count = count())
 
 ## 用例
 
-Now that we’ve presented an example to help you understand how spark_apply()
-works, we’ll cover a few practical use cases for it:
+我们已经提供了一个示例来帮助你理解`spark_apply()`，现在我们介绍一些实用的例子：
 
-* Import
-    You can consider using R to import data from external data sources and formats.
-For example, when a file format is not natively supported in Spark or its exten‐
-sions, you can consider using R code to implement a distributed custom parser
-using R packages.
-* Model
-    It is natural to use the rich modeling capabilities already available in R with
-Spark. In most cases, R models can’t be used across large data; however, we will
-present two particular use cases where R models can be useful at scale. For
-instance, when data fits into a single machine, you can use grid search to optimize
-their parameters in parallel. In cases where the data can be partitioned to create
-several models over subsets of the data, you can use partitioned modeling in R to
-compute models across partitions.
-* Transform
-    You can use R’s rich data transformation capabilities to complement Spark. We’ll
-present a use case of evaluating data by external systems, and use R to interoper‐
-ate with them by calling them through a web API.
-* Compute
-    When you need to perform large-scale computation in R, or big compute as
-described in Chapter 1, Spark is ideal to distribute this computation. We will
-present simulations as a particular use case for large-scale computing in R.
-As we now explore each use case in detail, we’ll provide a working example to help
-you understand how to use `spark_apply()` effectively.
+* 导入
+可以考虑使用R从外部数据源和格式导入数据。例如，当一个文件格式无法获得Spark或其扩展的原生支持时，可以考虑用R代码并借助R包实现分布式自定义解析器。
+* 建模
+使用Spark和R中已有的丰富建模功能是很自然的。在大多数情况下，R模型不能跨大数据使用；但是，我们会专门展示两个用例来说明其中R模型可以在大数据上使用。例如，当数据适合一台机器时，可以使用网格搜索并行优化它们的参数。在一些情况下，我们可以对数据进行分区，并在数据子集上创建多个模型，我们可以使用R中的分区建模来跨分区计算模型。
+* 变换
+你可以使用R的丰富数据转换功能来补充Spark。我们会展示一个通过外部系统评估数据的用例，并使用R通过web API调用它们来进行交互。
+* 计算
+当你需要在R中执行大规模计算，或者如第1章所述执行大型计算时，Spark是分发此计算的理想选择。我们会模拟R中大规模计算的一个特殊用例。
 
-### Custom Parsers
+当我们现在详细研究每个用例时，我们会提供一个工作示例，帮助了解如何有效地使用`spark_apply()`。
+
+### 定制解析器
 
 Though Spark and its various extensions provide support for many file formats
 (CSVs, JSON, Parquet, AVRO, etc.), you might need other formats to use at scale. You
