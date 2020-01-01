@@ -5182,15 +5182,10 @@ ggplot2::geom_point())
 
 ### 网格搜索
 
-Many R packages provide models that require defining multiple parameters to con‐
-figure and optimize. When the value of these parameters is unknown, we can distrib‐
-ute this list of unknown parameters across a cluster of machines to find the optimal
-parameter combination. If the list contains more than one parameter to optimize, it is
-common to test against all the combinations between parameter A and parameter B,
-creating a grid of parameters. The process of searching for the best parameter over
-this parameter grid is commonly known as grid search.
-For example, we can define a grid of parameters to optimize decision tree models as
-follows:
+许多R包提供了需要定义多个参数完成配置和优化的模型。当这些参数的值未知时，我们可以将一列未知参数发放到一组机器上，以找到最佳的参数组合。如果这列参数包含多个要优化的参数，则通常会通过参数A和参数B之间的所有组合进行测试，从而创建一个参数网格。在这个参数网格上搜索最佳参数的过程通常称为网格搜索。
+
+例如，我们可以定义一个参数网格来优化决策树模型，如下所示：
+
 ```{r}
 grid <- list(minsplit = c(2, 5, 10), maxdepth = c(1, 3, 8)) %>%
 purrr:::cross_df() %>%
@@ -5209,10 +5204,9 @@ grid
 8 5 8
 9 10 8
 ```
-The grid dataset was copied by using `repartition = 9` to ensure that each partition
-is contained in one machine, since the grid also has nine rows. Now, assuming that
-the original dataset fits in every machine, we can distribute this dataset to many
-machines and perform parameter search to find the model that best fits this data:
+
+使用`repartition = 9`来复制网格数据集，以确保每个机器包含一个分区，因为网格也有九行。现在，假设原始数据集可以放入每台计算机，我们可以把这个数据集分发给多台计算机，并执行参数搜索以找到最适合此数据的模型：
+
 ```{r}
 spark_apply(
 grid,
@@ -5240,27 +5234,16 @@ context = mtcars)
 8 5 8 0.938
 9 10 8 0.812
 ```
-For this model, `minsplit = 2` and `maxdepth = 8` produces the most accurate results.
-You can now use this specific parameter combination to properly train your model.
+对于这个模型，`minsplit = 2`和`maxdepth = 8`可以生成最准确的结果。现在你可以使用这些具体的参数组合来训练你的模型了。
 
-### Web APIs
+### Web API
 
-A web API is a program that can do something useful through a web interface that
-other programs can reuse. For instance, services like Twitter provide web APIs that
-allow you to automate reading tweets from a program written in R and other pro‐
-gramming languages. You can make use of web APIs using `spark_apply()` by send‐
-ing programmatic requests to external services using R code.
-For example, Google provides a web API to label images using deep learning techni‐
-ques; you can use this API from R, but for larger datasets, you need to access its APIs
-from Spark. You can use Spark to prepare data to be consumed by a web API and
-then use `spark_apply()` to perform this call and process all the incoming results back
-in Spark.
+Web API是一个程序，它通过其他程序可重用的w网络接口来做一些有用的事情。例如，Twitter之类的服务提供了Web API，允许你用R和其他编程语言编写的程序自动读取推文。通过使用R代码向外部服务发送实际请求，可以使用`spark_apply()`调用Web API。
 
-The next example makes use of the googleAuthR package to authenticate to Google
-Cloud, the RoogleVision package to perform labeling over the Google Vision API,
-and spark_apply() to interoperate between Spark and Google’s deep learning ser‐
-vice. To run the following example, you’ll first need to disconnect from Spark and
-download your cloudml.json file from the Google developer portal:
+例如，谷歌提供了一个Web API来使用深度学习技术标注图像；你可以通过R使用这个API。但是对于更大的数据集，你需要从Spark访问它的API。你可以使用Spark准备流向Web API的数据，然后使用`spark_apply()`完成调用并在Spark中处理所有传入的结果。
+
+下一个示例使用`googleAuthR`包向谷歌云完成身份验证，使用`RoogleVision`包在谷歌视觉API上执行标记，使用`spark_apply()`在spark和谷歌的深度学习服务之间进行交互。要运行以下示例，首先需要断开与Spark的连接，并从谷歌开发者门户下载`cloudml.json`文件：
+
 ```{r}
 sc <- spark_connect(
 master = "local",
@@ -5285,27 +5268,18 @@ download = FALSE)
 4 /m/0kpmf Dog breed 0.909 0.909
 5 /m/05mqq3 Snout 0.891 0.891
 ```
-To successfully run a large distributed computation over a web API, the API needs to
-be able to scale to support the load from all the Spark executors. We can trust that
-major service providers are likely to support all the requests incoming from your
-cluster. But when you’re calling internal web APIs, make sure the API can handle the
-load. Also, when you’re using third-party services, consider the cost of calling their
-APIs across all the executors in your cluster to avoid potentially expensive and unex‐
-pected charges.
-Next we’ll describe a use case for big compute where R is used to perform distributed
-rendering.
 
-### Simulations
+要在web API上成功运行大型分布式计算，API需要能够扩展以支持来自所有Spark执行器的负载。我们相信主流服务提供商可能支持从集群传入的所有请求。但是，当你调用内部web API时，请确保API能够处理负载。此外，当使用第三方服务时，需要考虑跨集群中的所有执行器调用API的成本，以避免潜在的昂贵和意外的费用。
 
-You can use R combined with Spark to perform large-scale computing. The use case
-we explore here is rendering computationally expensive images using the `rayrender`
+接下来，我们会介绍一个用于大型计算的例子，其中R用于执行分布式图像渲染。
 
-package, which uses ray tracing, a photorealistic technique commonly used in movie
-production.
-Let’s use this package to render a simple scene that includes a few spheres (see
-Figure 11-4) that use a lambertian material, a diffusely reflecting material or “matte.”
-First, install `rayrender` using `install.packages("rayrender")`. Then, be sure
-you’ve disconnected and reconnected Spark:
+
+### 模拟
+
+你可以使用R和Spark来执行大规模计算。我们在这里探索的用例是使用`rayrender`包渲染计算成本高昂的图像，该包使用射线跟踪，这是电影制作中常用的保真技术。
+
+让我们使用这个包来渲染一个简单的场景，其中包括几个使用朗博材料、漫反射材料或哑光的球体（见图11-4）。首先，使用`install.packages("rayrender")`安装`rayrender`。然后，确保已断开并重新连接Spark：
+
 ```{r}
 library(rayrender)
 scene <- generate_ground(material = lambertian()) %>%
@@ -5314,12 +5288,10 @@ add_object(sphere(material = metal(color="orange"), z = +2)) %>%
 add_object(sphere(material = metal(color="orange"), x = -2))
 render_scene(scene, lookfrom = c(10, 5, 0), parallel = TRUE)
 ```
-![图11-4. Ray tracing in Spark using R and rayrender](figures/11_4.png)
-In higher resolutions, say 1920 x 1080, the previous example takes several minutes to
-render the single frame from图11-4; rendering a few seconds at 30 frames per
-second would take several hours in a single machine. However, we can reduce this
-time using multiple machines by parallelizing computation across them. For instance,
-using 10 machines with the same number of CPUs would cut rendering time tenfold:
+![图11-4. Spark中使用R和`rayrender`的射线跟踪](figures/11_4.png)
+
+在更高的分辨率，例如1920 x 1080中，上一个示例需要几分钟来渲染图11-4中的单个帧；单个机器以每秒30帧的速度渲染将需要数小时。但是，我们可以通过在多台机器上并行计算来减少这一时间。例如，使用10台具有相同数量CPU的计算机可以将渲染时间缩短为十分之一：
+
 ```{r}
 system2("hadoop", args = c("fs", "-mkdir", "/rendering"))
 sdf_len(sc, 628, repartition = 628) %>%
