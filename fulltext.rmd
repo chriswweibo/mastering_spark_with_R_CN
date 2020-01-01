@@ -2072,7 +2072,7 @@ spark_disconnect(sc)
 > You will never walk again, but you will fly!
 > —Three-Eyed Raven
 
-在第4章中，你学习了如何使用Spark提供的高级函数以及与Spark协同工作的著名R包，来构建预测模型。你首先学习了监督式算法，最后学习了原始文本上的非监督式算法。
+在第4章中，你学习了如何使用Spark提供的高级函数以及与Spark协同工作的著名R程序包，来构建预测模型。你首先学习了监督式算法，最后学习了原始文本上的非监督式算法。
 
 在本章中，我们将深入学习Spark管道操作，这是第四章中介绍的特征工程的动力。例如，当通过R中的公式接口调用`MLlib`函数时，例如`ml_logistic_regression(cars, am ~ .)`，一个*管道*就在背后构建完成了。因此，管道允许使用高级数据处理和建模流程。此外，管道还允许将其*部署*到生产系统，web应用程序、移动应用程序等,促进了跨数据科学和工程团队的协作。
 
@@ -2970,7 +2970,7 @@ livy_service_stop()
 
 Spark集群的所有连接体系结构由三种类型的计算实例组成：*驱动节点*、*工作节点*和*集群管理器*。集群管理器是一种允许Spark在集群中执行的服务。这部分内容第之前的“管理器”中有详细说明。工作节点（也称为执行器）在分区数据上执行计算任务，并将中间结果传递给其他工作节点或返回给驱动节点。驱动节点的任务是将工作委托给工作节点，同时还负责聚合它们的结果和控制计算流。在大多数情况下，聚合发生在工作节点中；然而，即使在节点聚合数据之后，驱动节点通常也需要收集工作节点的结果。因此，驱动节点通常至少配备（通常更多）一些计算资源（内存、CPU、本地存储等），可以作为工作节点。
 
-严格地说，驱动节点和工作节点只是分配了具有特定角色的机器的名称，而驱动节点中的实际计算则根据*Spark上下文*执行的。Spark上下文是Spark功能的主要入口，因为它的任务是调度任务、管理存储、跟踪执行状态、指定访问配置的设置、取消作业等。在工作节点中，实际计算是在spark执行器下执行的，spark执行器是一个spark组件，其任务是针对特定的数据分区执行子任务。图7-1说明了这个概念，其中驱动节点通过集群管理器编排一个工作节点的工作。
+严格地说，驱动节点和工作节点只是分配了具有特定角色的机器的名称，而驱动节点中的实际计算则根据*SparkContext*执行的。SparkContext是Spark功能的主要入口，因为它的任务是调度任务、管理存储、跟踪执行状态、指定访问配置的设置、取消作业等。在工作节点中，实际计算是在spark执行器下执行的，spark执行器是一个spark组件，其任务是针对特定的数据分区执行子任务。图7-1说明了这个概念，其中驱动节点通过集群管理器编排一个工作节点的工作。
 
 ![图7-1. Apache Spark连接体系结构](figures/7_1.png)
 
@@ -3009,11 +3009,11 @@ sc <- spark_connect(master = "master", spark_home = "local/path/to/spark")
 
 ## 本地模式
 
-当你以本地模式连接到Spark时，Spark会像Spark上下文和单个执行一样，启动一个运行大多数集群组件的进程。这对于在大型计算集群上运行Spark、脱机工作、故障排查或测试代码非常理想。图7-3描述了Spark的本地连接。
+当你以本地模式连接到Spark时，Spark会像SparkContext和单个执行一样，启动一个运行大多数集群组件的进程。这对于在大型计算集群上运行Spark、脱机工作、故障排查或测试代码非常理想。图7-3描述了Spark的本地连接。
 
 ![图7-3. 本地连接图](figures/7_3.png)
 
-注意，本地模式下既没有集群管理器，也没有工作进程，因为在本地模式下，所有工作都在驱动应用程序中运行。另外值得注意的是，`sparklyr`通过`spark-submit`启动Spark上下文 。`spark-submit`是每个Spark安装程序中都提供的一个脚本，允许用户向Spark提交自定义应用程序。如果你好奇的话，第13章会解释`sparklyr`中发生的提交此应用程序并从R正确连接的内部过程。
+注意，本地模式下既没有集群管理器，也没有工作进程，因为在本地模式下，所有工作都在驱动应用程序中运行。另外值得注意的是，`sparklyr`通过`spark-submit`启动SparkContext 。`spark-submit`是每个Spark安装程序中都提供的一个脚本，允许用户向Spark提交自定义应用程序。如果你好奇的话，第13章会解释`sparklyr`中发生的提交此应用程序并从R正确连接的内部过程。
 
 要执行本地连接，我们可以使用前面章节中熟悉的以下代码：
 
@@ -3026,7 +3026,7 @@ sc <- spark_connect(master = "local")
 
 连接到Spark单机集群需要集群管理器主节点实例的位置。就像之前在“单机”部分介绍的，你可以在集群管理器的web界面中找到该实例。你可以通过查找以spark://开头的URL来找到此位置。
 
-单机模式下的连接从`sparklyr`开始，它会启动`spark-submit`，然后提交`sparklyr`应用程序并创建Spark上下文。该上下文从运行在给定主节点地址下的Spark单机实例中请求执行器。图7-4说明了此过程，这与图7-1中的总体连接架构非常相似，但有一些单机集群和`sparklyr`特有的附加细节。
+单机模式下的连接从`sparklyr`开始，它会启动`spark-submit`，然后提交`sparklyr`应用程序并创建SparkContext。该Context从运行在给定主节点地址下的Spark单机实例中请求执行器。图7-4说明了此过程，这与图7-1中的总体连接架构非常相似，但有一些单机集群和`sparklyr`特有的附加细节。
 
 ![图7-4. Spark单机连接图](figures/7_4.png)
 
@@ -3042,7 +3042,7 @@ Hadoop YARN是Hadoop项目中的集群管理器。这是集群中最常见的集
 
 ### YARN客户端
 
-当你使用YARN客户端模式连接时，驱动实例运行R，`sparklyr`和Spark上下文。这些操作需要YARN工作节点来运行Spark执行器，如图7-5所示。
+当你使用YARN客户端模式连接时，驱动实例运行R，`sparklyr`和SparkContext。这些操作需要YARN工作节点来运行Spark执行器，如图7-5所示。
 
 ![图7-5. YARN客户端连接图](figures/7_5.png)
 
@@ -3050,7 +3050,7 @@ Hadoop YARN是Hadoop项目中的集群管理器。这是集群中最常见的集
 ```{r}
 sc <- spark_connect(master = "yarn")
 ```
-当你使用客户端模式运行YARN时，集群管理器会在后台执行你希望集群管理器执行的操作：它从集群分配资源并将它们分配给Spark应用程序。Spark上下文会为你管理这些应用。在之前的的“YARN”部分中有一点需要注意，Spark上下文位于运行R代码的同一台机器中；这与集群模式下运行YARN有所不同。
+当你使用客户端模式运行YARN时，集群管理器会在后台执行你希望集群管理器执行的操作：它从集群分配资源并将它们分配给Spark应用程序。SparkContext会为你管理这些应用。在之前的的“YARN”部分中有一点需要注意，SparkContext位于运行R代码的同一台机器中；这与集群模式下运行YARN有所不同。
 
 ### YARN集群
 
@@ -3069,7 +3069,7 @@ sc <- spark_connect(master = "yarn-cluster")
 
 ## Livy
 
-与其他需要在集群中使用边缘节点的连接方法不同，Livy提供了一个web API，使Spark集群可以从集群外部访问，并且不需要在客户端中安装Spark。在通过web API连接之后，*Livy服务*通过从集群管理器请求资源并像往常一样分发工作来启动Spark上下文。图7-7展示了一个Livy连接；注意，客户端通过web API远程连接到驱动节点。
+与其他需要在集群中使用边缘节点的连接方法不同，Livy提供了一个web API，使Spark集群可以从集群外部访问，并且不需要在客户端中安装Spark。在通过web API连接之后，*Livy服务*通过从集群管理器请求资源并像往常一样分发工作来启动SparkContext。图7-7展示了一个Livy连接；注意，客户端通过web API远程连接到驱动节点。
 
 ![图7-7. Livy连接图](figures/7_7.png)
 
@@ -3734,7 +3734,7 @@ spark_read_source(sc, "simple_xml", "simple.xml", "xml")
 tbl(sc, "simple_xml") %>%
 spark_write_source("xml", options = list(path = "data.xml"))
 ```
-此外，R社区还开发了一些扩展来加载其他文件格式，例如`sparklyr.nested`用于帮助嵌套数据，`spark.sas7bdat`用于从SAS读取数据，`sparkavro`用于以AVRO格式读取数据，`sparkwarc`用于读取WARC文件，这些扩展使用了第10章中介绍的扩展机制。第11章介绍了使用R包加载其他文件格式的技术，第13章介绍了使用Java库做了进一步补充。但首先，让我们探讨如何从几个不同的文件系统中检索和存储文件。
+此外，R社区还开发了一些扩展来加载其他文件格式，例如`sparklyr.nested`用于帮助嵌套数据，`spark.sas7bdat`用于从SAS读取数据，`sparkavro`用于以AVRO格式读取数据，`sparkwarc`用于读取WARC文件，这些扩展使用了第10章中介绍的扩展机制。第11章介绍了使用R程序包加载其他文件格式的技术，第13章介绍了使用Java库做了进一步补充。但首先，让我们探讨如何从几个不同的文件系统中检索和存储文件。
 
 ## 文件系统
 
@@ -4350,9 +4350,9 @@ sc <- spark_connect(master = "local")
 
 ## 概述
 
-在第1章中，我们把R社区呈现为一个充满活力的群体，其中的每个人在许多方面相互协作，例如，通过创建可以从CRAN安装的R包来推动开放科学的发展。以类似的，但规模要小得多的方式，R社区提供了扩展，扩大了Spark和R最初支持的功能。Spark本身也支持创建Spark扩展。事实上，许多R扩展都使用Spark的扩展。
+在第1章中，我们把R社区呈现为一个充满活力的群体，其中的每个人在许多方面相互协作，例如，通过创建可以从CRAN安装的R程序包来推动开放科学的发展。以类似的，但规模要小得多的方式，R社区提供了扩展，扩大了Spark和R最初支持的功能。Spark本身也支持创建Spark扩展。事实上，许多R扩展都使用Spark的扩展。
 
-人们经常创建扩展，所以本章节在某个时间点后就过时了。此外，我们甚至可能不知道许多Spark和R扩展。然而，我们至少可以通过查看CRAN中`sparklyr`的“反向导入”来跟踪CRAN中可用的扩展。在CRAN中发布的扩展和R包往往是最稳定的，因为当一个包在CRAN中发布时，它会经过一个评审过程，从而提高贡献的总体质量。
+人们经常创建扩展，所以本章节在某个时间点后就过时了。此外，我们甚至可能不知道许多Spark和R扩展。然而，我们至少可以通过查看CRAN中`sparklyr`的“反向导入”来跟踪CRAN中可用的扩展。在CRAN中发布的扩展和R程序包往往是最稳定的，因为当一个包在CRAN中发布时，它会经过一个评审过程，从而提高贡献的总体质量。
 
 虽然我们希望能够展示所有的扩展，但是我们将本节限制在你最感兴趣的扩展。你可以在github.com/r-spark部分或通过搜索带有`sparklyr`标记的GitHub仓库找到其他扩展。
 
@@ -4372,7 +4372,7 @@ sc <- spark_connect(master = "local")
 
 在学习如何以及何时使用每个扩展之前，我们应该首先简要介绍如何使用R和Spark扩展。
 
-首先，Spark扩展是接受Spark的R包。与其他任何R包一样，你首先需要安装扩展。安装好后，一定要知道在使用扩展之前需要重新连接到Spark。所以，一般来说，你应该遵循以下模式：
+首先，Spark扩展是接受Spark的R程序包。与其他任何R程序包一样，你首先需要安装扩展。安装好后，一定要知道在使用扩展之前需要重新连接到Spark。所以，一般来说，你应该遵循以下模式：
 
 ```{r}
 library(sparkextension)
@@ -5077,7 +5077,7 @@ summarise(count = count())
 我们已经提供了一个示例来帮助你理解`spark_apply()`，现在我们介绍一些实用的例子：
 
 * 导入
-可以考虑使用R从外部数据源和格式导入数据。例如，当一个文件格式无法获得Spark或其扩展的原生支持时，可以考虑用R代码并借助R包实现分布式自定义解析器。
+可以考虑使用R从外部数据源和格式导入数据。例如，当一个文件格式无法获得Spark或其扩展的原生支持时，可以考虑用R代码并借助R程序包实现分布式自定义解析器。
 * 建模
 使用Spark和R中已有的丰富建模功能是很自然的。在大多数情况下，R模型不能跨大数据使用；但是，我们会专门展示两个用例来说明其中R模型可以在大数据上使用。例如，当数据适合一台机器时，可以使用网格搜索并行优化它们的参数。在一些情况下，我们可以对数据进行分区，并在数据子集上创建多个模型，我们可以使用R中的分区建模来跨分区计算模型。
 * 变换
@@ -5089,7 +5089,7 @@ summarise(count = count())
 
 ### 定制解析器
 
-尽管Spark及其各种扩展提供了对许多文件格式（csv、JSON、Parquet、AVRO等）的支持，但你会在大规模数据上能需要其他格式。你可以使用`spark_apply()`和许多现有的R包解析这些额外的格式。在本节中，我们将研究如何解析日志文件。使用类似的方法你还可以解析其他文件格式。
+尽管Spark及其各种扩展提供了对许多文件格式（csv、JSON、Parquet、AVRO等）的支持，但你会在大规模数据上能需要其他格式。你可以使用`spark_apply()`和许多现有的R程序包解析这些额外的格式。在本节中，我们将研究如何解析日志文件。使用类似的方法你还可以解析其他文件格式。
 
 Spark通常用来分析日志文件，例如跟踪Amazon S3下载数据的日志。`webreadr`包通过支持加载存储为Amazon S3、Squid和Common格式的日志，可以简化解析日志的过程。在连接到Spark之前，应该从CRAN安装`webreadr`。
 
@@ -5182,7 +5182,7 @@ ggplot2::geom_point())
 
 ### 网格搜索
 
-许多R包提供了需要定义多个参数完成配置和优化的模型。当这些参数的值未知时，我们可以将一列未知参数发放到一组机器上，以找到最佳的参数组合。如果这列参数包含多个要优化的参数，则通常会通过参数A和参数B之间的所有组合进行测试，从而创建一个参数网格。在这个参数网格上搜索最佳参数的过程通常称为网格搜索。
+许多R程序包提供了需要定义多个参数完成配置和优化的模型。当这些参数的值未知时，我们可以将一列未知参数发放到一组机器上，以找到最佳的参数组合。如果这列参数包含多个要优化的参数，则通常会通过参数A和参数B之间的所有组合进行测试，从而创建一个参数网格。在这个参数网格上搜索最佳参数的过程通常称为网格搜索。
 
 例如，我们可以定义一个参数网格来优化决策树模型，如下所示：
 
@@ -5404,16 +5404,14 @@ columns = list(numbers = "double", names = "character"))
 1 1 abc
 ```
 
-我们已经介绍了行和列如何与`spark_apply()`进行交互，接下来我们将继续使用上下文信息，它们有时在处理分布式数据集时需要。
+我们已经介绍了行和列如何与`spark_apply()`进行交互，接下来我们将继续使用Context信息，它们有时在处理分布式数据集时需要。
 
 ## Context
 
-To process partitions using `spark_apply()`, you might need to include auxiliary data
-that is small enough to fit in each node. This was the case in the grid search use case,
-where the dataset was passed to all partitions and remained unpartitioned itself.
-We can modify the initial `f(x) = 10 * x` example in this chapter to customize the
-multiplier. It was originally set to 10, but we can make it configurable by specifying it
-as the context parameter:
+如果要使用`spark_apply()`处理分区，可能需要包括足以放入每个节点的小型辅助数据。网格搜索的例子中就是这样，数据集被传递到所有分区，并且自身保持未分区状态。
+
+我们可以在本章中修改初始的`f(x) = 10 * x`示例来定制乘法器。它最初设置为10，但我们可以在`context`参数中指定，完成配置：
+
 ```{r}
 sdf_len(sc, 4) %>%
 spark_apply(
@@ -5428,17 +5426,13 @@ context = 100
 3 300
 4 400
 ```
-Figure 11-5 illustrates this example conceptually. Notice that the data partitions are
-still variable; however, the contextual parameter is distributed to all the nodes.
+图11-5展示了这个例子的概念图。注意到数据分区还是可用的，但是Context参数分配给了所有节点。
 
-![图11-5. Map operation when multiplying with context](figures/11_5.png)
+![图11-5. 乘以context参数的Map操作](figures/11_5.png)
 
-The grid search example used this parameter to pass a DataFrame to each worker
-node; however, since the context parameter is serialized as an R object, it can contain
-anything. For instance, if you need to pass multiple values—or even multiple datasets
-—you can pass a list with values.
+网格搜索示例使用这个参数将数据框传递给每个工作节点；但是，由于`context`参数被序列化为R对象，因此它可以包含任何内容。例如，如果需要传递多个值甚至多个数据集，你甚至可以传递包含值的列表。
 
-The following example defines a `f(x) = m * x + b` function and runs `m = 10` and `b = 2`:
+下面的例子定义了一个`f(x) = m * x + b`函数，并运行`m = 10`和`b = 2`：
 ```{r}
 sdf_len(sc, 4) %>%
 spark_apply( ~.y$m * .x + .y$b,
@@ -5451,36 +5445,27 @@ context = list(b = 2, m = 10) )
 3 32
 4 42
 ```
-Notice that we’ve renamed `context` to `.y` to shorten the variable name. This works
-because `spark_apply()` assumes context is the second parameter in functions and
-expressions.
-You’ll find the context parameter extremely useful; for instance, the next section
-presents how to properly construct functions, and `context` is used in advanced use
-cases to construct functions dependent on other functions.
 
-## Functions
+注意，我们已将`context`重命名为`.y`以缩短变量名。代码跑通的原因是`spark_apply()`假设`context`是函数和表达式中的第二个参数。
 
-Earlier we presented `spark_apply()` as an operation to perform custom transforma‐
-tions using a function or expression. In programming literature, functions with a
-context are also referred to as a closure.
-Expressions are useful to define short transformations, like `~ 10 * .x`. For an expres‐
-sion, `.x` contains a partition and .y the context, when available. However, it can be
-hard to define an expression for complex code that spans multiple lines. For those
-cases, functions are more appropriate.
-Functions enable complex and multiline transformations, and are defined as `function(data, context) {}` where you can provide arbitrary code within the `{}`. We’ve
-seen them in previous sections when using Google Cloud to transform images into
-image captions.
-The function passed to `spark_apply()` is serialized using serialize(), which is
-described as “a simple low-level interface for serializing to connections.” One current
-limitation of `serialize()` is that it won’t serialize objects being referenced outside its
-environment. For instance, the following function errors out since the closure refer‐
-ences `external_value`:
+你会发现`context`参数非常有用；例如，下一节会介绍如何正确构造函数，并且`context`在高级示例中用于构造依赖于其他函数的函数。
+
+## 函数
+
+前面我们将`spark_apply()`作为函数或表达式执行自定义转换的操作。在有关编程的文献中，带有上下文的函数也被称为*闭包*。
+
+表达式可用于定义语句较短的转换，如`~ 10 * .x`。对于表达式，`.x`包含分区而`.y`包含上下文信息（如果可用）。但是，我们很难为跨多行的复杂代码定义表达式。对于这些情况，函数更合适。
+
+函数支持复杂的多行转换，并定义为`function(data, context) {}`，你可以在`{}`中提供任何代码。我们在前面的章节中看到过使用谷歌云将图片转换为图片标题的例子。
+
+传递给`spark_apply()`的函数使用`serialize()`进行序列化，`serialize()`被描述为“一个用于序列化连接的简单低层级接口”。`serialize()`的一个当前限制是它不会序列化在其环境之外引用的对象。例如，以下函数由于闭包引用了`external_value`而报错：
+
 ```{r}
 external_value <- 1
 spark_apply(iris, function(e) e + external_value)
 ```
-As workarounds to this limitation, you can add the functions your closure needs into
-the context and then assign the functions into the global environment:
+作为解决这个限制的方法，你可以将闭包所需的函数添加到`context`中，然后将这些函数分配到全局环境中：
+
 ```{r}
 func_a <- function() 40
 func_b <- function() func_a() + 1
@@ -5498,13 +5483,13 @@ func_c = func_c
  <dbl>
 1 42
 ```
-When this isn’t feasible, you can also create your own R package with the functional‐
-ity you need and then use your package in `spark_apply()`.
-You’ve learned all the functionality available in `spark_apply()` using plain R code. In
-the next section we present how to use packages when distributing computations. R
-packages are essential when you are creating useful transformations.
 
-## Packages
+当这个方法不可行时，你还可以为所需的功能创建自己的R程序包，然后在`spark_apply()`中使用该包。
+
+你已经使用简单的R代码学习了`spark_apply()`中提供的所有功能。在下一节中，我们会介绍如何在分发计算时使用包。在创建有用的转换时，R程序包是必不可少的。
+
+
+## 程序包
 
 With `spark_apply()` you can use any R package inside Spark. For instance, you can
 use the `broom` package to create a tidy DataFrame from linear regression output:
