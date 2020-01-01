@@ -5089,17 +5089,12 @@ summarise(count = count())
 
 ### 定制解析器
 
-Though Spark and its various extensions provide support for many file formats
-(CSVs, JSON, Parquet, AVRO, etc.), you might need other formats to use at scale. You
-can parse these additional formats using `spark_apply()` and many existing R pack‐
-ages. In this section, we will look at how to parse logfiles, though similar approaches
-can be followed to parse other file formats.
+尽管Spark及其各种扩展提供了对许多文件格式（csv、JSON、Parquet、AVRO等）的支持，但你会在大规模数据上能需要其他格式。你可以使用`spark_apply()`和许多现有的R包解析这些额外的格式。在本节中，我们将研究如何解析日志文件。使用类似的方法你还可以解析其他文件格式。
 
-It is common to use Spark to analyze logfiles—for instance, logs that track download
-data from Amazon S3. The `webreadr` package can simplify the process of parsing logs
-by providing support to load logs stored as Amazon S3, Squid, and the Common log
-format. You should install `webreadr` from CRAN before connecting to Spark.
-For example, an Amazon S3 log looks as follows:
+Spark通常用来分析日志文件，例如跟踪Amazon S3下载数据的日志。`webreadr`包通过支持加载存储为Amazon S3、Squid和Common格式的日志，可以简化解析日志的过程。在连接到Spark之前，应该从CRAN安装`webreadr`。
+
+例如，Amazon S3日志如下所示：
+
 ```
 #Version: 1.0
 #Fields: date time x-edge-location sc-bytes c-ip cs-method cs(Host) cs-uri-stem
@@ -5111,7 +5106,7 @@ For example, an Amazon S3 log looks as follows:
  MRVMF7KydIvxMWfJIglgwHQwZsbG2IhRJ07sn9AkKUFSHS9EXAMPLE==
  d111111abcdef8.cloudfront.net http - 0.001
 ```
-This can be parsed easily with `read_aws()`, as follows:
+这些内容可以使用`read_aws()`快速的解析，代码如下：
 ```{r}
 aws_log <- system.file("extdata/log.aws", package = "webreadr")
 webreadr::read_aws(aws_log)
@@ -5124,7 +5119,7 @@ webreadr::read_aws(aws_log)
 # query <chr>, cookie <chr>, result_type <chr>, request_id <chr>,
 # host_header <chr>, protocol <chr>, bytes_received <chr>, time_elapsed <dbl>
 ```
-To scale this operation, we can make use of `read_aws()` using `spark_apply()`:
+要扩大这个操作，我们可以借助`spark_apply()`使用`read_aws()`：
 ```{r}
 spark_read_text(sc, "logs", aws_log, overwrite = TRUE, whole = TRUE) %>%
 spark_apply(~webreadr::read_aws(.x$contents))
@@ -5137,26 +5132,18 @@ spark_apply(~webreadr::read_aws(.x$contents))
 # query <chr>, cookie <chr>, result_type <chr>, request_id <chr>,
 # host_header <chr>, protocol <chr>, bytes_received <chr>, time_elapsed <dbl>
 ```
-The code used by plain R and `spark_apply()` is similar; however, with
-`spark_apply()`, logs are parsed in parallel across all the worker nodes available in
-your cluster.
-This concludes the custom parsers discussion; you can parse many other file formats
-at scale from R following a similar approach. Next we’ll look at present partitioned
-modeling as another use case focused on modeling across several datasets in parallel.
+纯R代码和`spark_apply()`代码很相似。但是通过`spark_apply()`，日志可以在集群中的所有工作节点上解析。
 
-### Partitioned Modeling
+自定义解析器的讨论到此结束；你可以按照类似的方法用R解析大数据的许多其他文件格式。接下来，我们把当前的分区建模看作另一个用例，关注跨多个数据集的并行建模。
 
-There are many modeling packages available in R that can also be run at scale by par‐
-titioning the data into manageable groups that fit in the resources of a single
-machine.
-For instance, suppose that you have a 1 TB dataset for sales data across multiple cities
-and you are tasked with creating sales predictions over each city. For this case, you
-can consider partitioning the original dataset per city—say, into 10 GB of data per city
-—which could be managed by a single compute instance. For this kind of partitiona‐
-ble dataset, you can also consider using `spark_apply()` by training each model over
-each city.
-As a simple example of partitioned modeling, we can run a linear regression using the
-iris dataset partitioned by species:
+### 分区建模
+
+R中有许多可以运行在大数据上的建模包。它们将数据划分成易于管理的几组数据，每组数据都可以放在单个机器上。
+
+例如，假设你有一个1TB的数据集，包含多个城市的销售数据，并且你的任务是在每个城市构建销售预测。在这种情况下，可以考虑将原始数据集划分为10GB的单个城市数据，这些数据可以由单个计算实例管理。对于这种可分区的数据集，还可以考虑使用`spark_apply()` ，为每个城市上训练一个模型。
+
+作为分区建模的简单示例，我们可以使用按物种分区的`iris`数据集进行线性回归：
+
 ```{r}
 iris <- copy_to(sc, datasets::iris)
 iris %>%
@@ -5168,7 +5155,7 @@ spark_apply(nrow, group_by = "Species")
 2 virginica 50
 3 setosa 50
 ```
-Then you can run a linear regression over each species using `spark_apply()`:
+然后，你可以使用`spark_apply()`在每个物种上执行线性回归：
 ```{r}
 iris %>%
 spark_apply(
@@ -5182,20 +5169,18 @@ group_by = "Species")
 2 virginica 0.104
 3 setosa 0.110
 ```
-As you can see from the r.squared results and intuitively in图11-3, the linear
-model for versicolor better fits to the regression line:
+从`r.squared`结果和图11-3可以看到，`versicolor`的线性模型可以更好的拟合成回归曲线：
 ```{r}
 purrr::map(c("versicolor", "virginica", "setosa"),
 ~dplyr::filter(datasets::iris, Species == !!.x) %>%
 ggplot2::ggplot(ggplot2::aes(x = Petal.Length, y = Petal.Width)) +
 ggplot2::geom_point())
 ```
-![图11-3. Modeling over species in the iris dataset](figures/11_3.png)
-This concludes our brief overview on how to perform modeling over several different
-partitionable datasets. A similar technique can be applied to perform modeling over
-the same dataset using different modeling parameters, as we cover next.
+![图11-3. `iris`数据集在不同物种上的建模结果 dataset](figures/11_3.png)
 
-### Grid Search
+我们简单介绍了如何在几个不同的可分区数据集上执行建模。类似的技术可以应用于同一个数据集上的使用不同参数的建模。下面就会介绍。
+
+### 网格搜索
 
 Many R packages provide models that require defining multiple parameters to con‐
 figure and optimize. When the value of these parameters is unknown, we can distrib‐
