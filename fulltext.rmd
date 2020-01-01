@@ -5304,34 +5304,26 @@ filename = render)
 system2("hadoop", args = c("fs", "-put", render, "/user/hadoop/rendering/"))
 }, context = scene, columns = list()) %>% collect()
 ```
-After all the images are rendered, the last step is to collect them from HDFS and use
-tools like `ffmpeg` to convert individual images into an animation:
+完成所有的图像渲染后，最后一步是从HDFS中获得结果，并使用诸如`ffmpeg`的工具把单个图像转化成动画：
+
 ```
 hadoop fs -get rendering/
 ffmpeg -s 1920x1080 -i rendering/%d.png -vcodec libx264 -crf 25
  -pix_fmt yuv420p rendering.mp4
 ```
 
-> This example assumes HDFS is used as the storage technology for
-Spark and being run under a hadoop user, you will need to adjust
-this for your particular storage or user.
+> 本例假设HDFS用作Spark的存储技术，并在hadoop用户下运行，你需要根据特定的存储或用户进行调整。
 
-We’ve covered some common use cases for `spark_apply()`, but you are certainly wel‐
-come to find other use cases for your particular needs. The next sections present
-technical concepts you’ll need to understand to create additional use cases and to use
-`spark_apply()` effectively.
 
-## Partitions
-Most Spark operations that analyze data with `dplyr` or model with MLlib don’t
-require understanding how Spark partitions data; they simply work automatically.
-However, for distributed R computations, this is not the case. For these you will have
-to learn and understand how exactly Spark is partitioning your data and provide
-transformations that are compatible with them. This is required since `spark_apply()`
-receives each partition and allows you to perform any transformation, not the entire
-dataset. You can refresh concepts like partitioning and transformations using the dia‐
-grams and examples from Chapter 9.
-To help you understand how partitions are represented in `spark_apply()`, consider
-the following code:
+我们已经介绍了`spark_apply()`的一些常见用例，但是你还要针对具体的需求找出其他用例。下一节将介绍技术概念，达到创建其他用例和有效使用`spark_apply()`的目的。
+
+
+## 分区
+
+大多数使用`dplyr`分析数据的任务或使用MLlib建模的Spark操作不需要了解Spark如何划分数据；它们是自动完成的。然而，对于分布式R计算，情况并非如此。要掌握这些内容，你必须学习和理解Spark是如何对数据进行分区的，并提供与之兼容的转换。这是必需的，因为`spark_apply()`接受每个分区并允许执行任何转换，而不是整个数据集。你可以使用第9章中的图表和示例回忆分区和转换等概念。
+
+为了帮助理解`spark_apply()`中如何分区，可以学习以下代码：
+
 ```{r}
 sdf_len(sc, 10) %>%
 spark_apply(~nrow(.x))
@@ -5341,22 +5333,18 @@ spark_apply(~nrow(.x))
 1 5
 2 5
 ```
-Should we expect the output to be the total number of rows? As you can see from the
-results, in general the answer is no; Spark assumes data will be distributed across
-multiple machines, so you’ll often find it already partitioned, even for small datasets.
-Because we should not expect `spark_apply()` to operate over a single partition, let’s
-find out how many partitions `sdf_len(sc, 10)` contains:
+
+我们应该期望输出是总行数吗？从结果中可以看出，答案通常是否定的；Spark假设数据分布在多台机器上，因此你经常会发现它已经分好区了，即使是对于小数据集也是如此。因为我们不应该让`spark_apply()`在单个分区上操作，所以让我们看看`sdf_len(sc, 10)`包含多少个分区：
+
 ```{r}
 sdf_len(sc, 10) %>% sdf_num_partitions()
 [1] 2
 ```
-This explains why counting rows through `nrow()` under `spark_apply()` retrieves two
-rows since there are two partitions, not one. `spark_apply()` is retrieving the count of
-rows over each partition, and each partition contains 5 rows, not 10 rows total, as you
-might have expected.
-For this particular example, we could further aggregate these partitions by reparti‐
-tioning and then adding up—this would resemble a simple MapReduce operation
-using `spark_apply()`:
+
+这解释了为什么在`spark_apply()`下通过`nrow()`计数行会得到两行结果，因为有两个分区，而不是一个。`spark_apply()`获取每个分区上的行数，每个分区包含5行，而不是所期望的那样总共10行。
+
+对于这个特定的示例，我们可以通过重新分区来进一步聚合这些分区，然后将其相加，这类似于使用`spark_apply()`的简单MapReduce操作：
+
 ```{r}
 sdf_len(sc, 10) %>%
 spark_apply(~nrow(.x)) %>%
@@ -5367,15 +5355,12 @@ spark_apply(~sum(.x))
 * <int>
 1 10
 ```
-So now that you know about partitions using spark_apply(), we’ll move on to using
-`group_by` to control partitions.
+因此，既然你知道在分区上使用`spark_apply()`，我们会继续使用`group_by`来控制分区。
 
-## Grouping
+## 分组
 
-When using `spark_apply()`, we can request explicit partitions from Spark. For
-instance, if we had to process numbers less than four in one partition and the remain‐
-ing ones in a second partition, we could create these groups explicitly and then
-request `spark_apply()` to use them:
+使用`spark_apply()`时，我们可以从spark请求显式分区。例如，如果我们必须在一个分区中处理小于4的数字，而在另个分区中处理其余的数字，我们可以显式地创建这些组，然后请求`spark_apply()`使用两个分区：
+
 ```{r}
 sdf_len(sc, 10) %>%
 transmute(groups = id < 4) %>%
@@ -5386,24 +5371,16 @@ spark_apply(~nrow(.x), group_by = "groups")
 1 TRUE 3
 2 FALSE 7
 ```
-Notice that `spark_apply()` is still processing two partitions, but in this case we
-expect these partitions since we explicitly requested them in `spark_apply()`; there‐
-fore, you can safely interpret the results as “there are three integers less than four.”
 
-> You can only group data by partitions that fit in a single machine; if
-one of the groups is too large, an exception will be thrown. To per‐
-form operations over groups that exceed the resources of a single
-node, you can consider partitioning to smaller units or use
-`dplyr::do`, which is currently optimized for large partitions.
+注意，`spark_apply()`还是处理两个分区，但在本例中，这是我们期望的，因为我们在`spark_apply()` 中显式地请求了它们；因此，你可以安全地将结果理解为“有3个整数小于4”。
 
-The takeaway from this section is to always consider partitions when dealing with
-`spark_apply()`. Next, we will zoom in to spark_apply() to understand how columns
-are interpreted.
+> 只能对放在单个计算机的数据按照分区进行分组；如果其中一个组太大，会抛出异常。要在超过单个节点资源的组上执行操作，可以考虑分区为较小的单元，或者使用`dplyr::do`，它目前已针对大型分区进行了优化。
 
-## Columns
+本节的要点是在处理`spark_apply()`时始终考虑分区。接下来，我们会详细研究`spark_apply()`，探索列是如何被理解的。
 
-By default, `spark_apply()` automatically inspects the DataFrame being produced to
-learn column names and types. For example:
+## 列
+
+`spark_apply()`默认自动检查生成中的数据框，以便发现列名和数据类型。例如：
 ```{r}
 sdf_len(sc, 1) %>%
 spark_apply(~ data.frame(numbers = 1, names = "abc"))
@@ -5412,13 +5389,11 @@ spark_apply(~ data.frame(numbers = 1, names = "abc"))
 * <dbl> <chr>
 1 1 abc
 ```
-However, this is inefficient since `spark_apply()` needs to run twice: first, to find col‐
-umns by computing `spark_apply()` against a subset of all the data, and then to com‐
-pute the actual desired values.
-To improve performance, you can explicitly specify the columns through the columns
-parameters. This parameter takes a named list of types expected in the resulting Data‐
-Frame. We can then rewrite the previous example to run only once by specifying the
-correct type for the numbers column:
+
+但是，这样做很低效，因为`spark_apply()`需要运行两次：首先，通过对所有数据的子集计算`spark_apply()`来查找列，然后计算实际所需的值。
+
+为了提高性能，可以通过`columns`参数显式指定列。这个参数接受最终数据框中期望的类型的命名列表。然后，我们可以通过给`numbers`列指定正确的类型，重写之前的示例，并只运行一次`spark_apply()`：
+
 ```{r}
 sdf_len(sc, 1) %>%
 spark_apply( ~ data.frame(numbers = 1, names = "abc"),
@@ -5428,9 +5403,8 @@ columns = list(numbers = "double", names = "character"))
 * <dbl> <chr>
 1 1 abc
 ```
-Now that we’ve presented how rows and columns interact with `spark_apply()`, let’s
-move on to making use of the contextual information sometimes required when pro‐
-cessing distributed datasets.
+
+我们已经介绍了行和列如何与`spark_apply()`进行交互，接下来我们将继续使用上下文信息，它们有时在处理分布式数据集时需要。
 
 ## Context
 
