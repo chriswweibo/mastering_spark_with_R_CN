@@ -5635,8 +5635,7 @@ sdf_len(sc, 2 * 10^4) %>% spark_apply(nrow)
 
 ## 故障排除
 
-A custom transformation can fail for many reasons. To learn how to troubleshoot
-errors, let’s simulate a problem by triggering an error ourselves:
+一个定制化的转换可能因为各种原因而失败。要了解如何排除报错，让我们自己模拟一个导致报错的问题：
 ```{r}
 sdf_len(sc, 1) %>% spark_apply(~stop("force an error"))
 Error in force(code) :
@@ -5645,17 +5644,15 @@ Error in force(code) :
 ---- Output Log ----
 19/03/11 14:12:24 INFO sparklyr: Worker (1) completed wait using lock for RScript
 ```
-Notice that the error message mentions inspecting the logs. When running in local
-mode, you can simply run the following:
+注意，错误信息提到要检查日志。在以本地模式运行时，你可以只运行以下代码：
 ```{r}
 spark_log(sc, filter = "terminated unexpectedly")
 19/03/11 14:12:24 ERROR sparklyr: RScript (1) terminated unexpectedly:
  force an error
 ```
-This points to the artificial `stop("force an error")` error we mentioned. However,
-if you’re not working in local mode, you will have to retrieve the worker logs from
-your cluster manager. Since this can be cumbersome, one alternative is to rerun
-`spark_apply()` but return the error message yourself:
+
+这指向我们提到的人为`stop("force an error")`错误。但是，如果不在本地模式下工作，必须从集群管理器中获取工作日志。由于这个过程可能很麻烦，一种替代方法是重新运行`spark_apply()`，自己返回错误消息：
+
 ```{r}
 sdf_len(sc, 1) %>% spark_apply(~tryCatch(
 stop("force an error"),
@@ -5666,19 +5663,15 @@ error = function(e) e$message
  <chr>
 1 force an error
 ```
-Among the other, more advanced troubleshooting techniques applicable to
-`spark_apply()`, the following sections present these techniques in order. You should
-try to troubleshoot by using worker logs first, then identifying partitioning errors,
-and finally, attempting to debug a worker node.
+
+除其他适用于`spark_apply()`的更高级故障排除技术外，以下各节按顺序介绍这些技术。你应该首先尝试使用工作日志进行故障排除，然后识别分区错误，最后尝试调试工作节点。
 
 ### 工作节点日志
 
-Whenever `spark_apply()` is executed, information regarding execution is written
-over each worker node. You can use this log to write custom messages to help you
-diagnose and fine-tune your code.
-For instance, suppose that we don’t know what the first column name of df is. We can
-write a custom log message executed from the worker nodes using `worker_log()` as
-follows:
+每当执行`spark_apply()`时，有关执行的信息都会写入每个工作节点。你可以使用这个日志编写自定义消息，以帮助诊断和调试代码。
+
+例如，假设我们不知道`df`的第一个列名是什么。我们可以使用`worker_log()`编写在工作节点执行的自定义日志消息，如下所示：
+
 ```{r}
 sdf_len(sc, 1) %>% spark_apply(function(df) {
 worker_log("the first column in the data frame is named ", names(df)[[1]])
@@ -5689,7 +5682,7 @@ df
 * <int>
 1 1
 ```
-When running locally, we can filter the log entries for the worker as follows:
+当在本地运行的时候，我们可以过滤工作节点的日志记录，如下所示：
 ```{r}
 spark_log(sc, filter = "sparklyr: RScript")
 18/12/18 11:33:47 INFO sparklyr: RScript (3513) the first column in
@@ -5699,28 +5692,27 @@ the dataframe is named id
 18/12/18 11:33:47 INFO sparklyr: RScript (3513) updated 1 rows
 18/12/18 11:33:47 INFO sparklyr: RScript (3513) finished apply
 18/12/18 11:33:47 INFO sparklyr: RScript (3513) finished
-220 | Chapter 11: Distributed R
 ```
-Notice that the logs print our custom log entry, showing that id is the name of the
-first column in the given DataFrame.
-This functionality is useful when troubleshooting errors; for instance, if we force an
-error using the `stop()` function:
+
+注意，日志会打印我们自定义日志记录，展示的id是给定数据框中第一列的名称。
+
+此功能在g故障排除时非常有用；例如，如果使用`stop()`函数强制执行错误：
+
 ```{r}
 sdf_len(sc, 1) %>% spark_apply(function(df) {
 stop("force an error")
 })
 ```
-We will get an error similar to the following:
+我们会得到如下的错误：
 ```{r}
  Error in force(code) :
  `sparklyr` worker rscript failure, check worker logs for details
 ```
-As suggested by the error, we can look in the worker logs for the specific errors as
-follows:
+根据错误提示的，我们可以查看工作节点的日志，获取如下的具体错误信息：
 ```{r}
 spark_log(sc)
 ```
-This will show an entry containing the error and the call stack:
+这些信息会展示包含错误和回调的记录：
 ```
 18/12/18 11:26:47 INFO sparklyr: RScript (1860) computing closure
 18/12/18 11:26:47 ERROR sparklyr: RScript (1860) terminated unexpectedly:
@@ -5733,42 +5725,35 @@ This will show an entry containing the error and the call stack:
 })(structure(list(id = 1L), class = "data.frame", row.names = c(NA,
 -1L)))
 ```
-Notice that `spark_log(sc)` only retrieves the worker logs when you’re using local
-clusters. When running in proper clusters with multiple machines, you will have to
-use the tools and user interface provided by the cluster manager to find these log
-entries.
+
+注意，`spark_log(sc)`只在使用本地集群时检索工作日志。当在具有多台计算机的集群中运行时，必须使用集群管理器提供的工具和用户界面来查找这些日志条目。
 
 ### 解决超时
 
-When you are running with several hundred executors, it becomes more likely that
-some tasks will hang indefinitely. In this situation, most of the tasks in your job com‐
-plete successfully, but a handful of them are still running and do not fail or succeed.
-Suppose that you need to calculate the size of many web pages. You could use
-`spark_apply()` with something similar to:
+当你运行几百个执行器时，某些任务可能会无限期挂起。在这种情况下，工作中的大多数任务都会成功完成，但其中有少数任务仍在运行，不会失败或成功。
+
+假设你需要计算许多网页的大小。你可以在类似如下的内容上使用`spark_apply()`：
+
 ```{r}
 sdf_len(sc, 3, repartition = 3) %>%
 spark_apply(~ download.file("https://google.com", "index.html") +
 file.size("index.html"))
 ```
-Some web pages might not exist or take too long to download. In this case, most tasks
-will succeed, but a few will hang. To prevent these few tasks from blocking all compu‐
-tations, you can use the `spark.speculation` Spark setting. With this setting enabled,
-once 75% of all tasks succeed, Spark will look for tasks taking longer than the median
-task execution time and retry. You can use the `spark.speculation.multiplier` set‐
-ting to configure the time multiplier used to determine when a task is running slow.
-Therefore, for this example, you could configure Spark to retry tasks that take four
-times longer than the median as follows:
+
+有些网页可能不存在或下载时间过长。在这种情况下，大多数任务都会成功，但少数任务会挂起。为了防止这几个任务阻塞所有计算，可以使用`spark.speculation`设置。启用这个设置后，一旦75%的任务成功，Spark将查找比任务执行时间中位数更长的任务，然后重试。你可以使用`spark.speculation.multiplier`设置时间倍数，来确定任务是否运行缓慢。
+
+因此，在本例中，您可以配置比这个中位数长四倍的任务，让Spark重试，如下所示：
+
 ```{r}
 config <- spark_config()
 config["spark.speculation"] <- TRUE
 config["spark.speculation.multiplier"] <- 4
 ```
 
-### Inspecting Partitions
+### 检查分区
 
-If a particular partition fails, you can detect the broken partition by computing a
-digest and then retrieving that particular partition. As usual, you can install digest
-from CRAN before connecting to Spark:
+如果一个特定的分区失败了，你可以通过计算摘要信息和检索具体的分区来检测损坏的分区。通常，你可以在连接到Spark之前从CRAN安装`digest`：
+
 ```{r}
 sdf_len(sc, 3) %>% spark_apply(function(x) {
 worker_log("processing ", digest::digest(x), " partition")
@@ -5776,14 +5761,14 @@ worker_log("processing ", digest::digest(x), " partition")
 x
 })
 ```
-This will add an entry similar to:
+这个操作会添加一个如下的记录：
 ```
 18/11/03 14:48:32 INFO sparklyr: RScript (2566)
  processing f35b1c321df0162e3f914adfb70b5416 partition
 ```
-When executing this in your cluster, look in the logs for the task that is not finishing.
-Once you have that digest, you can cancel the job. Then you can use that digest to
-retrieve the specific DataFrame to R with something like this:
+
+在集群中执行此操作时，可以在日志中查找未完成的任务。一旦找到了摘要信息，你就可以取消这个作业。然后，可以使用摘要检索具体的R数据帧框，类似如下：
+
 ```{r}
 sdf_len(sc, 3) %>% spark_apply(function(x) {
 if (identical(digest::digest(x),
@@ -5794,13 +5779,12 @@ if (identical(digest::digest(x),
  <int>
 1 1
 ```
-You can then run this in R to troubleshoot further.
+你可以在R中运行这些代码，进一步排查故障。
 
-### Debugging Workers
+### 调试工作节点
 
-A debugger is a tool that lets you execute your code line by line; you can use this to
-troubleshoot `spark_apply()` for local connections. You can start `spark_apply()` in
-debug mode by using the `debug` parameter and then following the instructions:
+调试器是一种工具，允许你逐行执行代码；你可以使用它来解决本地连接的`spark_apply()`问题。可以使用`debug`参数在调试模式下启动`spark_apply()`，然后按照说明进行操作：
+
 ```{r}
 sdf_len(sc, 1) %>% spark_apply(function() {
 stop("Error!")
@@ -5814,29 +5798,16 @@ Debugging spark_apply(), connect to worker debugging session as follows:
  debugonce(sparklyr:::spark_worker_main)
  sparklyr:::spark_worker_main(<sessionid>, <port>)
 ```
-As these instructions indicate, you’ll need to connect “as the worker node” from a dif‐
-ferent R session and then step through the code. This method is less straightforward
-than previous ones, since you’ll also need to step through some lines of `sparklyr`
-code; thus, we only recommend this as a last resort. (You can also try the online
-resources described in Chapter 2.)
-Let’s now wrap up this chapter with a brief recap of the functionality we presented.
 
-## Recap
+如这些说明所示，你需要从不同的R进程中连接“as the worker node”，然后逐步完成代码。这个方法并没有以前的方法直接，因为你还需要查看一些`sparklyr`代码。因此，我们只建议你最后使用这个方法。（您也可以尝试第2章中描述的在线资源。）
 
-This chapter presented `spark_apply()` as an advanced technique you can use to fill
-gaps in functionality in Spark or its many extensions. We presented example use cases
-for `spark_apply()` to parse data, model in parallel many small datasets, perform a
-grid search, and call web APIs. You learned how partitions relate to `spark_apply()`,
-and how to create custom groups, distribute contextual information across all nodes,
-and troubleshoot problems, limitations, and cluster configuration caveats.
-We also strongly recommended using Apache Arrow as a library when working with
-Spark with R, and presented installation, use cases, and considerations you should be
-aware of.
-Up to this point, we’ve only worked with large datasets of static data, which doesn’t
-change over time and remains invariant while we analyze, model, and visualize them.
-In Chapter 12, we will introduce techniques to process datasets that, in addition to
-being large, are also growing in such a way that they resemble a stream of
-information.
+现在，让我们在这一章结束时简要回顾一下我们介绍的功能。
+
+## 小结
+
+本章介绍了`spark_apply()`这一高级技术，你可以使用它来填补Spark或其许多扩展中的功能空白。我们给出了`spark_apply()`解析数据、并行建模许多小数据集、执行网格搜索和调用web api的用例。你还了解到了分区与`spark_apply()`的关系，以及如何创建自定义组、跨所有节点分发context信息，以及排除故障问题、功能局限和集群配置注意事项。我们还强烈建议在使用Spark和R时使用Apache Arrow作为库，并介绍了安装过程、用例和应该注意的事项。
+
+到目前为止，我们只处理静态数据的大型数据集，这些数据集不会随时间变化，并且在我们分析、建模和可视化它们时保持不变。在第12章中，我们将介绍另一种处理数据集的技术，这些数据集除了很大之外，还像信息流一样增长。
 
 ------
 
