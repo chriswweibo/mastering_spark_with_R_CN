@@ -5491,8 +5491,7 @@ func_c = func_c
 
 ## 程序包
 
-With `spark_apply()` you can use any R package inside Spark. For instance, you can
-use the `broom` package to create a tidy DataFrame from linear regression output:
+通过`spark_apply()`你可以在Spark中使用任何R程序包。例如，你可以用`broom`程序包创建线性回归模型输出的整洁的数据框结果：
 ```{r}
 spark_apply(
 iris,
@@ -5509,118 +5508,79 @@ group_by = "Species")
 5 setosa (Intercept) 1.33 0.0600 22.1 7.68e-27
 6 setosa Petal_Width 0.546 0.224 2.44 1.86e- 2
 ```
-The first time you call `spark_apply()`, all the contents in your local `.libPaths()`
-(which contains all R packages) will be copied into each Spark worker node. Packages
-are only copied once and persist as long as the connection remains open. It’s not
-uncommon for R libraries to be several gigabytes in size, so be prepared for a one￾time tax while the R packages are copied over to your Spark cluster. You can disable
-package distribution by setting `packages = FALSE`.
 
-> Since packages are copied only once for the duration of the
-`spark_connect()` connection, installing additional packages is not
-supported while the connection is active. Therefore, if a new pack‐
-age needs to be installed, `spark_disconnect()` the connection,
-modify packages, and then reconnect. In addition, R packages are
-not copied in local mode, because the packages already exist on the
-local system.
+第一次调用`spark_apply()`时，本地`.libPaths()`中的所有内容（包含所有R包）都会复制到每个Spark工作节点中。程序包只复制一次，并且只要连接一直打开，包就一直存在。R程序包大小为几十亿字节很常见，因此在将R包复制到Spark集群时，请做好单次资源调用的准备。你可以通过设置`packages = FALSE`来禁用程序包分发。
 
-Though this section was brief, using packages with distributed R code opens up an
-entire new universe of interesting use cases. Some of those use cases were presented
-in this chapter, but by looking at the rich ecosystem of R packages available today
-you’ll find many more.
-This section completes our discussion of the functionality needed to distribute R code
-with R packages. We’ll now cover some of the requirements your cluster needs to
-make use of `spark_apply()`.
+> 由于在`spark_connect()`连接期间只复制一次包，因此在连接处于活动状态时不支持安装其他包。因此，如果需要安装新程序包，请用`spark_connect()`断开连接，修改软件包，然后重新连接。此外，R程序包不在本地模式下复制，因为程序包已经存在于本地系统上。
 
-## Cluster Requirements
+尽管本节很简短，但是使用分布式R代码的程序包打开了一个全新而有趣的用例领域。本章介绍了其中一些用例，通过找寻当今的丰富的R包生态系统，你会发现更多的用例。
 
-The functionality presented in previous chapters did not require special configura‐
-tion of your Spark cluster—as long as you had a properly configured Spark cluster,
-you could use R with it. However, for the functionality presented here, your cluster
-administrator, cloud provider, or you will have to configure your cluster by installing
-either:
+本节完成了用程序包分发R代码所需功能的讨论。现在，我们讨论一下集群使用`spark_apply()`时的一些需求。
 
-* R in every node, to execute R code across your cluster
-* Apache Arrow in every node when using Spark 2.3 or later (Arrow provides performance improvements that bring distributed R code closer to native Scala code)
+## 集群需求
 
-Let’s take a look at each requirement to ensure that you properly consider the trade￾offs or benefits that they provide.
+前面章节中介绍的功能不需要特殊配置Spark集群。只要你有一个正确配置的Spark集群，就可以使用R。但是，对于下面提供的功能，你的群集管理员、云提供商， 或者你自己必须通过安装以下任一项来配置群集：
 
-### Installing R
+* 每个节点中的R，以便在集群中执行R代码
+* 当使用Spark 2.3或更高版本时，每个节点中的Apache Arrow（Arrow提供了性能改进，使分布式R代码更接近原生Scala代码）
 
-Starting with the first requirement, the R runtime is expected to be preinstalled in
-every node in the cluster; this is a requirement specific to `spark_apply()`.
-Failure to install R in every node will trigger a Cannot run program, no such file
-or directory error when you attempt to use `spark_apply()`.
-Contact your cluster administrator to consider making the R runtime available
-throughout the entire cluster. If R is already installed, you can specify the installation
-path to use with the `spark.r.command` configuration setting, as shown here:
+让我们看看每个需求，保证你可以正确考虑它们提供的利弊或益处。
+
+### 安装R
+
+对于第一个需求，R运行时应该预先安装在集群中的每个节点中；这是针对`spark_apply()`的需求。
+
+如果未能在每个节点中安装R，在尝试使用`spark_apply()`时会触发一个`Cannot run program, no such file or directory`的报错。
+
+请与群集管理员联系，保证整个群集中的R运行时可用。如果已经安装了R，可以指定要与`spark.r.command`配置一起使用的安装路径，如下所示：
+
 ```{r}
 config <- spark_config()
 config["spark.r.command"] <- "<path-to-r-version>"
 sc <- spark_connect(master = "local", config = config)
 sdf_len(sc, 10) %>% spark_apply(function(e) e) 
 ```
-A homogeneous cluster is required since the driver node distributes, and potentially
-compiles, packages to the workers. For instance, the driver and workers must have
-the same processor architecture, system libraries, and so on. This is usually the case
-for most clusters, but might not be true for yours.
-Different cluster managers, Spark distributions, and cloud providers support differ‐
-ent solutions to install additional software (like R) across every node in the cluster;
-follow instructions when installing R over each worker node. Here are a few
-examples:
 
-* Spark Standalone
-    Requires connecting to each machine and installing R; tools like pssh allow you to run a single installation command against multiple machines.
+由于驱动节点会向工作节点分发包，也可能编译包，因此我们需要同构群集。例如，驱动节点和工作节点必须具有相同的处理器体系结构、系统库等。这通常是大多数集群的情况，但是你的集群可能不是这样。
+
+不同的集群管理器、Spark发行版和云提供商支持不同的解决方案，以便在集群中的每个节点上安装额外的软件（如R）。在每个工作节点上安装R时，请遵循说明。这里有一些示例：
+
+* Spark单机版
+    需要连接到每台计算机并安装R；`pssh`之类的工具允许你面对多台计算机只运行一条安装命。
 * Cloudera
-    Provides an R parcel (see the Cloudera blog post “How to Distribute Your R code with `sparklyr` and Cloudera Data Science Workbench”), which enables R over each worker node.
-* Amazon EMR
-    R is preinstalled when starting an EMR cluster as mentioned in “Amazon” on page 104.
-* Microsoft HDInsight
-    R is preinstalled and no additional steps are needed.
+    提供了一个R包（请参阅Cloudera的博客文章“How to Distribute Your R code with `sparklyr` and Cloudera Data Science Workbench”），可以在每个工作节点上启用R。
+* 亚马逊EMR
+    在启动EMR集群时预装了R，如“Amazon”第104页提到的。
+* 微软HDInsight
+    R是预装的，不需要其他步骤。
 * Livy
-    Livy connections do not support distributing packages because the client machine where the libraries are precompiled might not have the same processor architecture or operating systems as the cluster machines.
+    Livy连接不支持分发包，因为预编译库的客户机可能没有与集群计算机相同的处理器体系结构或操作系统。
 
-Strictly speaking, this completes the last requirement for your cluster. However, we
-strongly recommend you use Apache Arrow with `spark_apply()` to support large￾scale computation with minimal overhead.
+严格地说，这些步骤完成了集群的最后一个需求。但是，我们强烈建议你使用Apache Arrow和`spark_apply()`来以最小的开销支持大规模计算。
 
 ### Apache Arrow
 
-Before introducing Apache Arrow, we’ll discuss how data is stored and transferred
-between Spark and R. As R was designed from its inception to perform fast numeric
-computations to accomplish this, it’s important to图out the best way to store
-data.
-Some computing systems store data internally by row; however, most interesting
-numerical operations require data to be processed by column. For example, calculat‐
-ing the mean of a column requires processing each column on its own, not the entire
-row. Spark stores data by default by row, since it’s easier to partition; in contrast, R
-stores data by column. Therefore, something needs to transform both representations
-when data is transferred between Spark and R, as shown in图11-6.
+在介绍Apache Arrow之前，我们会讨论一下如何在Spark和R之间存储和传输数据。由于R一开始的设计目的是执行快速的数值计算，因此找出存储数据的最佳方法非常重要。
 
-![图11-6. Data transformation between Spark and R](figures/11_6.png)
+一些计算系统在内部按行存储数据；然而，大多数有意义的数值运算要求按列处理数据。例如，计算列的平均值需要单独处理每一列，而不是整行。Spark默认按行存储数据，因为它更容易分区；但是，R按列存储数据。因此，当数据在Spark和R之间传输时，需要对这两种表示进行转换，如图11-6所示。
 
-This transformation from rows to columns needs to happen for each partition. In
-addition, data also must be transformed from Scala’s internal representation to R’s
-internal representation. Apache Arrow reduces these transformations that waste a lot
-of CPU cycles.
-Apache Arrow is a cross-language development platform for in-memory data. In
-Spark, it speeds up transferring data between Scala and R by defining a common data
-format compatible with many programming languages. Instead of having to trans‐
-form between Scala’s internal representation and R’s, you can use the same structure
-for both languages. In addition, transforming data from row-based storage to colum‐
-nar storage is performed in parallel in Spark, which can be further optimized by using
-the columnar storage formats presented in Chapter 8. The improved transformations
-are shown in图11-7.
+![图11-6. Spark和R之间的数据转换](figures/11_6.png)
 
-![图11-7. Data transformation between Spark and R using Apache Arrow](figures/11_7.png)
-Apache Arrow is not required but is strongly recommended while you are working
-with `spark_apply()`. It has been available since Spark 2.3.0; however, it requires sys‐
-tem administrators to install the Apache Arrow runtime in every node (see http://
-arrow.apache.org/install/).
-In addition, to use Apache Arrow with sparklyr, you also need to install the arrow
-package:
+每个分区都需要进行从行到列的转换。此外，数据还必须从Scala的内部表示转换为R的内部表示。Apache Arrow减少了这些浪费大量CPU周期的转换。
+
+Apache Arrow是一个跨语言的内存数据开发平台。在Spark中，它通过定义与许多编程语言兼容的通用数据格式来加速Scala和R之间的数据传输。我们不必在Scala的内部表示和R之间进行转换，而是对这两种语言使用相同的结构。此外，Spark并行地将数据从基于行的存储转换为基于列的存储，这可以通过第8章中介绍的列存储格式进一步优化。改进后的转换如图11-7所示。
+
+
+![图11-7. Spark和R之间使用的Apache Arrow数据转换](figures/11_7.png)
+
+虽然Apache Arrow不是必需的，但是还是强烈建议你在使用`spark_apply()`时使用它。它支持Spark2.3.0以后的版本；但是，它要求系统管理员在每个节点中安装Apache Arrow运行时（请参见http://Arrow.Apache.org/install/）。
+
+此外，要将Apache Arrow与`sparklyr`一起使用，还需要安装`arrow`程序包：
+
 ```{r}
 install.packages("arrow")
 ```
-Before we use arrow, let’s take a measurement to validate:
+使用`arrow`之前，让我首先挑选一个验证指标：
 ```{r}
 system.time(
 sdf_len(sc, 10^4) %>% spark_apply(nrow) %>% collect()
@@ -5628,9 +5588,9 @@ sdf_len(sc, 10^4) %>% spark_apply(nrow) %>% collect()
  user system elapsed
  0.240 0.020 7.957
 ```
-In our particular system, processing 10,000 rows takes about 8 seconds. To enable
-Arrow, simply include the library and use `spark_apply()` as usual. Let’s measure how
-long it takes `spark_apply()` to process 1 million rows:
+
+在我们的系统中，处理10000行大约需要8秒。要启用Arrow，只需像往常一样导入库并使用`spark_apply()`。让我们测一下`spark_apply()`处理100万行需要多长时间：
+
 ```{r}
 library(arrow)
 system.time(
@@ -5639,13 +5599,11 @@ sdf_len(sc, 10^6) %>% spark_apply(nrow) %>% collect()
  user system elapsed
  0.317 0.021 3.922
 ```
-In our system, Apache Arrow can process 100 times more data in half the time: just 4
-seconds.
-Most functionality in arrow simply works in the background, improving performance
-and data serialization; however, there is one setting you should be aware of. The
-`spark.sql.execution.arrow.maxRecordsPerBatch` configuration setting specifies
-the default size of each arrow data transfer. It’s shared with other Spark components
-and defaults to 10,000 rows:
+
+在我们的系统中，Apache Arrow可以在一半的时间内处理100倍的数据：仅耗时4秒。
+
+`arrow`中的大多数功能只是在后台工作，可以提高性能和数据序列化；但是，有一个设置需要注意。`spark.sql.execution.arrow.maxRecordsPerBatch`配置指定每个arrow数据传输的默认大小。它与其他Spark组件共享，默认为10000行：
+
 ```{r}
 218 | Chapter 11: Distributed R
 library(arrow)
@@ -5656,10 +5614,9 @@ sdf_len(sc, 2 * 10^4) %>% spark_apply(nrow)
 1 10000
 2 10000
 ```
-You might need to adjust this number based on how much data your system can han‐
-dle, making it smaller for large datasets or bigger for operations that require records
-to be processed together. We can change this setting to 5,000 rows and verify the par‐
-titions change appropriately:
+
+你可能需要根据系统能够处理的数据量调整这个数字，使其对于大型数据集更小，或者对于需要同时处理记录的操作更大。我们可以将此设置更改为5000行，并验证分区是否也正确更改：
+
 ```{r}
 config <- spark_config()
 config$spark.sql.execution.arrow.maxRecordsPerBatch <- 5 * 10^3
@@ -5673,10 +5630,10 @@ sdf_len(sc, 2 * 10^4) %>% spark_apply(nrow)
 3 5000
 4 5000
 ```
-So far we’ve presented use cases, main operations, and cluster requirements. Now
-we’ll discuss the troubleshooting techniques useful when distributing R code.
 
-## Troubleshooting
+到目前为止，我们已经介绍了用例、主要操作和集群需求。现在我们将讨论在分发R代码时有用的故障排除技术。
+
+## 故障排除
 
 A custom transformation can fail for many reasons. To learn how to troubleshoot
 errors, let’s simulate a problem by triggering an error ourselves:
@@ -5714,7 +5671,7 @@ Among the other, more advanced troubleshooting techniques applicable to
 try to troubleshoot by using worker logs first, then identifying partitioning errors,
 and finally, attempting to debug a worker node.
 
-### Worker Logs
+### 工作节点日志
 
 Whenever `spark_apply()` is executed, information regarding execution is written
 over each worker node. You can use this log to write custom messages to help you
@@ -5781,7 +5738,7 @@ clusters. When running in proper clusters with multiple machines, you will have 
 use the tools and user interface provided by the cluster manager to find these log
 entries.
 
-### Resolving Timeouts
+### 解决超时
 
 When you are running with several hundred executors, it becomes more likely that
 some tasks will hang indefinitely. In this situation, most of the tasks in your job com‐
