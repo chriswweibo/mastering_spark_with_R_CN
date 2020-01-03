@@ -5811,104 +5811,82 @@ Debugging spark_apply(), connect to worker debugging session as follows:
 
 ------
 
-# 第12章 流式计算
+# 第12章 数据流
 
 > Our stories aren’t over yet.
 > —Arya Stark
 
-Looking back at the previous chapters, we’ve covered a good deal, but not everything.
-We’ve analyzed tabular datasets, performed unsupervised learning over raw text, ana‐
-lyzed graphs and geographic datasets, and even transformed data with custom R
-code! So now what?
-Though we weren’t explicit about this, we’ve assumed until this point that your data is
-static, and didn’t change over time. But suppose for a moment your job is to analyze
-traffic patterns to give recommendations to the department of transportation. A rea‐
-sonable approach would be to analyze historical data and then design predictive
-models that compute forecasts overnight. Overnight? That’s very useful, but traffic
-patterns change by the hour and even by the minute. You could try to preprocess and
-predict faster and faster, but eventually this model breaks—you can’t load large-scale
-datasets, transform them, score them, unload them, and repeat this process by the
-second.
-Instead, we need to introduce a different kind of dataset—one that is not static but
-rather dynamic, one that is like a table but is growing constantly. We will refer to such
-datasets as streams.
+回顾前几章，我们已经讨论了很多技术，但还不是全部技术。我们分析了表格数据集，对原始文本执行了无监督学习，分析了图和地理数据集，甚至用自定义的R代码转换了数据！那现在还需要学习什么？
 
-## Overview
+在此之前我们一直假设数据是静态的，并且不会随着时间的推移而改变。尽管我们对此没有明确说明，d但是现在假设你的工作是分析交通模式，向交通部提出建议。一个合理的方法是分析历史数据，然后设计预测模型，在一夜之间完成预测。真的可以一夜之间完成吗？如果真的会这很有用，但是交通模式会随着时间甚至分钟的变化而变化。你可以预处理和预测的越来越快，但最终模型失效。因为你无法加载大型数据集、转换数据、对数据进行评分、卸载数据，并在每一秒重复此过程。
 
-We know how to work with large-scale static datasets, but how can we reason about
-large-scale real-time datasets? Datasets with an infinite amount of entries are known
-as streams.
-For static datasets, if we were to do real-time scoring using a pretrained topic model,
-the entries would be lines of text; for real-time datasets, we would perform the same
-225
-scoring over an infinite number of lines of text. Now, in practice, you will never pro‐
-cess an infinite number of records. You will eventually stop the stream—or this uni‐
-verse might end, whichever comes first. Regardless, thinking of the datasets as infinite
-makes it much easier to reason about them.
-Streams are most relevant when processing real-time data—for example, when ana‐
-lyzing a Twitter feed or stock prices. Both examples have well-defined columns, like
-“tweet” or “price,” but there are always new rows of data to be analyzed.
-Spark Streaming provides scalable and fault-tolerant data processing over streams of
-data. That means you can use many machines to process multiple streaming sources,
-perform joins with other streams or static sources, and recover from failures with at￾least-once guarantees (each message is certain to be delivered, but may do so multiple
-times).
-In Spark, you create streams by defining a source, a transformation, and a sink; you
-can think of these steps as reading, transforming, and writing a stream, as shown in
-Figure 12-1.
+相反，我们需要引入一种不同的数据集，一种不是静态的而是动态的，类似于表但不断增长的数据集。我们将这些数据集称为*数据流*。
 
-![图12-1. Working with Spark Streaming](figures/12_1.png)
+## 概述
 
-Let’s take a look at each of these a little more closely:
+我们知道如何处理大规模的静态数据集，但是我们如何推理大规模的实时数据集呢？具有无限条目数的数据集称为数据流。
 
-* Reading
-    Streams read data using any of the `stream_read_*()` functions; the read operation defines the source of the stream. You can define one or multiple sources from which to read.
-* Transforming
-    A stream can perform one or multiple transformations using `dplyr`, `SQL`, feature transformers, scoring pipelines, or distributed R code. Transformations can not only be applied to one or more streams, but can also use a combination of streams and static data sources; for instance, those loaded into Spark with `spark_read_()` functions—this means that you can combine static data and real￾time data sources with ease.
-* Writing
-    The write operations are performed with the family of `stream_write_*()` functions, while the read operation defined the sink of the stream. You can specify a single sink or multiple ones to write data to.
+对于静态数据集，如果我们使用预先训练的主题模型进行实时评分，记录就是文本行；对于实时数据集，我们会对无限行的文本执行相同的评分操作。在实践中，你其实永远不会处理无限多的记录。你最终会终止这条数据，何况这个世界也会终结。这两个结果哪个先到还不知道呢。不管怎样，将数据集看成无限数据集让我们更容易对它们进行推理。
 
-You can read and write to streams in several different file formats: CSV, JSON, Par‐
-quet, Optimized Row Columnar (ORC), and text (see Table 12-1). You also can read
-and write from and to Kafka, which we will introduce later on.
+数据流在处理实时数据时最常用的技术，例如分析Twitter feed或股票价格。这两个示例都有定义良好的列，如“tweet”或“price”，但总是有新的数据行要分析。
 
-Table 12-1. Spark functions to read and write streams
+*Spark streaming*提供可扩展和容错的数据流处理。这意味着你可以使用多台计算机来处理多个流数据源，与其他流或静态源连接，并在保证至少从故障中恢复一次（每条消息都会被传递，但可能会传递多次）。
 
-Format| Read |Write
+在Spark中，通过定义源、转换和sink来创建流；可以将这些步骤看作是读取、转换和编写数据流，如图12-1所示。
+
+![图12-1. 使用Spark Streaming](figures/12_1.png)
+
+让我们具体看一下这些概念：
+
+* 读取
+    数据流使用`stream_read_*()`函数读取数据；读取操作定义流的源。你可以定义一个或多个读取的源。
+* 转换
+    数据流可以使用`dplyr`、`SQL`、特征变换、评分管道或分布式R代码执行一个或多个转换。转换不仅可以应用于一个或多个流，还可以用于流和静态数据源的组合；例如，用`spark_read_()`函数加载到Spark中的转换意味着你可以轻松地组合静态数据和实时数据源。
+* 写入
+    写操作是通过流的一系列`stream_write_*()`函数来执行，而读取操作定义了流的sink。你可以指定一个或多个sink来写入数据。
+    
+你可以用几种不同的文件格式读写数据流：CSV、JSON、Parquet、行优化列式文件（ORC）和文本（见表12-1）。你也可以读写Kafka，我们稍后会介绍。
+
+表12-1. 读写数据流的Spark函数
+
+格式| 读取 |写入
 CSV |`stream_read_csv` |`stream_write_csv`
 JSON |`stream_read_json` |`stream_write_json`
 Kafka |`stream_read_kafka` |`stream_write_kafka`
 ORC |`stream_read_orc` |`stream_write_orc`
 Parquet| `stream_read_parquet` |`stream_write_parquet`
-Text| `stream_read_text` |`stream_write_text`
-Memory| |`stream_write_memory`
+文本| `stream_read_text` |`stream_write_text`
+内存| |`stream_write_memory`
 
-Since the transformation step is optional, the simplest stream we can define is one
-that continuously copies text files between source and destination.
-First, install the `future` package using `install.packages("future")` and connect to
-Spark.
-Since a stream requires the source to exist, create a `_source_` folder:
+由于转换步骤是可选的，我们可以定义的最简单的流是在数据源和目标地址之间连续复制文本文件的数据流。
+
+首先，使用`install.packages("future")`安装`future`包并连接到Spark。
+
+因为数据流需要数据源，所以创建一个`_source_`文件夹：
+
 ```{r}
 dir.create("source")
 ```
-We are now ready to define our first stream!
+现在，我们可以定义第一个数据流！
 ```{r}
 stream <- stream_read_text(sc, "source/") %>%
 stream_write_text("destination/")
 ```
-The streams starts running with `stream_write_*()`; once executed, the stream will
-monitor the `source` path and process data into the destination / path as it arrives.
-We can use `stream_generate_test()` to produce a file every second containing lines
-of text that follow a given distribution; you can read more about this in Appendix A.
-In practice, you would connect to existing sources without having to generate data
-artificially. We can then use `view_stream()` to track the rows per second (rps) being
-processed in the source, and in the destination, and their latest values over time:
+
+数据流开始以`stream_write_*()`运行；一旦执行，数据流将监视`source`路径，并在数据到达时处理至`destination/`路径。
+
+我们可以使用`stream_generate_test()`每秒生成一个文件，其中包含遵循给定分布的文本行；你可以在附录A中阅读更多有关此内容的信息。
+
+在实践中，你将连接到现有的源，而不必人工生成数据。然后，我们可以使用`view_stream()`跟踪数据源和目标路径中每秒处理的行数（rps）及其随时间变化的最新值：
+
 ```{r}
 future::future(stream_generate_test(interval = 0.5))
 stream_view(stream)
 ```
-The result is shown in图12-2.
+结果如图12-2所示。
 
-![图12-2. Monitoring a stream generating rows following a binomial distribution](figures/12_2.png)
+![图12-2. Monitoring a stream generating rows 监控记录行服从二项分布的的数据流](figures/12_2.png)
+
 Notice that the rps rate in the destination stream is higher than that in the source
 stream. This is expected and desirable since Spark measures incoming rates from the
 source stream, but also actual row-processing times in the destination stream. For
