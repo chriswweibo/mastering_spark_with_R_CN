@@ -6242,93 +6242,53 @@ unlink(c("source", "destination", "cars-stream",
 > Hold the door, hold the door.
 > —Hodor
 
-In Chapter 12, we equipped you with the tools to tackle large-scale and real-time data
-processing in Spark using R. In this final chapter we focus less on learning and more
-on giving back to the Spark and R communities or colleagues in your professional
-career. It really takes an entire community to keep this going, so we are counting on
-you!
-There are many ways to contribute, from helping community members and opening
-GitHub issues to providing new functionality for yourself, colleagues, or the R and
-Spark community. However, we’ll focus here on writing and sharing code that
-extends Spark, to help others use new functionality you can provide as an author of
-Spark extensions using R. Specifically, you’ll learn what an extension is, the different
-types of extensions you can build, what building tools are available, and when and
-how to build an extension from scratch.
-You will also learn how to make use of the hundreds of extensions available in Spark
-and the millions of components available in Java that can easily be used in R. We’ll
-also cover how to create code natively in Scala that makes use of Spark. As you might
-know, R is a great language for interfacing with other languages, such as C++, SQL,
-Python, and many others. It’s no surprise, then, that working with Scala from R will
-follow similar practices that make R ideal for providing easy-to-use interfaces that
-make data processing productive and that are loved by many of us.
+在第12章中，我们提供了使用R处理Spark中大规模实时数据处理的工具。在最后一章中，我们将更少地关注学习，更多地关注回报Spark和R社区或你职业生涯中的同事。这真的需要整个社区来维持，所以我们需要你！
 
-## Overview
+有很多方法可以做出贡献，从帮助社区成员和新开一个GitHub issue，到为自己、同事或R和Spark社区提供新功能。但是，这里我们只关注编写和共享扩展Spark的代码，以帮助其他人使用新的功能。你可以成为这些Spark扩展的作者。具体来说，你可以从零开始，了解什么是扩展、可以构建的不同的扩展类型、可用的构建工具，何时以及如何构建扩展。
 
-When you think about giving back to your larger coding community, the most
-important question you can ask about any piece of code you write is: would this code
-be useful to someone else?
-Let’s start by considering one of the first and simplest lines of code presented in this
-book. This code was used to load a simple CSV file:
+你还会学习到如何利用Spark中提供的数百个扩展和Java中提供的数百万个易于在R中使用的组件。我们还会介绍如何构建使用Spark的Scala代码。你会看到，R是与其他语言如C++、SQL、Python等交互的伟大语言。因此，使用R中的Scala也就不足为奇了。它会遵循类似的实践，使R成为提供易用接口的理想选择。这些接口使数据处理变得高效，并且深受用户喜爱。
+
+
+## 概述
+
+当你考虑回馈更大的编码社区时，关于你所写的任何一段代码，你能问的最重要的问题是：这段代码对其他人有用吗？
+
+让我们从本书中介绍的第一行也是最简单的一行代码开始。此代码用于加载简单的CSV文件：
+
 ```{r}
 spark_read_csv(sc, "cars.csv")
 ```
-Code this basic is probably not useful to someone else. However, you could tailor that
-same example to something that generates more interest, perhaps the following:
+这个基础代码可能对其他人没有用处。但是，你可以将同样的示例调整为能够产生更多意义的内容，可能如下所示：
+
 ```{r}
 spark_read_csv(sc, "/path/that/is/hard/to/remember/data.csv")
 ```
-This code is quite similar to the first. But if you work with others who are working
-with this dataset, the answer to the question about usefulness would be yes—this
-would very likely be useful to someone else!
-This is surprising since it means that not all useful code needs to be advanced or
-complicated. However, for it to be useful to others, it does need to be packaged, pre‐
-sented, and shared in a format that is easy to consume.
-A first attempt would be to save this into a `teamdata.R` file and write a function wrap‐
-ping it:
+
+这条代码与第一条很类似。但是如果你和其他人一起使用这个数据集，这条代码是有用的。有点意外！因为这意味着并非所有有用的代码都很高级或复杂。但是，为了让它对其他人有用，它确实需要以易于使用的格式打包、呈现和共享。
+
+第一次使用时将其保存到`teamdata.R`文件中，并编写一个函数包装它：
+
 ```{r}
 load_team_data <- function() {
 spark_read_text(sc, "/path/that/is/hard/to/remember/data.csv") }
 ```
-This is an improvement, but it would require users to manually share this file again
-and again. Fortunately, this problem is easily solved in R, through R packages.
-An R package contains R code in a format that is installable using the function
-`install.packages()`. One example is `sparklyr`。 There are many other R packages
-available; you can also create your own. For those of you new to creating them, we
-encourage you to read Hadley Wickham’s book, R Packages (O’Reilly). Creating an R
-package allows you to easily share your functions with others by sharing the package
-file in your organization.
-Once you create a package, there are many ways of sharing it with colleagues or the
-world. For instance, for packages meant to be private, consider using Drat or prod‐
-ucts like RStudio Package Manager. R packages meant for public consumption are
-made available to the R community in CRAN (the Comprehensive R Archive
-Network).
 
-These repositories of R packages allow users to install packages through
-`install.packages("teamdata")` without having to worry where to download the
-package from. It also allows other packages to reuse your package.
-In addition to using R packages like sparklyr, dplyr, broom, and others to create new
-R packages that extend Spark, you can also use all the functionality available in the
-Spark API or Spark Extensions or write custom Scala code.
-For instance, suppose that there is a new file format similar to a CSV but not quite the
-same. We might want to write a function named `spark_read_file()` that would take
-a path to this new file type and read it in Spark. One approach would be to use dplyr
-to process each line of text or any other R library using `spark_apply()`. Another
-would be to use the Spark API to access methods provided by Spark. A third
-approach would be to check whether someone in the Spark community has already
-provided a Spark extension that supports this new file format. Last but not least, you
-could write your own custom Scala code that makes use of any Java library, including
-Spark and its extensions. This is shown in图13-1.
+这是一个改进，但需要用户一次又一次地手动共享此文件。幸运的是，这个问题很容易在R中通过R程序包解决。R程序包包含R代码，支持使用`install.packages()`函数安装。其中一个例子是`sparklyr`。还有许多其他R包可用；你也可以创建自己的R包。对于创建R包的新手，我们鼓励阅读Hadley Wickham的著作《R包》（O'Reilly）。创建R包允许你在组织中共享包文件，进而轻松地与其他人共享函数。
 
-![图13-1. Extending Spark using the Spark API or Spark extensions, or writing Scala code](figures/13_1.png)
-We will focus first on extending Spark using the Spark API, since the techniques
-required to call the Spark API are also applicable while calling Spark extensions or
-custom Scala code.
+一旦你创建了一个包，有很多方法可以与同事或外界分享。例如，对于自己使用的包，可以考虑使用Drat或RStudio包管理器之类的产品。对于公开使用的R包，可以提供给CRAN（R综合档案网络）的R社区。
 
-## The Spark API
+这些R包仓库允许用户通过`install.packages("teamdata")`安装程序包，而不必担心从何处下载包。它还允许其他包重用你的包。除了使用R包（如`sparklyr`、`dplyr`、`broom`和其他包）创建扩展Spark的新R包外，你还可以使用Spark API或Spark扩展中提供的所有功能，也可以编写自定义Scala代码。
 
-Before we introduce the Spark API, let’s consider a simple and well-known problem.
-Suppose we want to count the number of lines in a distributed and potentially large
-text file—say, cars.csv, which we initialize as follows:
+例如，假设有一个类似于CSV但不完全相同的新文件格式。我们可能需要编写一个名为`spark_read_file()`的函数，该函数将接收这个新文件类型的路径，并在spark中读取它。一种方法是使用`dplyr`处理文本的每一行，或借助`spark_apply()`的其它R包。另一种方法是使用Spark API访问Spark提供的方法。第三种方法是检查Spark社区中是否已经有人提供了支持这种新文件格式的Spark扩展。最后，你可以编写自己的定制Scala代码，使用任何Java库，包括Spark及其扩展。如图13-1所示。
+
+![图13-1. 使用Spark API，Spark扩展，或编写Scala代码来扩展Spark](figures/13_1.png)
+
+我们会首先关注使用Spark API扩展Spark，因为调用Spark API所需的技术也适用于调用Spark扩展或自定义Scala代码。
+
+## Spark API
+
+在介绍Spark API之前，让我们考虑一个简单而著名的问题。假设我们要计算一个分布式的、可能很大的文本文件，例如`cars.csv`中的行数，我们将其初始化如下：
+
 ```{r}
 library(sparklyr)
 library(dplyr)
@@ -6336,7 +6296,7 @@ sc <- spark_connect(master = "local")
 cars <- copy_to(sc, mtcars)
 spark_write_csv(cars, "cars.csv")
 ```
-Now, to count how many lines are available in this file, we can run the following:
+现在，要计算文件中有多少行，我们可以运行如下代码：
 ```{r}
 spark_read_text(sc, "cars.csv") %>% count()
 # Source: spark<?> [?? x 1]
@@ -6344,48 +6304,37 @@ spark_read_text(sc, "cars.csv") %>% count()
  <dbl>
 1 33
 ```
-Easy enough: we used `spark_read_text()` to read the entire text file, followed by
-counting lines using `dplyr`’s `count()`. Now, suppose that neither
-`spark_read_text()`, nor dplyr, nor any other Spark functionality, is available to you.
-How would you ask Spark to count the number of rows in `cars.csv`?
-If you do this in Scala, you find in the Spark documentation that by using the Spark
-API you can count lines in a file as follows:
+
+很简单：我们使用`spark_read_text()`读取整个文本文件，然后使用`dplyr`的`count()`计数行。现在，假设`spark_read_text()`、`dplyr`或任何其他Spark功能都不可用。你会将怎么要求Spark计算`cars.csv`中的行数？如果在Scala中执行此操作，可以在Spark文档中找到答案。通过使用Spark API，可以按如下方式计算文件中的行数：
+
 ```{r}
 val textFile = spark.read.textFile("cars.csv")
 textFile.count()
 ```
-So, to use the functionality available in the Spark API from R, like spark.read.text
-File, you can use `invoke()`, `invoke_static()`, or `invoke_new()`. (As their names
-suggest, the first invokes a method from an object, the second invokes a method from
-a static object, and the third creates a new object.) We then use these functions to call
-Spark’s API and execute code similar to the one provided in Scala:
+
+因此，要使用R中Spark API的功能，比如`spark.read.text`文件，可以使用`invoke()`、`invoke_static()`或`invoke_new()`。（顾名思义，第一个从对象调用方法，第二个从静态对象调用方法，第三个创建新对象。）然后使用这些函数调用Spark的API并执行类似于Scala中提供的代码：
+
 ```{r}
 spark_context(sc) %>%
 invoke("textFile", "cars.csv", 1L) %>%
 invoke("count")
 [1] 33
 ```
-While the `invoke()` function was originally designed to call Spark code, it can also
-call any code available in Java. For instance, we can create a Java BigInteger with the
-following code:
+
+`invoke()`函数最初设计用于调用Spark代码，但它也可以调用Java中的任何代码。例如，我们可以使用以下代码创建一个Java `BigInteger`：
+
 ```{r}
 invoke_new(sc, "java.math.BigInteger", "1000000000")
-242 | Chapter 13: Contributing
 <jobj[225]>
 java.math.BigInteger
 1000000000
 ```
-As you can see, the object created is not an R object but rather a proper Java object. In
-R, this Java object is represented by the `spark_jobj`. These objects are meant to be
-used with the `invoke()` functions or `spark_dataframe()` and `spark_connection()`.
-`spark_dataframe()` transforms a `spark_jobj` into a Spark DataFrame when possible,
-whereas `spark_connect()` retrieves the original Spark connection object, which can
-be useful to avoid passing the `sc` object across functions.
-While calling the Spark API can be useful in some cases, most of the functionality
-available in Spark is already supported in `sparklyr`。 Therefore, a more interesting
-way to extend Spark is by using one of its many existing extensions.
 
-## Spark Extensions
+如你所见，创建的对象不是一个R对象，而是一个Java对象。在R中，这个Java对象由`spark_jobj`表示。这些对象应该与`invoke()`函数或`spark_dataframe()`和`spark_connection()`一起使用。`spark_dataframe()`尽可能将`spark_jobj`转换为Spark数据框，而`spark_connection()`获取原始的Spark连接对象，这有助于避免在函数之间传递`sc`对象。
+
+虽然在某些情况下调用Spark API可能很有用，但Spark中提供的大多数功能已经在`sparklyr`中得到了支持。因此，一个更有趣的扩展Spark的方法是使用许多现有的扩展。
+
+## Spark扩展
 
 Before we get started with this section, consider navigating to spark-packages.org, a
 site that tracks Spark extensions provided by the Spark community. Using the same
@@ -6468,7 +6417,7 @@ possibilities for you to consider!
 However, for those cases where no Spark extension is available, the next section will
 teach you how to use custom Scala code from your own R package.
 
-## Using Scala Code
+## 使用Scala代码
 
 Scala code enables you to use any method in the Spark API, Spark extensions, or Java
 library. In addition, writing Scala code when running in Spark can provide perfor‐
@@ -6523,7 +6472,7 @@ If you are interested in developing a Spark extension with R and you get stuck a
 the way, consider joining the `sparklyr` Gitter channel, where many of us hang out to
 help this wonderful community to grow. We hope to hear from you soon!
 
-## Recap
+## 小结
 
 This final chapter introduced you to a new set of tools to use to expand Spark func‐
 tionality beyond what R and R packages currently support. This vast new space of
