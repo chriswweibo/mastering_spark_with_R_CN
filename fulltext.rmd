@@ -5885,39 +5885,28 @@ stream_view(stream)
 ```
 结果如图12-2所示。
 
-![图12-2. Monitoring a stream generating rows 监控记录行服从二项分布的的数据流](figures/12_2.png)
+![图12-2. 监控记录行服从二项分布的的数据流](figures/12_2.png)
 
-Notice that the rps rate in the destination stream is higher than that in the source
-stream. This is expected and desirable since Spark measures incoming rates from the
-source stream, but also actual row-processing times in the destination stream. For
-example, if 10 rows per second are written to the source/ path, the incoming rate is
-10 rps. However, if it takes Spark only 0.01 seconds to write all those 10 rows, the out‐
-put rate is 100 rps.
-Use `stream_stop()` to properly stop processing data from this stream:
+注意，目标流中的rps速率高于数据源流中的rps速率。由于Spark测量来自数据源流的传入速率，而且还测量目标流中的实际行处理次数，因此这是符合预期的，也是期望的。例如，如果每秒向`source/`路径写入10行，则传入速率为10 rps。但是，如果Spark只需要0.01秒就可以写入这10行，那么输出速率是100 rps。
+
+使用`stream_stop()`停止处理流中的数据：
+
+
 ```{r}
 stream_stop(stream)
 ```
-This exercise introduced how we can easily start a Spark stream that reads and writes
-data based on a simulated stream. Let’s do something more interesting than just copy‐
-ing data with proper transformations.
 
-## Transformations
+上述练习介绍了如何轻松启动Spark流，并基于模拟的数据流读取和写入数据。下面让我们通过转换做一些比复制数据更有趣的事情。
 
-In a real-life scenario, the incoming data from a stream would not be written as is to
-the output. The Spark Streaming job would make transformations to the data, and
-then write the transformed data.
+## 转换
 
-Streams can be transformed using `dplyr`, SQL queries, ML pipelines, or R code. We
-can use as many transformations as needed in the same way that Spark DataFrames
-can be transformed with `sparklyr`。
-The source of the transformation can be a stream or DataFrame, but the output is
-always a stream. If needed, you can always take a snapshot from the destination
-stream and then save the output as a DataFrame. That is what `sparklyr` will do for
-you if a destination stream is not specified.
-Each of the following subsections covers an option provided by `sparklyr` to perform
-transformations on a stream.
+在实际场景中，数据流中传入的数据不会按原样输出。Spark Streaming作业会对数据进行转换，然后写入转换后的数据。数据流可以使用`dplyr`、SQL查询、ML管道或R代码进行转换。我们可以根据需要使用尽可能多的转换，就像Spark数据框可以使用`sparklyr`进行转换一样。
 
-### Analysis
+转换的数据源可以是数据流，也可以是数据框，但输出始终是数据流。如果需要，可以始终从目标流中获取快照，然后将保存输出为数据框。如果未指定目标流，`sparklyr`会负责这些事情。
+
+下面的每个小节都介绍了`sparklyr`提供的在数据流上执行转换的选项。
+
+### 分析
 
 You can analyze streams with `dplyr` verbs and SQL using `DBI.` As a quick example, we
 will filter rows and add columns over a stream. We won’t explicitly call `stream_generate_test()`, but you can call it on your own through the later package if you feel
