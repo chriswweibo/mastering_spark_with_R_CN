@@ -5908,9 +5908,8 @@ stream_stop(stream)
 
 ### 分析
 
-You can analyze streams with `dplyr` verbs and SQL using `DBI.` As a quick example, we
-will filter rows and add columns over a stream. We won’t explicitly call `stream_generate_test()`, but you can call it on your own through the later package if you feel
-the urge to verify that data is being processed continuously:
+你可以使用`dplyr`操作和`DBI`的SQL分析数据流。作为一个快速示例，我们会在数据流上筛选行和添加列。我们不会显式调用`stream_generate_test()`，但是如果你觉得需要，还可以自己调用，核实数据正在持续处理：
+
 ```{r}
 library(dplyr)
 stream_read_csv(sc, "source") %>%
@@ -5931,8 +5930,7 @@ mutate(y = round(x / 100))
 10 710 7
 # … with more rows
 ```
-It’s also possible to perform aggregations over the entire history of the stream. The
-history could be filtered or not:
+你还可以在数据流的整个历史记录中执行聚合。历史记录可以经过筛选，也可以不筛选：
 ```{r}
 stream_read_csv(sc, "source") %>%
 filter(x > 700) %>%
@@ -5946,13 +5944,9 @@ count(y)
 3 10 13210
 4 7 12692
 ```
-Grouped aggregations of the latest data in the stream require a timestamp. The time‐
-stamp will note when the reading function (in this case `stream_read_csv()`) first
-“saw” that specific record. In Spark Streaming terminology, the timestamp is called a
-watermark. The `spark_watermark()` function adds the timestamp. In this example,
-the watermark will be the same for all records, since the five files were read by the
-stream after they were created. Note that only Kafka and memory outputs support
-watermarks:
+
+数据流中最新数据的分组聚合需要时间戳。时间戳会显示读取函数（在本例中为`stream_read_csv()`）第一次“看到”该特定记录的时间。在Spark Streaming术语中，时间戳称为*水印*。`spark_watermark()`会添加时间戳。在本例中，所有记录的水印都是相同的，因为五个文件在创建后都被数据流读取。注意，只有Kafka和内存输出支持水印：
+
 ```{r}
 stream_read_csv(sc, "source") %>%
 stream_watermark()
@@ -5971,8 +5965,9 @@ stream_watermark()
 10 285 2019-06-30 07:14:21
 # … with more rows
 ```
-After the watermark is created, you can use it in the `group_by()` verb. You can then
-pipe it into a `summarise()` function to get some stats of the stream:
+
+创建水印后，可以在`group_by()`操作中使用它。然后，可以将其导入`summarise()`函数以获取数据流的一些统计信息：
+
 ```{r}
 stream_read_csv(sc, "source") %>%
 stream_watermark() %>%
@@ -5988,19 +5983,14 @@ count = n()
 1 2019-06-30 07:14:55 1000 1 259332
 ```
 
-### Modeling
+### 建模
 
-Spark streams currently don’t support training on real-time datasets. Aside from the
-technical challenges, even if it were possible, it would be quite difficult to train
+Spark数据流目前不支持实时数据集训练。除了技术上的挑战，即使有可能，也很难训练模型，因为模型本身需要随着时间的推移进行调整。这项技术叫做*在线学习*，这也许是Spark未来支持的技术。
 
-models since the model itself would need to adapt over time. Known as online learn‐
-ing, this is perhaps something that Spark will support in the future.
-That said, there are other modeling concepts we can use with streams, like feature
-transformers and scoring. Let’s try out a feature transformer with streams, and leave
-scoring for the next section, since we will need to train a model.
-The next example uses the `ft_bucketizer()` feature transformer to modify the
-stream followed by regular `dplyr` functions, which you can use just as you would
-with static datasets:
+尽管如此，还有一下其他的建模概念可以与数据流一起使用，如特征变换器和评分。让我们用数据流尝试一个特征转换器，并将评分留给下一节，因为我们会需要训练一个模型。
+
+下一个示例使用`ft_bucketizer()`特征转换器修改数据流，然后是常规的`dplyr`函数，你可以像使用静态数据集一样使用这些函数：
+
 ```{r}
 stream_read_csv(sc, "source") %>%
 mutate(x = as.numeric(x)) %>%
@@ -6023,13 +6013,12 @@ arrange(buckets)
 10 9 26162
 ```
 
-### Pipelines
+### 管道
 
-Spark pipelines can be used for scoring streams, but not to train over streaming data.
-The former is fully supported, while the latter is a feature under active development
-by the Spark community.
-To score a stream, it’s necessary to first create our model. So let’s build, fit, and save a
-simple pipeline:
+Spark管道可以用来对数据流进行评分，但不能用来训练数据流。前一个功能已经完全支持，后一个是Spark社区正在积极开发的特性。
+
+要给数据流评分，必须首先创建我们的模型。因此，让我们构建、调整并保存一个简单的管道：
+
 ```{r}
 cars <- copy_to(sc, mtcars)
 model <- ml_pipeline(sc) %>%
@@ -6039,12 +6028,9 @@ ml_logistic_regression() %>%
 ml_fit(cars)
 ```
 
-> If you choose to, you can make use of other concepts presented in
-Chapter 5, like saving and reloading pipelines through `ml_save()`
-and `ml_load()` before scoring streams.
+> 如果你愿意，可以使用第5章中介绍的其他概念，例如对数据流进行评分之前，通过`ml_save()`和`ml_load()`保存和重新加载管道。
 
-We can then generate a stream based on `mtcars` using `stream_generate_test()`, and
-score the model using `ml_transform()`:
+然后我们可以使用`stream_generate_test()`生成一个基于`mtcars`的数据流，并使用`ml_transform()`给模型评分:，
 ```{r}
 future::future(stream_generate_test(mtcars, "cars-stream", iterations = 5))
 ml_transform(model, stream_read_csv(sc, "cars-stream"))
@@ -6064,29 +6050,22 @@ ml_transform(model, stream_read_csv(sc, "cars-stream"))
 # … with more rows, and 5 more variables: features <list>, label <dbl>,
 # rawPrediction <list>, probability <list>, prediction <dbl>
 ```
-Though this example was put together with a few lines of code, what we just accom‐
-plished is actually quite impressive. You copied data into Spark, performed feature
-engineering, trained a model, and scored the model over a real-time dataset, with just
-seven lines of code! Let’s try now to use custom transformations, in real time.
 
-### Distributed R
+尽管这个例子是几行代码组合在一起的，但是这一刚刚完成的工作实际上令人印象深刻。你把数据复制到Spark中，执行特征工程，训练模型，并在实时数据集上对模型进行评分，只需7行代码！现在让我们尝试实时环境下的自定义转换。
 
-Arbitrary R code can also be used to transform a stream with the use of
-`spark_apply()`. This approach follows the same principles discussed in Chapter 11,
-where `spark_apply()` runs R code over each executor in the cluster where data is
-available. This enables processing high-throughput streams and fulfills low-latency
-requirements:
+### 分布式R
+
+你也可以借助`spark_apply()`使用任意R代码来转换数据流。此方法遵循第11章中讨论的相同原则，`spark_apply()`在集群中存储数据的每个执行器上运行R代码。这样可以处理高吞吐量数据流并满足低延迟需求：
+
 ```{r}
 stream_read_csv(sc, "cars-stream") %>%
 select(mpg) %>%
 spark_apply(~ round(.x), mpg = "integer") %>%
 stream_write_csv("cars-round")
 ```
-which, as you would expect, processes data from cars-stream into cars-round by
-running the custom `round()` R function. Let’s peek into the output sink:
+正如可以预见的，它通过运行自定义的`round()`函数将来自`cars-stream`的数据处理成`cars-round`。让我们看看输出sink：
 ```{r}
 spark_read_csv(sc, "cars-round")
-232 | Chapter 12: Streaming
 # Source: spark<carsround> [?? x 1]
  mpg
  <dbl>
@@ -6102,36 +6081,28 @@ spark_read_csv(sc, "cars-round")
 10 15
 # … with more rows
 ```
-Again, make sure you apply the concepts you already know about `spark_apply()`
-when using streams; for instance, you should consider using arrow to significantly
-improve performance. Before we move on, disconnect from Spark:
+
+同样，在使用数据流时，请确保使用已经熟悉的有关`spark_apply()`的概念；例如，你应该考虑使用`arrow`来显著提高性能。在我们继续介绍之前，断开与Spark的连接：
+
 ```{r}
 spark_disconnect(sc)
 ```
-This was our last transformation for streams. We’ll now learn how to use Spark
-Streaming with Kafka.
+这是数据流转换的最后内容。我们会学到如何通过Kafka使用Spark Streaming。
 
 ## Kafka
 
-Apache Kafka is an open source stream-processing software platform developed by
-LinkedIn and donated to the Apache Software Foundation. It is written in Scala and
-Java. To describe it using an analogy, Kafka is to real-time storage what Hadoop is to
-static storage.
-Kafka stores the stream as records, which consist of a key, a value, and a timestamp. It
-can handle multiple streams that contain different information, by categorizing them
-by topic. Kafka is commonly used to connect multiple real-time applications. A pro‐
-ducer is an application that streams data into Kafka, while a consumer is the one that
-reads from Kafka; in Kafka terminology, a consumer application subscribes to topics.
-Therefore, the most basic workflow we can accomplish with Kafka is one with a sin‐
-gle producer and a single consumer; this is illustrated in图12-3.
+Apache Kafka是领英开发的开源数据流处理软件平台，捐赠给了Apache软件基金会。它是用Scala和Java编写的。做一个类比的话，Kafka是实时存储，Hadoop是静态存储。
 
-![图12-3. A basic Kaa workflow](figures/12_3.png)
+Kafka将数据流存储为记录，记录由键、值和时间戳组成。它可以按主题对包含不同信息的多个流进行分类，并处理这些数据流。Kafka通常用于连接多个实时应用程序。生产者是将数据流到Kafka的应用程序，而消费者是从Kafka读取数据的应用程序；在Kafka术语体系中，消费者应用程序*订阅*主题。
+因此，我们可以用Kafka完成的最基本的工作流是，包含一个生产者和一个消费者的流程，如图12-3所示。
 
-If you are new to Kafka, we don’t recommend you run the code from this section.
-However, if you’re really motivated to follow along, you will first need to install Kafka
-as explained in Appendix A or deploy it in your cluster.
-Using Kafka also requires you to have the Kafka package when connecting to Spark.
-Make sure this is specified in your connection config:
+
+![图12-3. 一个基本的Kafka工作流](figures/12_3.png)
+
+如果你是Kafka新手，我们不建议你运行本节中的代码。但是，如果你非常想继续研究，那么首先需要按照附录A中的说明安装Kafka或将其部署到集群中。
+
+使用Kafka还需要在连接到Spark时安装Kafka包。请确保在连接的`config`中指定此选项：
+
 ```{r}
 library(sparklyr)
 library(dplyr)
@@ -6139,7 +6110,7 @@ sc <- spark_connect(master = "local",version = "2.3", config = list(
 sparklyr.shell.packages = "org.apache.spark:spark-sql-kafka-0-10_2.11:2.3.1"
 ))
 ```
-Once connected, it’s straightforward to read data from a stream:
+连接成功后，从数据流读取数据后就很直接了：
 ```{r}
 stream_read_kafka(
 sc,
@@ -6148,29 +6119,17 @@ kafka.bootstrap.server = "host1:9092, host2:9092",
 subscribe = "<topic-name>"
 ) )
 ```
-However, notice that you need to properly configure the options list; `kafka.bootstrap.server` expects a list of Kafka hosts, while `topic` and `subscribe` define which
-topic should be used when writing or reading from Kafka, respectively.
-Though we’ve started by presenting a simple single-producer and single-consumer
-use case, Kafka also allows much more complex interactions. We will next read from
-one topic, process its data, and then write the results to a different topic. Systems that
-are producers and consumers from the same topic are referred to as stream processors.
-In图12-4, the stream processor reads topic A and then writes results to topic B.
-This allows for a given consumer application to read results instead of “raw” feed
-data.
-![图12-4. A Kaa workflow using stream processors](figures/12_4.png)
 
-Three modes are available when processing Kafka streams in Spark: `complete`,
-`update`, and `append.` The complete mode provides the totals for every group every
-time there is a new batch; update provides totals for only the groups that have
-updates in the latest batch; and append adds raw records to the target topic. The
-append mode is not meant for aggregates, but works well for passing a filtered subset
-to the target topic.
-In our next example, the producer streams random letters into Kafka under a let
-ters topic. Then, Spark will act as the stream processor, reading the letters topic
-and computing unique letters, which are then written back to Kafka under the totals
-topic. We’ll use the update mode when writing back into Kafka; that is, only the totals
-that changed will be sent to Kafka. This change is determined after each batch from
-the letters topic:
+但是，请注意，你需要正确配置`options`列表。`kafka.bootstrap.server`需要一个kafka主机列表，而`topic`和`subscribe`分别定义了在从Kafka写入或读取时应使用哪个主题。
+
+尽管我们已经介绍了包含一个生产者和一个消费者简单用例，Kafka也支持更复杂的交互。接下来，我们从一个主题中读取数据、处理数据，然后将结果写入另一个主题。属于同一主题的生产者和消费者的系统称为流处理器。在图12-4中，流处理器读取主题A，然后将结果写入主题B。这考虑到给定的消费者程序读取结果，而不是读取“原始”feed数据。
+
+![图12-4. 使用数据流处理器的Kafka工作流](figures/12_4.png)
+
+在Spark中处理Kafka流时，有三种模式可用：`complete`，`update`和`append`。`complete`模式在每次有新的批量数据时为每组提供全部信息；`update`仅为最近批量数据中有更新的组提供全部信息；`append`将原始记录添加到目标主题。`append`模式不适用于聚合，但适用于将筛选的子集传递到目标主题。
+
+在下一个示例中，生产者在`letters`主题下将随机字母流到Kafka中。然后，Spark将充当流处理器，读取字母主题并计算唯一的字母，然后在`totals`主题下将这些字母写回Kafka。写回Kafka时，我们将使用`update`模式；也就是说，只有发生改变的`totals`才会发送到Kafka。这个更改在`letters`主题的每批数据之后确定：
+
 ```{r}
 hosts <- "localhost:9092"
 read_options <- list(kafka.bootstrap.servers = hosts, subscribe = "letters")
@@ -6182,36 +6141,32 @@ mutate(value = paste0(value, "=", n)) %>% # kafka expects a value field
 stream_write_kafka(mode = "update",
 options = write_options)
 ```
-You can take a quick look at totals by reading from Kafka:
+你可以读取Kafka，快速查看全部信息：
 ```{r}
 stream_read_kafka(sc, options = totals_options)
 ```
-Using a new terminal session, use Kafka’s command-line tool to manually add single
-letters into the `letters` topic:
+
+通过新的终端会话，使用Kafka的命令行工具手动将单个字母添加到`letters`主题中：
+
 ```
 kafka-console-producer.sh --broker-list localhost:9092 --topic letters
 >A
 >B
 >C
 ```
-The letters that you input are pushed to Kafka, read by Spark, aggregated within
-Spark, and pushed back into Kafka, Then, finally, they are consumed by Spark again
-to give you a glimpse into the totals topic. This was quite a setup, but also a realistic
-configuration commonly found in real-time processing projects.
-Next, we will use the Shiny framework to visualize streams, in real time!
+
+输入的字母被推到Kafka，被Spark读取，在Spark中聚合，然后返回给Kafka。最后，它们再次被Spark使用，提供有关`totals`主题简单信息。这是一个很好的流程，也是实时数据处理项目中常见的实际配置。
+
+接下来，我们将使用Shiny框架来实时可视化数据流！
 
 ## Shiny
 
-Shiny’s reactive framework is well suited to support streaming information, which
-you can use to display real-time data from Spark using `reactiveSpark()`. There is far
+Shiny的reactive框架非常适合支持流式信息，你可以使用`reactiveSpark()`来显示来自Spark的实时数据。Shiny的知识远比我们在这里所能了解到的多得多。如果您已经熟悉Shiny，那么这个示例应该很容易理解。
 
-more to learn about Shiny than we could possibly present here. However, if you’re
-already familiar with Shiny, this example should be quite easy to understand.
-We have a modified version of the k-means Shiny example that, instead of getting the
-data from the static iris dataset, is generated with `stream_generate_test()`, con‐
-sumed by Spark, retrieved to Shiny through `reactiveSpark()`, and then displayed as
-shown in图12-5.
-To run this example, store the following Shiny app under shiny/shiny-stream.R:
+我们有一个k-means的Shiny示例的修改版本，它不是从静态的`iris`数据集中获取数据，而是使用`stream_generate_test()`生成，被Spark使用，通过`reactiveSpark()`获取给Shiny，展示如图12-5。
+
+要运行这个示例，可以把以下Shiny应用程序存储在`shiny/shiny-stream.R`下：
+
 ```{r}
 library(sparklyr)
 library(shiny)
@@ -6245,52 +6200,40 @@ points(clusters()$centers, pch = 4, cex = 4, lwd = 4)
 }
 shinyApp(ui, server)
 ```
-This Shiny application can then be launched with `runApp()`, like so:
+这个Shiny应用程序可以通过`runApp()`启动，类似于:
 ```{r}
 shiny::runApp("shiny/shiny-stream.R")
 ```
-While the Shiny app is running, launch a new R session from the same directory and
-create a test stream with `stream_generate_test()`. This will generate a stream of
-continuous data that Spark can process and Shiny can visualize (as illustrated in
-Figure 12-5):
+
+当Shiny应用程序运行时，会从同一目录启动一个新的R会话，并使用`stream_generate_test()`创建一个测试流。这会生成Spark可以处理和Shiny可以可视化的连续数据流（如图12-5所示）：
+
 ```{r}
 sparklyr::stream_generate_test(datasets::iris, "shiny/shiny-stream",
 rep(5, 10^3))
 ```
 
-![图12-5. Progression of Spark reactive loading data into the Shiny app](figures/12_5.png)
-In this section you learned how easy it is to create a Shiny app that can be used for
-several different purposes, such as monitoring and dashboarding.
-In a more complex implementation, the source would more likely be a Kafka stream.
-Before we transition, disconnect from Spark and clear the folders that we used:
+![图12-5. 给Shiny程序加载数据的Spark reactive过程](figures/12_5.png)
+
+在这一部分中，你了解了创建一个可用于多种不同目的（如监视和仪表板）的Shiny应用程序是非常容易的。
+
+在更复杂的实现中，数据源可能是Kafka流。在离开之前，请断开与Spark的连接并清除我们用过的文件夹：
+
 ```{r}
 spark_disconnect(sc)
 unlink(c("source", "destination", "cars-stream",
 "car-round", "shiny/shiny-stream"), recursive = TRUE)
 ```
 
-## Recap
+## 小结
 
-From static datasets to real-time datasets, you’ve truly mastered many of the large￾scale computing techniques. Specifically, in this chapter, you learned how static data
-can be generalized to real time if we think of it as an infinite table. We were then able
-to create a simple stream, without any data transformations, that copies data from
-point A to point B.
-This humble start became quite useful when you learned about the several different
-transformations you can apply to streaming data—from data analysis transformations
+从静态数据集到实时数据集，你已经真正掌握了许多大规模计算技术。具体来说，在本章中，你学习了将静态数据视为一个无限表的情况下，如何将其推广为实时数据。然后我们可以创建一个简单的数据流，无需任何数据转换的情况下，就可以将数据从A复制到B。
 
-using the `dplyr` and `DBI` packages, to feature transformers introduced while model‐
-ing, to fully fledged pipelines capable of scoring in real time, to, last but not least,
-transforming datasets with custom R code. This was a lot to digest, for sure.
-We then presented Apache Kafka as a reliable and scalable solution for real-time data.
-We showed you how a real-time system could be structured by introducing you to
-consumers, producers, and topics. These, when properly combined, create powerful
-abstractions to process real-time data.
-Then we closed with “a cherry on top of the sundae”: presenting how to use Spark
-Streaming in Shiny. Since a stream can be transformed into a reactive (which is the
-lingua franca of the world of reactivity), the ease of this approach was a nice surprise.
-It’s time now to move on to our very last (and quite short) chapter, Chapter 13; there
-we’ll try to persuade you to use your newly acquired knowledge for the benefit of the
-Spark and R communities at large.
+当你了解到不同的转换可以用于数据流时，这个简单的开始也很有用。例如，可以使用`dplyr`和`DBI`程序包完成数据分析，建模时引入的特征变换器转换、能够实时评分的成熟管道，以及使用自定义R代码转换数据集。当然，这些内容需要消化。
+
+然后，我们将Apache Kafka作为一个可靠的、可扩展的实时数据解决方案。我们展示了如何通过消费者、生产者和主题来构建实时系统。如果将它们适当地组合在一起，就可以构建强大的体系架构来处理实时数据。
+
+然后我们介绍了锦上添花的技术，如何在Shiny中使用Spark Streaming。由于数据流流可以转换为reactive类型（响应式编程领域的通用语言），因此其易用性是绝对让人惊喜。现在是时候进入我们的（非常简短的）最后一章了，第13章。我们会试图说服你使用新知识，让整个Spark和R社区的获益。
+
 
 ------
 
