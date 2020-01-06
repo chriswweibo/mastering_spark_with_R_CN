@@ -6336,17 +6336,12 @@ java.math.BigInteger
 
 ## Spark扩展
 
-Before we get started with this section, consider navigating to spark-packages.org, a
-site that tracks Spark extensions provided by the Spark community. Using the same
-techniques presented in the previous section, you can use these extensions from R.
-For instance, there is Apache Solr, a system designed to perform full-text searches
-over large datasets, something that Apache Spark currently does not support natively.
-Also, as of this writing, there is no extension for R to support Solr. So, let’s try to solve
-this by using a Spark extension.
-First, if you search “spark-packages.org” to find a Solr extension, you should be able
-to locate spark-solr. The “How to” extension mentions that the
-`com.lucidworks.spark:spark-solr:2.0.1` should be loaded. We can accomplish
-this in R using the `sparklyr.shell.packages` configuration option:
+在开始本节之前，请考虑导航到spark-packages.org，该网站跟踪Spark社区提供的Spark扩展。使用上一节中介绍的相同技术，你可以在R中使用这些扩展。
+
+例如，有一个Apache Solr，它是一个用于在大型数据集上执行全文搜索的系统，Apache Spark目前并不原生支持这种功能。另外，在本文撰写之时，还没有R扩展来支持Solr。所以，让我们试着用Spark扩展来解决这个问题。
+
+首先，如果搜索“spark packages.org”来找到Solr扩展，那么你应该能够找到`spark-solr`。“How to”扩展指出应该加载`com.lucidworks.spark:spark-solr:2.0.1`。我们可以使用`sparklyr.shell.packages`配置选项在R中完成配置：
+
 ```{r}
 config <- spark_config()
 config["sparklyr.shell.packages"] <- "com.lucidworks.spark:spark-solr:3.6.3"
@@ -6354,20 +6349,12 @@ config["sparklyr.shell.repositories"] <-
 "http://repo.spring.io/plugins-release/,http://central.maven.org/maven2/"
 sc <- spark_connect(master = "local", config = config)
 ```
-While specifying the `sparklyr.shell.packages` parameter is usually enough, for this
-particular extension, dependencies failed to download from the Spark packages
-repository. You would need to manually find the failed dependencies in the Maven
-repo and add further repositories under the `sparklyr.shell.repositories`
-parameter.
 
-> When you use an extension, Spark connects to the Maven package
-repository to retrieve it. This can take significant time depending
-on the extension and your download speeds. In this case, consider
-using the `sparklyr.connect.timeout` configuration parameter to
-allow Spark to download the required files.
+虽然指定`sparklyr.shell.packages`参数通常就足够了，但是对于这个特定的扩展，依赖项无法从Spark包仓库下载。你需要在Maven repo中手动查找失败的依赖项，并在`sparklyr.shell.repositories`参数下添加更多的仓库。
 
-From the spark-solr documentation, you would find that this extension can be used
-with the following Scala code:
+> 当使用扩展时，Spark会连接到Maven包仓库来以便获取检索扩展。这可能需要很长时间，取决于扩展和你的下载速度。在这种情况下，考虑使用`sparklyr.connect.timeout`配置参数来允许Spark下载所需的文件。
+
+从`spark-solr`文档中，你可以找到这个扩展可以通过以下Scala代码使用:
 ```{r}
 val options = Map(
 "collection" -> "{solr_collection_name}",
@@ -6375,7 +6362,7 @@ val options = Map(
 )
 val df = spark.read.format("solr") .options(options) .load()
 ```
-We can translate this to R code:
+我们可以翻译成R代码：
 ```{r}
 spark_session(sc) %>%
 invoke("read") %>%
@@ -6384,15 +6371,11 @@ invoke("option", "collection", "<collection>") %>%
 invoke("option", "zkhost", "<host>") %>%
 invoke("load")
 ```
-This code will fail, however, since it would require a valid Solr instance and configur‐
-ing Solr goes beyond the scope of this book. But this example provides insights as to
-how you can create Spark extensions. It’s also worth mentioning that you can use
-`spark_read_source()` to read from generic sources to avoid writing custom
-`invoke()` code.
-As pointed out in “Overview” on page 240, consider sharing code with others using R
-packages. While you could require users of your package to specify `sparklyr.shell.packages`, you can avoid this by registering dependencies in your R
-package. Dependencies are declared under a `spark_dependencies()` function; thus,
-for the example in this section:
+
+但是，这段代码会失败，因为它需要一个有效的Solr实例，并且配置Solr超出了本书的范围。但是这个例子帮你理解如何创建Spark扩展。值得一提的是，你可以使用`spark_read_source()`从通用源中读取，以避免编写自定义的`invoke()`代码。
+
+正如“概述”中指出的，考虑与使用R包的其他人共享代码。虽然可以要求你的包的用户指定`sparklyr.shell.packages`，但是在R包中注册依赖项可以避免这种情况。依赖项在`spark_dependencies()`函数下声明；因此，对于本节中的示例：
+
 ```{r}
 spark_dependencies <- function(spark_version, scala_version, ...) {
 spark_dependency(
@@ -6401,96 +6384,63 @@ repositories = c(
 "http://repo.spring.io/plugins-release/",
 "http://central.maven.org/maven2/") ) }
 .onLoad <- function(libname, pkgname) {
-244 | Chapter 13: Contributing
 sparklyr::register_extension(pkgname) }
 ```
-The `onLoad` function is automatically called by R when your library loads. It should
-call `register_extension()`, which will then call back `spark_dependencies()`, to
-allow your extension to provide additional dependencies. This example supports
-Spark 2.4, but you should also support mapping Spark and Scala versions to the cor‐
-rect Spark extension version.
-There are about 450 Spark extensions you can use; in addition, you can also use any
-Java library from a Maven repository, where Maven Central has over 3 million arti‐
-facts. While not all Maven Central libraries might be relevant to Spark, the combina‐
-tion of Spark extensions and Maven repositories certainly opens many interesting
-possibilities for you to consider!
-However, for those cases where no Spark extension is available, the next section will
-teach you how to use custom Scala code from your own R package.
+
+当加载库时，`onLoad`函数由R自动调用。它应该调用`register_extension()`，该函数再回调`spark_dependencies()`，以允许扩展提供其他依赖项。本例支持Spark 2.4，但也应该支持将Spark和Scala版本映射到正确的Spark扩展版本。
+
+你可以使用大约450个Spark扩展；此外，你还可以使用Maven仓库中的任何Java库，其中Maven Central有超过300万个组件。虽然并不是所有的Maven Central库都与Spark相关，但是Spark扩展和Maven仓储库的结合无疑为你提供了许多值得考虑的可能性！
+
+但是，对于那些没有Spark扩展的情况，下一节将介绍如何使用来自自己R包的定制Scala代码。
 
 ## 使用Scala代码
 
-Scala code enables you to use any method in the Spark API, Spark extensions, or Java
-library. In addition, writing Scala code when running in Spark can provide perfor‐
-mance improvements over R code using `spark_apply()`. In general, the structure of
-your R package will contain R code and Scala code; however, the Scala code will need
-to be compiled as JARs (Java ARchive files) and included in your package.
-Figure 13-2 shows this structure.
+Scala代码允许你使用Spark API、Spark扩展或Java库中的任何方法。此外，在Spark中运行时编写Scala代码可以在使用`spark_apply()`的R代码时提供性能改进。通常，R包结构会包含R代码和Scala代码；但是，Scala代码需要编译为JAR包（Java归档文件）并包含在程序包中。图13-2展示了这种结构。
 
-![图13-2. R package structure when using Scala code](figures/13_2.png)
-As usual, the R code should be placed under a top-level R folder, Scala code under a
-java folder, and the compiled JARs under an inst/java folder. Though you are cer‐
-tainly welcome to manually compile the Scala code, you can use helper functions to
-download the required compiler and compile Scala code.
-To compile Scala code, you’ll need to install the Java Development Kit 8 (JDK8, for
-short). Download the JDK from Oracle’s Java download page; this will require you to
-restart your R session.
+![图13-2. 使用Scala代码时的R程序包结构](figures/13_2.png)
 
-You’ll also need a Scala compiler for Scala 2.11 and 2.12. The Scala compilers can be
-automatically downloaded and installed using `download_scalac()`:
+通常，R代码应该放在顶层R文件夹下，Scala代码放在java文件夹下，编译的JAR包放在inst/java文件夹下。尽管欢迎手动编译Scala代码，但是你可以使用帮助函数下载所需的编译器并编译Scala代码。
+
+要编译Scala代码，需要安装Java Development Kit 8（简称JDK8）。从Oracle的Java下载页面下载JDK；这需要重新启动R进程。
+
+你还需要Scala编译器支持Scala 2.11和2.12。使用`download_scalac()`，Scala编译器会自动下载和安装：
 ```{r}
 download_scalac()
 ```
-Next, you’ll need to compile your Scala sources using `compile_package_jars()`. By
-default, it uses `spark_compilation_spec()`, which compiles your sources for the fol‐
-lowing Spark versions:
+
+接下来，需要使用`compile_package_jars()`编译Scala源代码。默认情况下，它使用`spark_compilation_spec()`，并支持以下Spark版本：
+
 ```{r}
 ## [1] "1.5.2" "1.6.0" "2.0.0" "2.3.0" "2.4.0"
 ```
-You can also customize this specification by creating custom entries with `spark_compilation_spec()`.
-While you could create the project structure for the Scala code from scratch, you can
-also simply call `spark_extension(path)` to create an extension in the given path.
-This extension will be mostly empty but will contain the appropriate project structure
-to call the Scala code.
-Since `spark_extension()` is registered as a custom project extension in RStudio, you
-can also create an R package that extends Spark using Scala code from the File menu;
-click New Project and then select “R Package using Spark” as shown in图13-3.
 
-![图13-3. Creating a Scala extension package from RStudio](figures/13_3.png)
-Once you are ready to compile your package JARs, you can simply run the following:
+你还可以使用`spark_compilation_spec()`创建自定义条目来定义这个配置。
+
+虽然可以从头开始为Scala代码创建项目结构，但也可以简单地调用`spark_extension(path)`在给定路径中创建扩展。
+虽然这个扩展很可能是空的，但是包含调用Scala代码的项目结构。
+
+由于`spark_extension()`在RStudio中注册为自定义项目扩展，你还可以从“文件”菜单中使用Scala代码创建扩展spark的R包；单击“新建项目”，然后选择“使用spark的R包”，如图13-3所示。
+
+![图13-3. 从Rstudio创建Scala扩展包](figures/13_3.png)
+准备好编译程序包的JAR包后，你只需要运行以下代码：
 ```{r}
 compile_package_jars()
 ```
-Since the JARs are compiled by default into the inst/ package path, when you are
-building the R package all the JARs will also be included within the package. This
 
-means that you can share or publish your R package, and it will be fully functional by
-R users. For advanced Spark users with most of their expertise in Scala, it’s compel‐
-ling to consider writing libraries for R users and the R community in Scala and then
-easily packaging these into R packages that are easy to consume, use, and share
-among them.
-If you are interested in developing a Spark extension with R and you get stuck along
-the way, consider joining the `sparklyr` Gitter channel, where many of us hang out to
-help this wonderful community to grow. We hope to hear from you soon!
+由于JAR包默认编译到inst/package路径中，因此在构建R包时，所有JAR包也将包含在程序包中。这意味着你可以共享或发布你的R包，为R用户提供相关功能。对于拥有Scala专业知识的Spark高级用户来说，必须考虑用Scala为R用户和R社区编写库，然后将这些库打包成易于调取、使用和共享的R包。
+
+如果你对R环境中的Spark扩展开发感兴趣，而在开发过程中遇到困难，可以考虑加入`sparklyr`的Gitter频道，我们中的许多人都会在这里帮助社区成长。我们希望很快听到你的声音！
 
 ## 小结
 
-This final chapter introduced you to a new set of tools to use to expand Spark func‐
-tionality beyond what R and R packages currently support. This vast new space of
-libraries includes more than 450 Spark extensions and millions of Java artifacts you
-can use in Spark from R. Beyond these resources, you also learned how to build Java
-artifacts using Scala code that can be easily embedded and compiled from R.
-This brings us back to this book’s purpose, presented early on; while we know you’ve
-learned how to perform large-scale computing using Spark in R, we’re also confident
-that you have acquired the knowledge required to help other community members
-through Spark extensions. We can’t wait to see your new creations, which will surely
-help grow the Spark and R communities at large.
-To close, we hope the first chapters gave you an easy introduction to Spark and R.
-Following that, we presented analysis and modeling as foundations for using Spark,
-with the familiarity of R packages you already know and love. You moved on to learn‐
-ing how to perform large-scale computing in proper Spark clusters. The last third of
-this book focused on advanced topics: using extensions, distributing R code, process‐
-ing real-time data, and, finally, giving back by using Spark extensions using R and
-Scala code.
+最后一章介绍了一组新的工具，用于将Spark功能扩展到R和R包当前支持的范围之外。这个巨大的仓库包括450多个Spark扩展和数以百万计的Java组件。它们都帮助我们在R中使用Spark。除了这些资源之外，你还学习了如何使用Scala代码构建Java组件，该代码可以很容易地从R嵌入和编译。
+
+这让我们回到了本书的初衷：虽然我们知道你已经学习了如何使用在R中使用Saprk执行大规模计算，还相信你已经掌握了通过Spark扩展帮助其他社区成员所需的知识。我们迫不及待地想看到你们新的创造，这肯定会有助于Spark和R社区的发展。
+
+最后，我们希望前几章完成了Spark和R的简单介绍。然后，我们为了使用Spark，通过熟悉的R程序包，介绍了分析和建模基础。接着，你学习了如何在合适的Spark集群中执行大规模计算。本书的最后三分之一关注在高级主题上：使用扩展、分发R代码、处理实时数据。最后，借助R和Scala代码使用Spark扩展回馈社区。
+
+我们已经尽所能提供了最好的内容。但是，如果你知道任何改进本书的方法，请在the-r-in-spark仓库下新开一个GitHub issue。我们会在以后的修订中关注你的建议。我们希望你喜欢读这本书，而且你学到的和我们在写这本书时学到的一样多。我们希望你值得花时间阅读本书。有你作为我们的读者是我们的荣幸。
+
 We’ve tried to present the best possible content. However, if you know of any way to
 improve this book, please open a GitHub issue under the the-r-in-spark repo, and
 we’ll address your suggestions in upcoming revisions. We hope you enjoyed reading
