@@ -238,7 +238,7 @@ Watch us on YouTube: http://www.youtube.com/oreillymedia
 
 [^6]: Zaharia M, Chowdhury M, Franklin MJ, Shenker S, Stoica I (2010). “Spark: Cluster computing with working sets.” HotCloud, 10(10-10), 95.
 
-![图1-3. 逻辑斯蒂回归在Hadoop和Spark上的性能](figures/1_3.png)
+![图1-3. 逻辑回归在Hadoop和Spark上的性能](figures/1_3.png)
 
 尽管Spark以内存操作性能而闻名，而当初设计时是作为支持内存和磁盘操作的一种通用执行引擎。例如，Spark创造了新的大规模排序记录，而这些数据并没有存在内存中。相反，Spark改进了网络序列化，网络改组，CPU缓存的高效利用，进而极大的提高了性能。如果你需要对大规模数据进行排序，世界上没有比Spark更快的系统了。
 
@@ -6441,22 +6441,15 @@ compile_package_jars()
 
 我们已经尽所能提供了最好的内容。但是，如果你知道任何改进本书的方法，请在the-r-in-spark仓库下新开一个GitHub issue。我们会在以后的修订中关注你的建议。我们希望你喜欢读这本书，而且你学到的和我们在写这本书时学到的一样多。我们希望你值得花时间阅读本书。有你作为我们的读者是我们的荣幸。
 
-We’ve tried to present the best possible content. However, if you know of any way to
-improve this book, please open a GitHub issue under the the-r-in-spark repo, and
-we’ll address your suggestions in upcoming revisions. We hope you enjoyed reading
-this book, and that you’ve learned as much as we have learned while writing it. We
-hope it was worthy of your time—it has been an honor having you as our reader.
+# 附录A：参考代码
 
-# 附录A :Supplemental Code References
+在整本书中，我们都提到了这个附录。这里我们包括了重要的内容（并列出了可以找到这些材料的章节）。
 
-Throughout the book we’ve included references to this appendix. Here we’ve included
-important content (and listed the sections where this material can be found).
+## 前言
 
-## Preface
+### 格式化
 
-### Formatting
-
-The following `ggplot2` theme was used to format all plots in this book:
+下面的`ggplot2`主题用来格式化本书的所有绘图：
 ```{r}
 plot_style <- function() {
 font <- "Helvetica"
@@ -6491,16 +6484,16 @@ panel.background = ggplot2::element_blank(),
 strip.background = ggplot2::element_rect(fill = "white"),
 strip.text = ggplot2::element_text(size = 20, hjust = 0) ) }
 ```
-You can activate this with the following:
+你可以使用下列代码激活：
 ```{r}
 ggplot2::theme_set(plot_style())
 ```
 
-## Chapter 1
+## 第1章
 
-### The World’s Capacity to Store Information
+### 全球存储信息能力
 
-The following script was used to generate图1-1:
+下列脚本用来生成图1-1：
 ```{r}
 library(ggplot2)
 library(dplyr)
@@ -6519,15 +6512,14 @@ theme_light() +
 theme(legend.position = "bottom")
 ```
 
-### Daily Downloads of CRAN Packages
+### CRAN程序包每日下载量
 
-Figure 1-6 was generated through the following code:
+图1-6通过以下代码生成：
 ```{r}
 downloads_csv <- "data/01-intro-r-cran-downloads.csv"
 if (!file.exists(downloads_csv)) {
 downloads <- cranlogs::cran_downloads(from = "2014-01-01", to = "2019-01-01")
 readr::write_csv(downloads, downloads_csv)
-250 | Appendix A: Supplemental Code References
 }
 cran_downloads <- readr::read_csv(downloads_csv)
 ggplot(cran_downloads, aes(date, count)) +
@@ -6544,63 +6536,53 @@ breaks = c(0.5 * 10^6, 10^6, 1.5 * 10^6, 2 * 10^6, 2.5 * 10^6, 3 * 10^6,
 labels = c("", "1M", "", "2M", "", "3M", "") )
 ```
 
-## Chapter 2
+## 第2章
 
-### Prerequisites
+### 预备知识
 
-#### Installing R
+#### 安装R
 
-Download the R installer (see图A-1) and launch it for your Windows, Mac, or
-Linux platform.
-Supplemental Code References | 251
-![图A-1. The R Project for Statistical Computing](figures/A_1.png)
+下载R安装文件（见图A-1），在Windows，Mac或Linux平台上启动。
 
-#### Installing Java
+![图A-1. 面向统计计算的R项目](figures/A_1.png)
 
-Download the Java installer (see图A-2) and launch it for your Windows, Mac, or
-Linux platform.
-252 | Appendix A: Supplemental Code References
-![图A-2. Java download page](figures/A_2.png)
-Starting with Spark 2.1, Java 8 is required; however, previous versions of Spark sup‐
-port Java 7. Regardless, we recommend installing Java Runtime Engine 8 (JRE 8).
+#### 安装Java
 
-> If you’re an advanced reader who is already using the Java Develop‐
-ment Kit (JDK), note that JDK 9+ is currently unsupported. So you
-will need to downgrade to JDK 8 by uninstalling JDK 9+ or by set‐
-ting JAVA_HOME appropiately.
+下载Java安装文件（见图A-2），在Windows，Mac或Linux平台上启动。
 
-#### Installing RStudio
+![图A-2. Java下载页](figures/A_2.png)
 
-While installing RStudio is not strictly required to work with Spark with R, it will
-make you much more productive and therefore, we recommend it. Download the
-RStudio installer (see图A-3), then launch it for your Windows, Mac, or Linux
-platform.
+Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么样，我们都建议安装Java Runtime Engine 8（JRE 8）。
 
-![图A-3. RStudio download page](figures/A_3.png)
-After launching RStudio, you can use its console panel to execute the code provided
-in this chapter.
+> 如果你是一个已经在使用Java Development Kit（JDK）的高级读者，请注意JDK 9+目前不受支持。因此，你需要通过卸载JDK 9+或适当设置`JAVA_HOME`来降级到JDK 8。
 
-#### Using RStudio
 
-If you’re unfamiliar with RStudio (see图A-4), you should make note of the fol‐
-lowing panes:
+#### 安装RStudio
 
-* Console
-    You can use a standalone R console to execute all the code presented in this book.
-* Packages
-    This pane allows you to install `sparklyr` with ease, check its version, navigate to
-the help contents, and more.
-* Connections
-    This pane allows you to connect to Spark, manage your active connection, and
-view the available datasets.
+虽然安装RStudio在使用Spark和R并不是必须的，但它会提高工作效率。因此，我们建议还是安装Rstudio。下载RStudio安装程序（参见图A-3），然后在Windows，Mac或Linux平台上启动。
 
-![图A-4. RStudio overview](figures/A_4.png)
+![图A-3. RStudio下载页](figures/A_3.png)
 
-## Chapter 3
+启动RStudio后，你可以使用控制台面板来执行本章中的代码。
 
-### Hive Functions
+#### 使用RStudio
 
-Name | Description
+如果你不熟悉RStudio（参见图A-4），应该注意以下面板：
+* 控制台
+    可以使用一个独立的R控制台来执行本书中介绍的所有代码。
+* 程序包
+    此面板允许你轻松安装`sparklyr`，检查其版本，导航到帮助内容，等等。
+* 连接
+    此面板允许你连接到Spark，管理活动连接，并查看可用的数据集。
+
+
+![图A-4. RStudio界面](figures/A_4.png)
+
+## 第3章
+
+### Hive函数
+
+名称 | 描述
 -------|----------
 `size(Map<K.V>)` |Returns the number of elements in the map type.
 `size(Array)` |Returns the number of elements in the array type.
@@ -6746,59 +6728,60 @@ Name | Description
 `json_tuple(string jsonStr,string k1,…,string kn)`|Takes JSON string and a set of n keys, and returns a tuple of n values.
 `parse_url_tuple(string urlStr,string p1,…,string pn)`|Takes URL string and a set of n URL parts, and returns a tuple of n values.
 
-## Chapter 4
+## 第4章
 
-### MLlib Functions
+### MLlib函数
 
-The following table exhibits the ML algorithms supported in sparklyr:
-Classification
+下表展示了`sparklyr`支持的机器学习算法：
 
-Algorithm |Function
+#### 分类
+
+算法 |函数
 ------|-------
-Decision trees| `ml_decision_tree_classifier()`
-Gradient-boosted trees |`ml_gbt_classifier()`
-Linear support vector machines |`ml_linear_svc()`
-Logistic regression |`ml_logistic_regression()`
-Multilayer perceptron |`ml_multilayer_perceptron_classifier()`
-Naive-Bayes |`ml_naive_bayes()`
-One vs rest |`ml_one_vs_rest()`
-Random forests |`ml_random_forest_classifier()`
+决策树| `ml_decision_tree_classifier()`
+梯度提升树 |`ml_gbt_classifier()`
+线性支持向量机 |`ml_linear_svc()`
+逻辑回归|`ml_logistic_regression()`
+多层感知机 |`ml_multilayer_perceptron_classifier()`
+朴素贝叶斯 |`ml_naive_bayes()`
+一对多分类 |`ml_one_vs_rest()`
+随机森林 |`ml_random_forest_classifier()`
 
-#### Regression
+#### 回归
 
-Algorithm |Function
+算法 |函数
 ------|-------
-Accelerated failure time survival regression |`ml_aft_survival_regression()`
-Decision trees |`ml_decision_tree_regressor()`
-Generalized linear regression |`ml_generalized_linear_regression()`
-Gradient-boosted trees |`ml_gbt_regressor()`
-Isotonic regression |`ml_isotonic_regression()`
-Linear regression |`ml_linear_regression()`
+加速时效时间生成回归 |`ml_aft_survival_regression()`
+决策树 |`ml_decision_tree_regressor()`
+广义线性回归|`ml_generalized_linear_regression()`
+梯度提升树|`ml_gbt_regressor()`
+保序回归 |`ml_isotonic_regression()`
+线性回归 |`ml_linear_regression()`
 
-#### Clustering
+#### 聚类
 
-Algorithm |Function
+算法 |函数
 ------|-------
-Bisecting k-means clustering |`ml_bisecting_kmeans()`
-Gaussian mixture clustering |`ml_gaussian_mixture()`
-k-means clustering |`ml_kmeans()`
-Latent Dirichlet allocation |`ml_lda()`
+二分k-means聚类 |`ml_bisecting_kmeans()`
+高斯混合聚类 |`ml_gaussian_mixture()`
+k-means聚类|`ml_kmeans()`
+隐狄利克雷分布 |`ml_lda()`
 
-#### Recommendation
+#### 推荐
 
-Algorithm |Function
+算法 |函数
 ------|-------
-Alternating least squares factorization |`ml_als()`
+交替最小二乘分解 |`ml_als()`
 
-#### Frequent Pattern Mining
+#### 常见模式挖掘
 
-Algorithm |Function
+算法 |函数
 ------|-------
-FPGrowth |`ml_fpgrowth()`
+频繁模式增长 |`ml_fpgrowth()`
 
-#### Feature Transformers
+#### 特征变换
 
-Transformer| Function
+变换器| 函数
 ------|-------
 Binarizer |`ft_binarizer()`
 Bucketizer |`ft_bucketizer()`
