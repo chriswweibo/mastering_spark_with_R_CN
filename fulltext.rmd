@@ -6904,47 +6904,25 @@ bin/kafka-server-start.sh config/server.properties
 确保总是首先启动Zookeeper，然后启动Kafka。
 
 
-# About the Authors
+# 关于作者
 
-Javier Luraschi is a software engineer with experience in technologies ranging from
-desktop, web, mobile, and backend, to augmented reality and deep learning applica‐
-tions. He previously worked for Microsoft Research and SAP and holds a double
-degree in mathematics and software engineering. He is the creator of sparklyr,
-cloudml, r2d3, mlflow, tfdeploy, and kerasjs.
-Kevin Kuo builds open source libraries for machine learning and model deployment.
-He has held data science positions in various industries, including insurance, where
-he was a credentialed actuary. Kevin is the creator of mlflow, mleap, and sparkxgb
-among various R packages. He is also an amateur mixologist and sommelier.
-Edgar Ruiz has a background in deploying enterprise reporting and business intelli‐
-gence solutions. He is the author of multiple articles and blog posts sharing analytics
-insights and server infrastructure for data science. Edgar is the author and adminis‐
-trator of the db.rstudio.com website, and the current administrator of the sparklyr
-website. He also coauthored the dbplyr package and created the dbplot, tidypre
-dict, and modeldb packages.
+Javier Luraschi是一名软件工程师，在从桌面、web、移动和后端开发到增强现实和深度学习应用程序的技术方面具有丰富经验。他曾供职于微软研究院和SAP，拥有数学和软件工程双学位。他是`sparklyr`、`cloudml`、`r2d3`、`mlflow`、`tfdeploy`和`kerasjs`的作者。
+
+Kevin Kuo为机器学习和模型部署构建了开源代码库。他曾在多个行业担任数据科学家职位，其中包括保险业，他是一名持照的精算师。Kevin是`mlflow`、`mleap`和`sparkxgb`的作者。他也是一个业余的调酒师和品酒师。
+
+Edgar Ruiz具有部署企业报告和商业智能解决方案的背景。他是多篇文章和博客文章的作者，旨在分享分析见解和数据科学项目的服务器架构。Edgar是`db.rstudio.com`网站的作者和管理员，也是`sparklyr`网站的现任管理员。他还与人合著了`dbplyr`包，并创建了`dbplot`、`tidypredict`和`modeldb`包。
+
 --------
 
-# Colophon
+# 结语
 
-The animal on the cover of Mastering Spark with R is a rose fish (Sebastes norvegicus),
-a deep-sea species of rockfish. Although most rockfish live in the North Pacific, the
-rose fish is one of four species that live in the North Atlantic.
-Juvenile rose fish live around fjords, while adults live in waters up to 3,280 feet deep.
-Adults average 18 inches long, although they can reach up to 3 feet. They are slow￾growing fish that reach full maturity around 8 or 9 years old. Rose fish are vivipari‐
-ous; in winter, females give birth to 50,000–350,000 larvae. They can live to be 60
-years old.
-Rose fish are commercially fished, with an annual catch of 40 to 60 kilotons. They are
-considered to be severely overfished, especially given that it takes 8 or 9 years to reach
-reproductive age.
-Many of the animals on O’Reilly covers are endangered; all of them are important to
-the world.
-The cover illustration is by Jose Marzan, based on a black and white engraving from
-Histoire Naturelle. The cover fonts are Gilroy Semibold and Guardian Sans. The text
-font is Adobe Minion Pro; the heading font is Adobe Myriad Condensed; and the
-code font is Dalton Maag’s Ubuntu Mono.
-There’s much more 
-where this came from.
-Experience books, videos, live online 
-training courses, and more from O’Reilly 
-and our 200+ partners—all in one place.
-Learn more at oreilly.com/online-learning
-©2019 O’Reilly Media, Inc. O’Reilly is a registered trademark of O’Reilly Media, Inc. | 175
+《Mastering Spark with R》封面上的动物是一种玫瑰鱼（褐家鼠），一种深海岩鱼。虽然大多数岩鱼生活在北太平洋，但玫瑰鱼是生活在北大西洋的四种鱼类之一。
+
+幼年玫瑰鱼生活在峡湾附近，而成年玫瑰鱼生活在3280英尺深的水域。成年玫瑰鱼平均有18英寸长，然后某些也可以达到3英尺。它们是生长缓慢的鱼类，在8或9岁左右达到完全成熟。玫瑰鱼是胎生的；在冬季，雌性会产下50000-350000个卵。玫瑰鱼寿命可达60岁。
+
+玫瑰鱼是一种商业捕捞的鱼类，年捕获量为40至60千吨。人们认为是玫瑰鱼已经被严重过度捕捞了，特别是考虑到需要8或9年才能达到生殖年龄。
+
+奥雷利岛上的许多动物正濒临灭绝，而它们对世界都很重要。
+
+封面插图由Jose Marzan根据Histoire Naturelle的黑白雕刻而成。封面字体是Gilroy Semibold和Guardian Sans。文本字体是Adobe Minion Pro；标题字体是Adobe Myriad Condensed；代码字体是Dalton Maag的Ubuntu Mono。
+
