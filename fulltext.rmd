@@ -15,6 +15,7 @@ library(formatR)
 opts_chunk$set(tidy=T, message=FALSE, fig.align='center', eval=F)
 ```
 
+-------
 
 # 序
 
@@ -357,7 +358,7 @@ R语言是S语言一种现代而自由的实现。特别的，根据《面向统
 
 # 第2章 开始
 
-> I always wanted to be a wizard.
+> 我一直想成为一个巫师。
 
 > — Samwell Tarly
 
@@ -646,11 +647,11 @@ mpg cyl disp hp drat wt qsec vs am gear carb
 
 如果你是R语言高手，你会倾向于使用`spark_apply()`处理一切。但是最好别这样！`spark_apply()` 适用于Spark能力受限的高级情形。你会了解到如何执行合适的数据分析和建模，而不用把R代码分发给你的集群。
 
-### 流式计算
+### Streaming
 
 虽然处理大量静态数据是Spark的典型应用场景，但是Spark也可以处理实时动态数据集。某些应用中确实有这样的需求。你可以把一个流式数据集看做一个持续更新数据的静态数据源，例如股票市场报价。流式数据通常从Kafka（一个开源的流式数据处理软件平台）或分布式存储中读取。
 
-要体验流式计算，首先创建一个input/文件夹，放入一些流式计算所需的输入数据：
+要体验Streaming，首先创建一个*input/文件夹*，放入一些流式计算所需的输入数据：
 ```{r}
 dir.create("input")
 write.csv(mtcars, "input/cars_1.csv", row.names = F)
@@ -728,7 +729,7 @@ spark_disconnect_all()
 ```
 注意，退出R或者RStudio，或者重启R进程，也会引起Spark连接终止，进而终止Spark集群并把没有明确保存的数据放在缓存。
 
-### 使用RStudio
+## 使用RStudio
 
 既然使用RStudio运行R非常普遍，`sparklyr`也提供了RStudio扩展来帮助简化工作流，提高Rstudio中使用Spark的生产效率。如果你不熟悉RStudio，可以快速浏览依一下“使用Rstudio”部分。一些扩展非常值得关注。
 
@@ -802,7 +803,7 @@ spark_disconnect_all()
 
 # 第3章 分析
 
-> First lesson: stick them with the pointy end.
+> 第一课：用尖的那头去刺敌人。
 > —Jon Snow
 
 之前的章节主要介绍Spark和R，可以让你快速熟悉和鼓励尝试基础的数据分析流程。但是，我们并没有介绍什么是数据分析，尤其是Spark中的数据分析。 我们介绍了本书中需要用到的工具，它们有助于你更多的关注学习而不是排查问题。
@@ -1077,6 +1078,7 @@ geom_col(fill = "#999999") + coord_flip()
 ### 使用`dbplot`
 
 `dbplot`程序包为远程数据提供了有用的绘图函数。`dbplot`中用于转换数据的代码已经完成，以便可以对应到Spark中。它会使用这些结果，通过`ggplot2`程序包创建图形，其中数据转换和绘图都是由一个函数完成的。`dbplot_histogram()`函数可以让Spark计算分箱，并对每个分箱计数，产出一个`ggplot`对象，这个对象可以通过后续添加其他步骤进行优化。`dbplot_histogram()`也接受`binwidth`参数来控制用于计算分箱的数据范围：
+
 ```{r}
 library(dbplot)
 cars %>%
@@ -1088,7 +1090,8 @@ subtitle = "Histogram over miles per gallon")
 
 ![图3-10. `dbplot`创建的直方图](figures/3_10.png)
 
-直方图是分析单变量的好方法。要分析两个变量，我们经常会用到散点图或光栅图。散点图用来对比两个连续型变量的关系。例如，一个散点图会展示汽车重量和汽油消耗之间的关系。图3-11说明，汽车越重，汽油消耗越多，因为这些点几乎靠拢成一条线，从左上角下降到右下角。下面是是生成图形的代码：
+直方图是分析单变量的好方法。要分析两个变量，我们经常会用到散点图或栅格图。散点图用来对比两个连续型变量的关系。例如，一个散点图会展示汽车重量和汽油消耗之间的关系。图3-11说明，汽车越重，汽油消耗越多，因为这些点几乎靠拢成一条线，从左上角下降到右下角。下面是是生成图形的代码：
+
 ```{r}
 ggplot(aes(mpg, wt), data = mtcars) +
 geom_point()
@@ -1096,28 +1099,25 @@ geom_point()
 
 ![图3-11. Spark中的散点图示例](figures/3_11.png)
 
-However, for scatter plots, no amount of “pushing the computation” to Spark will
-help with this problem because the data must be plotted in individual dots.
-The best alternative is to find a plot type that represents the x/y relationship and con‐
-centration in a way that it is easy to perceive and to “physically” plot. The raster plot
-might be the best answer. A raster plot returns a grid of x/y positions and the results
-of a given aggregation, usually represented by the color of the square.
-You can use `dbplot_raster()` to create a scatter-like plot in Spark, while only retriev‐
-ing (collecting) a small subset of the remote dataset:
+然而，对于散点图，再多的“推动计算”也无助于解决这个问题，因为数据必须用单独的点绘制。
+
+最好的选择是找到一种能代表x/y关系和集中度的绘图类型，且这种类型易于理解和实际绘图。栅格图可能是最好的答案。栅格图返回x/y位置的网格和给定聚集的结果，通常用带颜色的方形表示。
+
+可以使用`dbplot_raster()`在Spark中创建类似散点图的绘图，而只获取（收集）远程数据集的一个子集：
+
 ```{r}
 dbplot_raster(cars, mpg, wt, resolution = 16)
 ```
-As shown in图3-12, the resulting plot returns a grid no bigger than 5 x 5. This
-limits the number of records that need to be collected into R to 25.
 
-![图3-12. A raster plot using Spark](figures/3_12.png)
+如图3-12所示，生成的图返回不大于$5 \times 5$的网格。这会把需要收集到R中的记录数限制为25。
+
+
+![图3-12. 使用Spark绘制的](figures/3_12.png)
 
 > 你也可以使用`dbplot`获取原始数据并用其他方式做可视化。要获取聚合结果，而不是图形，使用
 `db_compute_bins()`，`db_compute_count()`，`db_compute_raster()`和`db_compute_boxplot()`。
 
-While visualizations are indispensable, you can complement data analysis using stat‐
-istical models to gain even deeper insights into our data. The next section describes
-how we can prepare data for modeling with Spark.
+虽然可视化是必不可少的，但你还可以使用统计模型补足数据分析，以获得对数据更深入的了解。下一节将介绍如何准备数据以便使用Spark进行建模。
 
 ## 建模
 
@@ -1301,7 +1301,7 @@ output:
 
 # 第4章 建模
 
-> I’ve trusted in your visions, in your prophecies, for years.
+> 多年来，我一直相信你的幻象，你的预言。
 > —Stannis Baratheon
 
 在第3章中，你学到了如果在大规模数据集上利用Spark进行数据分析。在本章中，我们会详细介绍使用Spark构建预测模型的步骤。我们会研究`MLlib`，Spark中支持编写高层级代码在分布式数据上进行预测建模的模块，并在特征工程和探索性数据分析的背景下使用数据操作。
@@ -2018,7 +2018,7 @@ spark_disconnect(sc)
 
 # 第5章 管道操作
 
-> You will never walk again, but you will fly!
+> 你再也不会走路了，但你会飞的！
 > —Three-Eyed Raven
 
 在第4章中，你学习了如何使用Spark提供的高级函数以及与Spark协同工作的著名R程序包，来构建预测模型。你首先学习了监督式算法，最后学习了原始文本上的非监督式算法。
@@ -2522,7 +2522,7 @@ service$interrupt()
 
 # 第6章 集群
 
-> I have a very large army and very large dragons.
+> 我有一支很强大的军队和一条很大的龙。
 > —Daenerys Targaryen
 
 前几章集中讨论了在一个计算实例上,即你的个人计算机上，使用Spark。在本章中，我们将介绍在多个计算实例（也称为计算集群）上运行Spark的技术。本章和后续章节将介绍并使用适用于计算集群的概念；但是，并不需要使用计算集群来继续学习，因此你仍然可以使用个人计算机。值得一提的是，虽然前面的章节主要关注一个计算实例，但你也可以在计算集群中使用介绍的所有数据分析和建模技术，而无需更改任何代码。
@@ -2767,7 +2767,7 @@ gcloud compute ssh sparklyr-m --project=<project> --zone=<region> -- -D 1080 \
 
 Table 6-4. 谷歌云Dataproc定价信息
 
-实例e |CPU|内存 |计算引擎| Dataproc高级版
+实例 |CPU|内存 |计算引擎| Dataproc高级版
 ------|------|------|------|------
 n1-standard-1 |1 |3.75 GB |0.0475美元/小时 |0.010美元/小时
 n1-standard-8 |8 |30 GB |0.3800美元/小时 |0.080美元/小时
@@ -2840,7 +2840,7 @@ Kubernetes可以执行许多集群应用和框架，你可以通过使用具有�
 
 虽然对于一些集群来说，仅使用R和Spark就足够了，但通常在集群中还会安装补充工具,例如分别使用Ganglia、Hue和Oozie等应用来改进监视、SQL分析、工作流协调等。本节并不打算涵盖所有工具，而是介绍常用的工具。
 
-#### RStudio
+### RStudio
 
 通过第1章的学习，你知道RStudio是R的一个著名的免费桌面开发环境；因此，很可能大家正在使用RStudio 桌面版完成本书中的示例。但是，你可能不知道RStudio也可以作为web服务在Spark集群中运行。这个版本的RStudio称为RStudio Server。你可以在图6-15中看到正在运行的RStudio Server。与Spark UI在集群中运行的方式相同，你可以在集群中安装RStudio Server，然后连接到RStudio Server，并按照RStudio Desktop完全相同的方式使用RStudio，同时支持针对Spark集群运行代码。如图6-15所示，RStudio Server不管看起来，还是感觉起来都像RStudio Desktop，但是它支持通过所在的集环境中来高效的运行命令。
 
@@ -2851,13 +2851,13 @@ Kubernetes可以执行许多集群应用和框架，你可以通过使用具有�
 RStudio和Shiny服务器是免费开源的产品；但是，RStudio还提供RStudio Server、RStudio Server Pro、Shiny Server Pro和RStudio Connect等专业产品。你可以在集群内安装这些产品以支持其他R工作流程。`sparklyr`不需要任何额外的工具，但它们带来了值得考虑的生产力显著提高。你可以在rstudio.com/products/上了解更多相关信息。
 
 
-#### Jupyter
+### Jupyter
 
 Juyter项目为开发开源软件、公开标准和跨几十种编程语言的交互式计算服务而生。Jupyter笔记本支持多种编程语言，包括R。你可以使用R内核实现`sparklyr`与Jupyter笔记本一起使用。图6-16展示了`sparklyr`在本地Jupyter笔记本中运行的情况。
 
 ![图6-16. 运行`sparklyr`的Jupyter笔记本](figures/6_16.png)
 
-#### Livy
+### Livy
 
 Apache Livy是Apache中的一个孵化项目，支持通过web界面远程使用Spark集群。直接连接到Spark集群是最理想的；但是，有时直接连接到Spark集群是不可行的。当面临这些限制时，你可以考虑在集群中安装Livy并对其进行适当的安全保护，以便能够通过web协议进行远程使用。不过，请注意，在`sparklyr`中使用Livy会带来明显的性能开销。
 
@@ -2905,7 +2905,7 @@ livy_service_stop()
 
 # 第7章 连接
 
-> They don’t get to choose.
+> 他们没有选择的余地。
 > —Daenerys Targaryen
 
 第6章介绍了主要的集群计算趋势、集群管理器、发行版和云服务提供商，以帮助你选择最适合需要的Spark集群。相比之下，本章会介绍Spark集群内部组件以及如何连接到特定Spark集群。
@@ -3281,8 +3281,7 @@ sc <- spark_connect(master = "sparklyr://localhost:8880/42", version = "2.3")
 
 # 第8章 数据
 
-> Has it occurred to you that she might not have
-> been a reliable source of information?
+> 你有没有想过她可能不是一个可靠的信息来源？
 > —Jon Snow
 
 根据前面章节中获得的知识，你现在可以进行大规模数据分析和建模了！然而，到目前为止，我们还没有真正解释过如何将数据读入Spark。我们已经探索了如何使用`copy_to()`上传小数据集或使用函数，如`spark_read_csv()`或 `spark_write_csv()`，但没有详细解释过程和原因。
@@ -3809,7 +3808,7 @@ dbtable = "person"))
 
 # 第9章 调试
 
-> Chaos isn’t a pit. Chaos is a ladder.
+> 混乱不是深渊，而是阶梯。
 > —Petyr Baelish
 
 在前面的章节中，我们假设Spark中的计算是有效的。虽然这个假设在一些情况下是成立的，但通常需要对Spark内部运行的操作有一些了解，以便微调配置，从而使计算高效运行。本章介绍Spark如何计算大型数据集上的数据，并提供有关如何优化操作的详细信息。
@@ -4007,7 +4006,7 @@ spark_home_dir() %>% file.path("bin", "spark-submit") %>% system2()
 
 通常，任何`spark-submit`设置都通过`sparklyr.shell.X`来配置，其中X是`spark-submit`参数不带`--`前缀的名称。
 
-### 运行时设置
+### runtime设置
 
 正如提到的，一些Spark设置会配置进程的运行时。运行时设置是提交设置的超集，因为即使不能更改设置，检索当前配置通常也是有帮助的。
 
@@ -4290,7 +4289,7 @@ sc <- spark_connect(master = "local")
 
 # 第10章 扩展
 
-> I try to know as many people as I can. You never know which one you’ll need.
+> 我尽量多认识一些人。你永远不知道你需要哪个人。
 > —Tyrion Lannister
 
 在第9章中，你学到了Spark如何通过允许用户配置集群资源、隐式或显式地分区数据、跨分布式计算节点执行命令、在需要时跨节点重洗数据、缓存数据以提高性能，以及通过网络高效地序列化数据来处理大规模数据。你还学习了如何配置连接、提交作业和运行应用程序时使用的不同Spark设置，以及仅适用于本章介绍的R和R扩展的特定设置。
@@ -4953,7 +4952,7 @@ XGBoost和深度学习部分提供了使用梯度下降的备选建模技术：�
 
 # 第11章 分布式R
 
-> Not like this. Not like this. Not like this.
+> 不是这样的，不是这样的，不是这样的。
 > —Cersei Lannister
 
 在前面的章节中，你学习了如何在本地Spark实例和合适的Spark集群中执行数据分析和建模。在第10章中，我们专门研究了如何利用Spark和R社区提供的额外功能。在大多数情况下，Spark功能和扩展的结合足以执行几乎所有的计算。但是，对于Spark及其扩展缺少功能的情况，可以考虑自己将R计算分发给工作节点。
@@ -5764,7 +5763,7 @@ Debugging spark_apply(), connect to worker debugging session as follows:
 
 # 第12章 数据流
 
-> Our stories aren’t over yet.
+> 我们的故事还没有结束。
 > —Arya Stark
 
 回顾前几章，我们已经讨论了很多技术，但还不是全部技术。我们分析了表格数据集，对原始文本执行了无监督学习，分析了图和地理数据集，甚至用自定义的R代码转换了数据！那现在还需要学习什么？
@@ -6190,7 +6189,7 @@ unlink(c("source", "destination", "cars-stream",
 
 # 第13章 社区贡献
 
-> Hold the door, hold the door.
+> 堵住门，堵住门。
 > —Hodor
 
 在第12章中，我们提供了使用R处理Spark中大规模实时数据处理的工具。在最后一章中，我们将更少地关注学习，更多地关注回报Spark和R社区或你职业生涯中的同事。这真的需要整个社区来维持，所以我们需要你！
@@ -6392,7 +6391,7 @@ compile_package_jars()
 
 我们已经尽所能提供了最好的内容。但是，如果你知道任何改进本书的方法，请在the-r-in-spark仓库下新开一个GitHub issue。我们会在以后的修订中关注你的建议。我们希望你喜欢读这本书，而且你学到的和我们在写这本书时学到的一样多。我们希望你值得花时间阅读本书。有你作为我们的读者是我们的荣幸。
 
-# 附录A：参考代码
+# 附录A：补充参考代码
 
 在整本书中，我们都提到了这个附录。这里我们包括了重要的内容（并列出了可以找到这些材料的章节）。
 
