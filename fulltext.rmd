@@ -6783,42 +6783,42 @@ k-means聚类|`ml_kmeans()`
 
 变换器| 函数
 ------|-------
-Binarizer |`ft_binarizer()`
-Bucketizer |`ft_bucketizer()`
-Chi-squared feature selector |`ft_chisq_selector()`
-Vocabulary from document collections |`ft_count_vectorizer()`
-Discrete cosine transform |`ft_discrete_cosine_transform()`
-Transformation using `dplyr` |`ft_dplyr_transformer()`
-Hadamard product |`ft_elementwise_product()`
-Feature hasher |`ft_feature_hasher()`
-Term frequencies using hashing |`export(`ft_hashing_tf)
-Inverse document frequency |`ft_idf()`
-Imputation for missing values |`export(`ft_imputer)
+二值化器 |`ft_binarizer()`
+分桶器 |`ft_bucketizer()`
+卡方特征选择器 |`ft_chisq_selector()`
+文档集合词表|`ft_count_vectorizer()`
+离散余弦转换 |`ft_discrete_cosine_transform()`
+使用`dplyr`转换 |`ft_dplyr_transformer()`
+Hadamard积|`ft_elementwise_product()`
+特征哈希 |`ft_feature_hasher()`
+使用哈希的词频 |`export(`ft_hashing_tf)
+逆文档频率 |`ft_idf()`
+缺失值推断 |`export(`ft_imputer)
 Index to string |`ft_index_to_string()`
-Feature Interaction transform |`ft_interaction()`
-Rescale to [–1, 1] range |`ft_max_abs_scaler()`
-Rescale to [min, max] range |`ft_min_max_scaler()`
-Locality sensitive hashing |`ft_minhash_lsh()`
-Converts to n-grams |`ft_ngram()`
-Normalize using the given P-norm |`ft_normalizer()`
-One-hot encoding |`ft_one_hot_encoder()`
-Feature expansion in polynomial space |`ft_polynomial_expansion()`
-Maps to binned categorical features |`ft_quantile_discretizer()`
-SQL transformation |`ft_sql_transformer()`
-Standardizes features using corrected STD |`ft_standard_scaler()`
-Filters out stop words |`ft_stop_words_remover()`
-Map to label indices |`ft_string_indexer()`
-Splits by white spaces |`ft_tokenizer()`
-Combine vectors to row vector |`ft_vector_assembler()`
-Indexing categorical feature |`ft_vector_indexer()`
-Subarray of the original feature |`ft_vector_slicer()`
-Transform word into code |`ft_word2vec()`
+特征交互转换 |`ft_interaction()`
+[–1, 1]区间缩放|`ft_max_abs_scaler()`
+[min, max]区间缩放 |`ft_min_max_scaler()`
+局部敏感哈希 |`ft_minhash_lsh()`
+转换为n-grams |`ft_ngram()`
+给定P-norm的归一 |`ft_normalizer()`
+One-hot编码 |`ft_one_hot_encoder()`
+多项式空间中的特征扩展|`ft_polynomial_expansion()`
+映射到分箱的类别型特征|`ft_quantile_discretizer()`
+SQL变换 |`ft_sql_transformer()`
+使用修正的STD标准化特征 |`ft_standard_scaler()`
+过滤停用词|`ft_stop_words_remover()`
+映射到标签索引|`ft_string_indexer()`
+按空格切分|`ft_tokenizer()`
+合并向量为行向量|`ft_vector_assembler()`
+为类别型特征建立索引 |`ft_vector_indexer()`
+原始特征的子数组|`ft_vector_slicer()`
+讲词转换为编码|`ft_word2vec()`
 
-## Chapter 6
+## 第6章
 
-### Google Trends for On-Premises (Mainframes), Cloud Computing, and Kubernetes
+### 本地机（主机），云计算和Kubernetes的谷歌趋势
 
-The data that created图6-1 can be downloaded from https://bit.ly/2YnHkNI.
+用于创建图6-1的数据可以从https://bit.ly/2YnHkNI下载。
 ```{r}
 library(dplyr)
 read.csv("data/clusters-trends.csv", skip = 2) %>%
@@ -6839,20 +6839,19 @@ geom_hline(yintercept = 0, size = 1, colour = "#333333") +
 theme(axis.title.x = element_blank())
 ```
 
-## Chapter 12
+## 第12章
 
-### Stream Generator
+### 数据流生成器
 
-The stream_generate_test() function presented in Chapter 12 creates a local test
-stream. This function works independently from a Spark connection. The following
-example will create five files in the source subfolder. Each file will be created 1 second
-after the previous file’s creation:
+第12章中介绍的`stream_generate_test()`函数可以创建本地测试流。此功能独立于Spark连接而工作。下面的示例将在原始子文件夹中创建五个文件。每个文件将在上一个文件完成创建后1秒创建：
+
 ```{r}
 library(sparklyr)
 stream_generate_test(iterations = 5, path = "source", interval = 1)
 ```
-After the function completes, all of the files should show up in the source folder.
-Notice that the file sizes vary: this is so that it simulates what a true stream would do:
+
+函数完成后，所有文件都应显示在源文件夹中。请注意，文件大小各不相同：这是为了模拟真实流的作用：
+
 ```{r}
 file.info(file.path("source", list.files("source")))[1]
 ## size
@@ -6862,8 +6861,7 @@ file.info(file.path("source", list.files("source")))[1]
 ## source/stream_4.csv 2370
 ## source/stream_5.csv 7236
 ```
-The stream_generate_test() by default creates a single numeric variable Data‐
-Frame.
+`stream_generate_test()`默认创建一个单个数值变量的数据框。
 ```{r}
 readr::read_csv("source/stream_5.csv")
 ## # A tibble: 1,489 x 1
@@ -6882,710 +6880,29 @@ readr::read_csv("source/stream_5.csv")
 ## # ... with 1,479 more rows
 ```
 
-### Installing Kafka
+### 安装Kafka
 
-These instructions were compiled using information from the current Quickstart
-page of the official Kafka site. (Newer versions of Kafka will undoubtedly be available
-not long after this book is published.) The idea here is to “timestamp” the versions
-used in the example in “Kafka” on page 233:
+本说明是根据Kafka官方网站的快速入门页面中的信息形成的。（毫无疑问，在本书出版后不久，新版本的Kafka将面世。）此处是为了给“Kafka”中的例子中使用的版本打上“时间戳”：
 
-1. Download Kafka.
+1. 下载Kafka。
 ```
 wget http://apache.claz.org/kafka/2.2.0/kafka_2.12-2.2.0.tgz
 ```
-2. Expand the tar file and enter the new folder.
+2. 扩展*tar*文件，并进入新的文件夹。
 ```
 tar -xzf kafka_2.12-2.2.0.tgz
 cd kafka_2.12-2.2.0
 ```
-3. Start the Zookeeper service that comes with Kafka.
+3. 启动带有Kafka的Zookeeper服务。
 ```
 bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
-4. Start the Kafka service.
+4. 启动Kafka服务。
 ```
 bin/kafka-server-start.sh config/server.properties
 ```
-Make sure to always start Zookeeper first, and then Kafka.
+确保总是首先启动Zookeeper，然后启动Kafka。
 
-
-# Index
-
-Symbols
-10 V’s of Big Data, 8
-4 V’s of big data, 8 A
-acyclic graphs, 157
-Amazon EMR, 104-106, 128, 216
-Amazon Web Services (AWS), 94, 104-106
-AMPLab project, 106
-analog information, 2
-analysis data, 66
-analytics projects, 6
-Apache Arrow, 217-219
-Apache Kafka
-installing, 265
-streaming, 233
-Apache Livy, 114, 124, 216
-Apache Mesos, 100, 126, 160
-Apache Parquet, 147
-Apache Solr, 243
-Apache Spark (see also Spark using R)
-architecture, 117
-characteristics of, 6
-checking version installed, 18
-computation graph, 157
-displaying available versions, 18
-extensions, 25
-versus Hadoop, 6
-home identifier, 18, 120
-installing, 17
-large-scale sorting speed, 5
-memory categories in, 171
-online clusters, 16
-online resources, 30
-origins of, 4
-push compute, collect results principle, 43
-uninstalling, 18
-web interface, 20
-Arrow, 217-219
-artificial intelligence (AI), 192
-assessment data, 66
-Azure, 109, 128
-B
-batch scoring, 87
-batches, 128
-big compute, 7, 202
-big data, 7
-bookdown package, 49
-broom package, 14
-C
-caching
-benefits of, 169
-checkpointing, 170
-example of, 48
-memory, 171
-purpose of, 156
-callr package, 87
-Cassandra, 151
-Cgroups, 100, 111
-checkpointing, 170
-cloud computing
-Amazon, 104-106
-Databricks, 16, 106, 128
-defined, 95
-Google, 107, 264
-IBM, 108, 128
-267
-Microsoft, 109
-overview of, 103
-Qubole, 110, 128
-Cloud Native Computing Foundation (CNCF),
-111
-cloud providers, 95, 128
-Cloudera, 101-103, 216
-cluster managers
-Apache Mesos, 100
-Hadoop YARN, 99, 123
-purpose of, 95, 118
-Spark Standalone, 96-99, 121, 216
-cluster-scale, defined, 6
-clusters
-benefits of, 7
-cloud cluster computing, 103-111
-complementary tools used for, 112-115
-connecting to local, 18, 120
-connecting to online, 16, 117-133 (see also
-connections)
-Kubernetes cluster computing, 111
-on-premises cluster computing, 95-103
-overview of, 93-95
-with distributed R, 215-219
-coarse-grained scheduler, 100
-code examples, obtaining and using, xvii
-coefficient estimates, 71
-collaboration, 86, 90
-columns, 141, 211
-commands
-collect(), 43
-compute(), 48
-copy_to(), 19, 36
-correlate(), 40
-dbplot_histogram(), 44
-dbplot_raster(), 45
-db_compute_bins(), 46
-db_compute_boxplot(), 46
-db_compute_count(), 46
-db_compute_raster(), 46
-ft_bucketizer(), 231
-ft_one_hot_encoder_estimator(), 81
-ft_standard_scaler(), 81
-ft_string_indexer(), 81, 83
-ft_vector-assembler(), 78
-ft_vector_assembler(), 81
-glimpse(), 56
-group_by(), 43
-install.packages(), 240
-ml_cross_validator(), 82
-ml_evaluate(), 68
-ml_fit(), 78, 80, 83, 84
-ml_linear_regression(), 71
-ml_load(), 85
-ml_logistic_regression(), 71, 81, 83
-ml_pipeline(), 79
-ml_pipeline(sc), 79
-ml_save(), 84, 86
-ml_transform(), 79, 84
-mutate(), 39
-render(), 50
-rplot(), 41
-sdf_checkpoint(), 170
-sdf_random_split(), 66
-show_query(), 38
-spark_apply(), 26, 199
-spark_config_settings(), 164
-spark_connect(), 19, 119, 161
-spark_disconnect(sc), 28, 86
-spark_disconnect_all(), 28
-spark_install(), 17
-spark_log(sc), 27
-spark_read_csv(), 139
-spark_uninstall(), 18
-spark_web(), 129
-spark_web(sc), 20
-stream_write_*(), 227
-summarise(), 43
-tbl_cache(), 169
-tbl_uncache(), 169
-tidy(), 74
-unnest_tokens(), 201
-worker_log(), 220
-comments and questions, xviii
-communicating results, 49
-compute instances, 96
-compute nodes, 96
-configuration files, 172
-configuring
-common resources to configure, 160
-connect settings, 161
-purpose of, 155
-runtime settings, 163
-sparklyr settings, 164-167
-Standalone and Mesos, 160
-submit settings, 162
-types of configuration settings, 161
-YARN, 160
-268 | Index
-connections
-batches, 128
-cloud providers, 128
-Kubernetes, 127
-Livy, 124
-managing multiple, 129
-Mesos, 126
-overview of, 118
-Spark Standalone, 121
-to edge nodes, 119
-to local clusters, 18, 120
-tools for, 129
-troubleshooting, 19, 130
-YARN, 122, 122
-consumers, 233
-context, 212
-contributing
-overview of, 240
-Spark API, 242
-Spark extensions, 243
-using Scala code, 245
-copying data, 143
-corr package
-benefits of, 40
-installing, 35
-correlations, calculating, 40
-CRAN (Comprehensive R Archive Network),
-10, 250
-CSV format, 145
-custom parsers, 202
-D
-DAG Visualization, 158
-data analysis
-communicating results, 49
-importing data, 36
-modeling, 46
-overview of, 22, 33
-push compute, collect results principle, 34
-visualizing data, 42-46
-wrangling data, 37-41
-data handling
-copying data, 143
-file formats, 144-149
-file systems, 149
-importing, 202
-overview of, 135
-reading data, 137-141
-storage systems, 150-152
-writing data, 141
-data lakes, 8
-data science
-benefits of R for, 11
-benefits of `sparklyr` for, 14
-performing at scale, 15
-data wrangling, 37-40
-Databricks, 16, 106, 128
-datacenters, 94
-DataFrames
-columns and, 211
-constructing for vertices, 184
-converting data to and from, 88
-converting into H2O DataFrames, 179
-correlations and, 40
-creating numeric variable, 265
-extracting coefficient estimates into, 71
-from linear regression output, 214
-grid search and, 212
-joining frames that differ in size, 172
-operating modes in ML functions, 83
-pipelines and, 81
-reading VCF files and running analyses, 193
-retrieving, 169, 222
-transforming, 77, 79, 81, 84, 229
-using `dplyr` verbs with, 35, 37
-visualization using ggplot2, 60
-DBI package, 14, 22
-dbplot package
-installing, 35
-visualizations using, 44
-DBU per hour, 107
-debugging, 223
-decision trees, 187
-deep learning, 11, 189-192
-degree of a vertex, 185
-deployment
-batch scoring, 87
-benefits of collaboration through pipelines,
-86, 90
-defined, 86
-modes of, 87
-real-time scoring, 88
-digital information, 2
-Directed Acyclic Graph (DAG), 157
-directed graphs, 183
-disconnecting, 28
-distributed R
-cluster requirements, 215-219
-Index | 269
-columns, 211
-context, 212
-functions, 213
-grouping, 210
-installing R, 216
-overview of, 200
-packages, 214
-partitions, 209
-Spark using R, 26
-streaming, 232
-troubleshooting, 219-223
-use cases, 202-209
-Docker, 111
-dplyr package
-benefits of, 22
-data transformations, 38
-integration with sparklyr, 14
-sparklyr backend for, 35
-SQL statements using, 37
-driver nodes, 19, 118
-E
-edge nodes, 119
-errata, xviii
-estimators, 77
-event timeline, 159, 172
-execution, defined, 156
-executors, 118
-explicit partitions, 168
-exploratory data analysis (EDA), 56-63
-extensions
-contributing to, 243
-deep learning, 189-192
-genomics, 192-195
-graphs, 182-187
-H2O, 178-182
-overview of, 176-178
-sparkly.nested extension, 25
-spatial, 195
-troubleshooting, 197
-using with R and Spark, 177
-XGBoost, 187
-Extract, Transform, Load (ETL), 8 F
-feature engineering, 63
-feedforward neural network model, 72
-file formats
-CSV, 145
-JSON, 146
-others, 148
-Parquet, 147
-file systems, 149
-fine-grained scheduler, 100
-folder as a table idea, 138
-formatting plots, xv, 249
-four V’s of big data, 8
-functions, 213
-G
-Ganglia, 112
-generalized linear regression, 70
-genome-wide association studies (GWAS), 177
-genomics, 192-195
-geospark extensions, 195
-geospark extensios, 177
-getting started
-connecting, 18
-disconnecting, 28
-installing Spark, 17
-installing sparklyr, 17
-overview of, 15
-prerequisites, 16
-resources, 30
-using RStudio, 28
-using Spark from R, 19-28
-ggplot2 package
-formatting plots, xv, 249
-installing, 35
-visualizations using, 42
-Google Cloud Platform (GCP), 107, 264
-Google File System, 2
-gradient descent, 187
-gradient-boosted decision trees (GBDT), 187
-gradient-boosted regression trees (GBRT), 187
-graphframes extensions, 176
-graphs
-additional graph algorithms, 187
-degree of a vertex, 185
-directed and undirected, 183
-graph theory, 182
-GraphX component, 184
-PageRank algorithm, 186
-GraphX component, 184
-grid search, 202, 205
-grouping, 210
-270 | Index
-H
-H2O, 178-182
-Hadoop Distributed File System (HDFS), 4
-Hadoop YARN, 99, 122
-HDInsight, 109, 128, 216
-high-performance hardware, 93
-histograms, 44
-Hive project
-benefits of, 4
-functions, 255-262
-Spark integration with, 150
-SQL conventions, 39
-homogeneous clusters, 216
-Hortonworks, 101-103
-httr package, 87
-Hue, 112
-hybrid cloud, 95, 112
-hyperparameter tuning, 82
-I
-IBM Cloud, 108, 128
-implicit partitions, 167
-information storage and retrieval
-analog versus digital information, 2
-Apache Spark, 4-7
-cluster computing benefits, 7
-Google File System, 2
-Hadoop, MapReduce, and SQL, 3
-historical phases of, 2
-R computing language, 9-13
-sparklyr package, 13
-input/ folder, 26
-instances, 96
-J
-Java
-checking version installed, 17
-installing, 252
-JDBC, 152
-job execution, process of, 156
-JSON file format, 146
-Jupyter, 114
-K
-Kafka
-installing, 265
-reading and writing from, 227, 230
-streaming, 233
-knitr package, 49
-Kubernetes, 95, 111, 127, 264
-L
-lambda expressions, 200
-large-scale data processing, 7, 202
-Linux Cgroups, 100, 111
-Livy, 114, 124, 216
-local clusters, 18, 120
-logistic regression, 4, 67, 82
-logs and logging, 27, 130, 220
-M
-machine learning, 11, 54, 262-264
-magrittr package, 14, 38
-malformed entries, 140
-map operation, 3, 200
-MapR, 101, 102
-MapReduce, 3
-master parameter, 19
-memory, 140, 171
-Mesos, 100, 126, 160
-Microsoft Azure, 109, 128
-Microsoft HDInsight, 109, 128, 216
-missing values, 37
-mleap package, 88
-MLlib, 262-264
-modeling
-exploratory data analysis, 56-63
-feature engineering, 63
-overview of, 23, 46, 54
-pipeline models, 79
-predictive modeling, 54
-Spark streams, 230
-supervised learning, 66-72
-unsupervised learning, 72
-multilayered perceptrons, 189
-N
-nodes, 96
-NoSQL databases, 151
-O
-off-the-shelf hardware, 93
-on-premises cluster computing
-cluster managers, 95-100
-overview of, 95
-Spark distributions, 101-103
-Index | 271
-online learning, 230
-Oozie, 112
-Open Compute Project, 94
-OpenAI, 192
-output/ folder, 26
-P
-packages, 214, 240
-PageRank algorithm, 3, 186
-parallel execution, 13, 34, 159, 184, 202-223
-parcels, 101
-Parquet, 147
-parsers, custom, 202
-partitioned modeling, 202, 204
-partitioning
-explicit partitions, 168
-implicit partitions, 167
-purpose of, 156
-partitions, 209, 222
-paths, 137
-perceptrons, 189
-pipe (%>%) operator, 38
-pipeline models, 79
-pipeline stages, 77
-pipelines
-creating, 79
-deployment, 86-90
-interoperability, 84-86
-operating modes, 83
-overview of, 77-79
-purpose of, 77
-Spark pipelines, 231
-use cases, 80-83
-plumber package, 87
-prediction models, 53, 80
-(see also modeling)
-present partitioned modeling, 204
-principal coordinates, 63
-private cloud, 95
-producers, 233
-productionization, 86
-profiling, 12
-public cloud, 95
-pushdown predicates, 151
-Q
-Qubole, 110, 128
-questions and comments, xviii
-R
-R community, 10
-R computing language (see also Spark using R)
-benefits of, 9
-extensions, 25
-fields used in, 10
-installing, 16, 251
-origins of, 9
-techniques used with, 12
-visualizations using, 42
-R Markdown, 35, 49
-R Packages, 240
-racks, 94
-raster plots, 45
-reading data
-columns, 141
-memory, 140
-paths, 137
-schema, 138
-real-time scoring, 88
-receiver operating characteristic curve (ROC
-AUC), 66
-reduce operation, 3
-regression trees, 187
-repartitioning, 168
-resilient distributed dataset (RDD), 169
-rlang package, 14
-rsparkling extensions, 176
-RStudio
-Databricks and, 106
-installing, 16, 253
-using, 28, 254
-RStudio Server, 113
-S
-S computing language, 9
-S3, 83
-sampling, 12
-Scala, 245
-scaling out, 13
-scaling up, 13
-scatter plots, 45
-schemas, 138
-serialization
-purpose of, 156
-tuning, 172
-Shiny Server, 113, 235
-shuffling, 156, 172
-simulations, 202, 207
-272 | Index
-sink, 226
-Solr, 243
-sorting operations, 156
-source, 226
-Spark API, 242
-Spark context, 118
-Spark distributions, 101-103
-Spark ecosystem, 54
-spark executor, 118
-Spark Standalone, 96-99, 121, 216
-Spark Streaming, 226
-Spark using R
-benefits of `sparklyr` package for, 13
-data analysis, 22, 33-52
-data formats, 25
-distributed R, 26
-goal of, 13
-installing Spark, 17
-installing sparklyr, 17
-logs, 27
-modeling, 23, 53-76
-online resources, xiii, 30
-streaming, 26
-using extensions with, 25, 177
-web interface, 20
-spark-submit script, 121, 130, 162
-sparkly.nested extension, 25
-sparklyr package (see also Spark using R)
-applications for, 13
-benefits of, 13
-checking version installed, 17
-configuration settings, 164-167
-development of, 13
-installing, 17
-machine learning interface, 54
-MLib algorithms supported, 262-264
-online resources, 30
-pipeline construction, 79
-pipeline model objects, 86
-push compute, collect results principle, 35
-spark-submit script, 121, 130, 162
-versions certified with Cloudera, 102
-sparktf extension, 176
-SPARK_HOME, 18, 120
-spatial operations, 195
-Stack Overflow, 30
-stage, 156
-Standalone clusters, 96-99, 121, 216
-standard scaler, 82
-storage systems
-Cassandra, 151
-Hive, 150
-JDBC, 152
-overview of, 150
-streaming
-Kafka, 233
-overview of, 225
-Shiny, 235
-Spark using R, 26
-stream_generate_test(), 264
-transformations, 228-233
-Structured Query Language (SQL), 4, 22
-subscribers, 233
-supervised learning
-generalized linear regression, 70
-other models, 72
-overview of, 66
-process of, 54
-T
-ten V’s of Big Data, 8
-TensorFlow, 176
-tibble package, 14
-timeline, 159, 172
-timeouts, resolving, 221
-topic modeling, 74
-transformations
-analysis, 229
-data wrangling, 37
-distributed R, 232
-modeling, 230
-overview of, 228
-pipelines, 231
-transformers and estimators, 77
-troubleshooting
-connections, 19
-detailed, 131
-distributed R, 219-223
-extensions, 197
-first steps, 130
-logging, 130
-spark-submit script, 130
-Windows connections, 132
-tuning
-caching, 169
-configuration files, 172
-configuring, 160-167
-overview of, 155-159
-Index | 273
-partitioning, 167
-serialization, 172
-shuffling, 172
-U
-undirected graphs, 183
-unified analytics, 6
-unsupervised learning
-data preparation, 73
-overview of, 72
-process of, 54
-topic modeling, 74
-V
-valency of a vertex, 185
-variant call format (VCF), 192
-variantspark extension, 177, 193
-variety, 8
-velocity, 8
-veracity, 8
-visualizations
-applications for, 42
-using dbplot, 44
-using ggplot2, 42
-using R, 42
-volume, 8 W
-watermarks, 230
-web APIs, 202, 206
-web interface, 20
-Well-Known Text (WKT) format, 177
-Windows connections, 132
-worker logs, 220
-worker nodes, 118
-writing data, 141
-X
-xgboost extension, 177, 187
-Y
-YARN, 99, 122
-------
 
 # About the Authors
 
