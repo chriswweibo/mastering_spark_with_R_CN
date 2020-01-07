@@ -65,7 +65,7 @@ Definitive Guide》是一个综合性的资源，《Learning Spark》是一本�
 
 ## 格式化
 
-Tables generated from code are formatted as follows:
+代码生成的表用以下代码格式化：
 
 ```{r}
 # A tibble: 3 x 2
@@ -76,110 +76,59 @@ numbers text
 3 3 three
 ```
 
-The dimensions of the table (number of rows and columns) are described in the first
-row, followed by column names in the second row and column types in the third row.
-There are also various subtle visual improvements provided by the tibble package
-that we make use of throughout this book.
-Most plots are rendered using the `ggplot2` package and a custom theme available in
-the appendix; however, because this book is not focused on data visualization, we
-only provide code to render a basic plot that won’t match the formatting we applied.
-If you are interested in learning more about visualization in R, consider specialized
-books like R Graphics Cookbook (O’Reilly).
+表的维度（行数和列数）在第一行中有描述，第二行是列名，第三行是列类型。我们在本书中使用的`tibble`包还提供了各种细微的视觉改进。
+
+大多数绘图都使用`ggplot2`包和附录中提供的自定义主题进行渲染；但是，由于本书不关注数据可视化，因此我们只提供基本绘图的代码，其可能与应用的格式不匹配。如果你有兴趣学习R中更多关于可视化的知识，可以考虑专门的书籍，比如《R Graphics Cookbook》（O'Reilly）。
 
 ## 致谢
 
-We thank the package authors that enabled Spark with R: Javier Luraschi, Kevin Kuo,
-Kevin Ushey, and JJ Allaire (sparklyr); Romain François and Hadley Wickham
-Preface | xv(dbplyr); Hadley Wickham and Edgar Ruiz (dpblyr); Kirill Mülller (DBI); and the
-authors of the Apache Spark project itself, and its original author Matei Zaharia.
-We thank the package authors that released extensions to enrich the Spark and R eco‐
-system: Akhil Nair (crassy); Harry Zhu (geospark); Kevin Kuo (graphframes, mleap,
-sparktf, and sparkxgb); Jakub Hava, Navdeep Gill, Erin LeDell, and Michal Maloh‐
-lava (rsparkling); Jan Wijffels (spark.sas7bdat); Aki Ariga (sparkavro); Martin
-Studer (sparkbq); Matt Pollock (sparklyr.nested); Nathan Eastwood (sparkts); and
-Samuel Macêdo (variantspark).
-We thank our wonderful editor, Melissa Potter, for providing us with guidance,
-encouragement, and countless hours of detailed feedback to make this book the best
-we could have ever written.
-To Bradley Boehmke, Bryan Adams, Bryan Jonas, Dusty Turner, and Hossein Falaki,
-we thank you for your technical reviews, time, and candid feedback, and for sharing
-your expertise with us. Many readers will have a much more pleasant experience
-thanks to you.
-Thanks to RStudio, JJ Allaire, and Tareef Kawaf for supporting this work, and the R
-community itself for its continuous support and encouragement.
-Max Kuhn, thank you for your invaluable feedback on Chapter 4, in which, with his
-permission, we adapted examples from his wonderful book Feature Engineering and
-Selection: A Practical Approach for Predictive Models (CRC Press).
-We also thank everyone indirectly involved but not explicitly listed in this section; we
-are truly standing on the shoulders of giants.
-This book itself was written in R using bookdown by Yihui Xie, rmarkdown by JJ Allaire
-and Yihui Xie, and knitr by Yihui Xie; we drew the visualizations using `ggplot2` by
-Hadley Wickham and Winston Chang; we created the diagrams using nomnoml by
-Daniel Kallin and Javier Luraschi; and we did the document conversions using pan
-doc by John MacFarlane.
-Conventions Used in This Book
-The following typographical conventions are used in this book:
-Italic
-Indicates new terms, URLs, email addresses, filenames, and file extensions.
-Constant width
-Used for program listings as well as within paragraphs to refer to program ele‐
-ments such as variable or function names, databases, data types, environment
-variables, statements, and keywords.
-xvi | PrefaceConstant width bold
-Shows commands or other text that should be typed literally by the user.
-Constant width italic
-Shows text that should be replaced with user-supplied values or by values deter‐
-mined by context.
-This element signifies a tip or suggestion.
-This element signifies a general note.
+感谢那些允许通过R使用Spark的程序包作者：Javier Luraschi、Kevin Kuo、Kevin Ushey和JJ Allaire（`sparklyr`）；Romain franois和Hadley Wickham（`dbplyr`）；Hadley Wickham和Edgar Ruiz（`dpblyr`）；Kirill Mülller（`DBI`）；以及Apache Spark项目本身的作者及其最初作者Matei Zaharia。
 
-## 使用代码示例
+感谢为丰富Spark和R生态系统而发布扩展的程序包作者：Akhil Nair（`crassy`）；Harry Zhu（`geospark`）；Kevin Kuo（`graphframes`、`mleap`、`sparktf`和`sparkxgb`）；Jakub Hava、Navdeep Gill、Erin LeDell和Michal Malohlava（`rsparkling`）；Jan Wijffels（`Spark.sas7bdat`）；Aki Ariga（`sparkavro`）；Martin Studer（`sparkbq`）；Matt Pollock（`sparklyr.nested`）；Nathan Eastwood（`sparkts`）；Samuel Macêdo（`variantspark`）。
 
-Supplemental material (code examples, exercises, etc.) is available for download at
-https://github.com/r-spark/the-r-in-spark.
-This book is here to help you get your job done. In general, if example code is offered
-with this book, you may use it in your programs and documentation. You do not
-need to contact us for permission unless you’re reproducing a significant portion of
-the code. For example, writing a program that uses several chunks of code from this
-book does not require permission. Selling or distributing a CD-ROM of examples
-from O’Reilly books does require permission. Answering a question by citing this
-book and quoting example code does not require permission. Incorporating a signifi‐
-cant amount of example code from this book into your product’s documentation does
-require permission.
-We appreciate, but do not require, attribution. An attribution usually includes the
-title, author, publisher, and ISBN. For example: “Mastering Spark with R by Javier Lur‐
-aschi, Kevin Kuo, and Edgar Ruiz (O’Reilly). Copyright 2020 Javier Luraschi, Kevin
+感谢我们出色的编辑Melissa Potter为我们提供指导、鼓励和无数小时的详细反馈，使这本书成为我们的著作中最好的一本。
+
+感谢Bradley Boehmke，Bryan Adams，Bryan Jonas，Dusty Turner和Hossein Falaki，感谢你们的技术评论、及时和坦率的反馈，并与我们分享专业知识。多亏了你们，许多读者才会有更愉快的阅读体验。
+
+感谢RStudio、JJ Allaire和Tareef Kawaf对这项工作的支持，感谢R的持续支持和鼓励。
+
+Max Kuhn，感谢你对第四章的宝贵反馈。在他的允许下，我们采用了他的精彩著作《特征工程与选择：预测模型的实用方法》（CRC出版社）中的例子。
+
+我们也感谢所有间接参与但未在本节中明确列出的人们；我们真正站在了巨人的肩膀上。
+
+这本书是用Yihui Xie的`bookdown`，JJ Allaire和Yihui Xie的`rmarkdown`，Yihui Xie的`knitr`写成的；用Hadley Wickham和Winston Chang的`ggplot2`完成可视化；用Daniel Kallin和Javier Luraschi的`nomnoml`绘制图表；用John MacFarlane的`pandoc`进行文档转换。
+
+## 行文格式
+
+本书使用下列排版风格：
+
+*斜体*
+表示新的术语，URL，电子邮箱地址，文件名，和文件扩展名。
+
+`固定宽度`
+用于表示程序内容以及段落中引用的程序元素，如变量或函数名、数据库、数据类型、环境变量、语句和关键字。
+
+`**重体固定宽度**`
+展示用户输入的命令或其它文本。
+
+`*斜体固定宽度*`
+展示应该被用户提供的,或由上下文确定的值替换的文本。
+
+> 用来表示注意事项或者建议。
+
+> 用来表示一般的注释。
+
+## 使用示例代码
+
+补充材料（代码示例、练习等）可在https://github.com/r-spark/the-r-in-spark上下载。
+
+这本书是来帮你完成工作的。一般情况下，如果本书提供了示例代码，你可以在你的程序和文档中使用。你不需要为了获得许可联系我们，除非你正在复制代码的重要部分。例如，编写一个使用本书中多段代码的程序不需要获得我们的许可。出售或分发O'Reilly书籍的示例光盘就需要获得许可。引用本书以及示例代码来回答问题也不需要许可。将本书中大量的示例代码合并到你的产品文档中就需要获得许可。
+
+虽然我们会感谢你的引用，但是我们也不强制要求你这么做。引用通常包括标题、作者、出版商和ISBN。例如：“Mastering Spark with R by Javier Luraschi, Kevin Kuo, and Edgar Ruiz (O’Reilly). Copyright 2020 Javier Luraschi, Kevin
 Kuo, and Edgar Ruiz, 978-1-492-04637-0.”
-If you feel your use of code examples falls outside fair use or the permission given
-above, feel free to contact us at permissions@oreilly.com.
-Preface | xviiO’Reilly Online Learning
-For almost 40 years, O’Reilly Media has provided technology
-and business training, knowledge, and insight to help compa‐
-nies succeed.
-Our unique network of experts and innovators share their knowledge and expertise
-through books, articles, conferences, and our online learning platform. O’Reilly’s
-online learning platform gives you on-demand access to live training courses, indepth learning paths, interactive coding environments, and a vast collection of text
-and video from O’Reilly and 200+ other publishers. For more information, please
-visit http://oreilly.com.
 
-## 如何联系我们
+如果你觉得你对代码示例的使用超出了合理使用或上述许可范围，请通过permissions@oreilly.com与我们联系。
 
-Please address comments and questions concerning this book to the publisher:
-O’Reilly Media, Inc.
-1005 Gravenstein Highway North
-Sebastopol, CA 95472
-800-998-9938 (in the United States or Canada)
-707-829-0515 (international or local)
-707-829-0104 (fax)
-We have a web page for this book, where we list errata, examples, and any additional
-information. You can access this page at https://oreil.ly/SparkwithR.
-To comment or ask technical questions about this book, send email to bookques‐
-tions@oreilly.com.
-For more information about our books, courses, conferences, and news, see our web‐
-site at http://www.oreilly.com.
-Find us on Facebook: http://facebook.com/oreilly
-Follow us on Twitter: http://twitter.com/oreillymedia
-Watch us on YouTube: http://www.youtube.com/oreillymedia
 
 # 第1章 引言
 
