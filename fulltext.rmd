@@ -1,11 +1,12 @@
 ---
-title: "Mastering Spark with R The Complete Guide to Large-Scale Analysis and Modeling "
-author: "Bo"
-date: "2019/10/18"
+title: "用R玩转Spark——大规模数据分析和建模完全手册"
+author: "魏博"
+date: "`r Sys.Date()`"
 output: 
   word_document:
-    toc: yes
-    toc_depth: 2
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    highlight: tango  # specifies the syntax highlighting style
 ---
 
 ```{r, echo=F}
@@ -31,8 +32,7 @@ Apache Spark是一个基于可扩展性构建的分布式计算平台：Spark的
 
 在信息呈指数级增长的世界中，Apache Spark等先进工具为解决我们今天面临的许多相关问题提供了支持。从基于数据驱动决策寻找改进方法的公司，到解决医疗、金融、教育和能源问题的研究机构，Spark比以往任何时候都能更快、更可靠地分析更多信息。
 
-人们编写了各种各样的书籍来学习Apache Spark。例如，《Spark: The
-Definitive Guide》是一个综合性的资源，《Learning Spark》是一本介绍性的书籍，旨在帮助用户熟悉和运行Spark（两者都来自O'Reilly）。然而，在撰写本文时，既没有使用R计算语言学习Apache Spark的书籍，也没有专门为R用户或潜在的R用户设计的书籍。
+人们编写了各种各样的书籍来学习Apache Spark。例如，《Spark: The Definitive Guide》是一个综合性的资源，《Learning Spark》是一本介绍性的书籍，旨在帮助用户熟悉和运行Spark（两者都来自O'Reilly）。然而，在撰写本文时，既没有使用R计算语言学习Apache Spark的书籍，也没有专门为R用户或潜在的R用户设计的书籍。
 
 
 有一些在线资源可以学习R语言中的Apache Spark。最著名的是Spark.rstudio.com网站和Spark.Apache.org上的Spark文档网站。这两个网站都是很好的在线资源；但是，上边的内容不打算让你从头到尾的阅读。它们都假设读者对Apache Spark、R和集群计算有一定的了解。
@@ -802,7 +802,6 @@ spark_disconnect_all()
 
 # 第3章 分析
 
-
 > First lesson: stick them with the pointy end.
 > —Jon Snow
 
@@ -810,7 +809,7 @@ spark_disconnect_all()
 
 本章会介绍使用Spark和R进行数据分析的工具和概念。需要注意的是，这些工具和你只使用R的时候一样！这并非偶然。我们只是希望数据科学家能够屏蔽一些技术细节，而只使用自己熟知和喜欢的程序库，并且确实在Spark框架下可行。现在我们离这个目标还有点距离，但是并不远。所以，你会在本章学到一些广泛使用的R程序包和实际操作来进行数据分析——`dplyr`，`ggplot2`，`formulas`，`rmarkdown`等，这些程序包在Spark框架下依然有效。
 
-第四章会关注创建统计模型来预测，估计和描述数据集。但是首先，我们从分析工作开始！
+第4章会关注创建统计模型来预测，估计和描述数据集。但是首先，我们从分析工作开始！
 
 ## 概述
 
@@ -1371,6 +1370,7 @@ install.packages("FactoMineR")
 * 初步评估纳入的变量和需要的转换。
 
 首先，连接到Spark，加载相关的库，读取数据：
+
 ```{r}
 library(sparklyr)
 library(ggplot2)
@@ -2142,6 +2142,7 @@ okc_train <- okc_train %>%
 select(not_working, age, sex, drinks, drugs, essay1:essay9, essay_length)
 ```
 首先，我们展示管道，包括特征工程和建模步骤，然后逐步走通：
+
 ```{r}
 pipeline <- ml_pipeline(sc) %>%
 ft_string_indexer(input_col = "sex", output_col = "sex_indexed") %>%
@@ -2509,7 +2510,7 @@ httr::content()
 service$interrupt()
 ```
 
-## Recap
+## 小结
 
 在本章中，我们讨论了Spark管道，这是第4章中介绍的建模函数背后的引擎。你学习了如何通过将数据处理和建模算法组织到管道中来整理预测建模工作流。您学习了管道还通过共享与语言无关的序列化格式促进了多语言数据科学和工程团队成员之间的协作，也就是说，你可以从R导出Spark管道，让其他人使用Python或Scala将你的管道重新加载到Spark中，这使得他们可以在不改变语言选择的情况下进行合作。
 
@@ -3174,6 +3175,7 @@ sc_23 <- spark_connect(master = "local", version = "2.3", appName = "Spark23")
 sc_standalone <- spark_connect(master = "spark://host:port")
 ```
 最后，你可以断开每个连接：
+
 ```{r}
 spark_disconnect(sc_1_6_3)
 spark_disconnect(sc_2_3_0)
@@ -6811,6 +6813,7 @@ file.info(file.path("source", list.files("source")))[1]
 ## source/stream_5.csv 7236
 ```
 `stream_generate_test()`默认创建一个单个数值变量的数据框。
+
 ```{r}
 readr::read_csv("source/stream_5.csv")
 ## # A tibble: 1,489 x 1
