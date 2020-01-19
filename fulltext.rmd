@@ -3015,21 +3015,21 @@ livy_service_stop()
 
 第6章介绍了主要的集群计算趋势、集群管理器、发行版和云服务供应商，以帮助你选择最适合需要的Spark集群。相比之下，本章会介绍Spark集群内部组件以及如何连接到特定Spark集群。
 
-阅读本章时，无需执行每一行代码。这会非常困难，因为你需要准备不同的Spark环境。相反，如果你已经有了一个Spark集群，或者上一章让你有足够的动力去注册一个按需的集群，那么现在是学习如何连接集群的时候了。本章帮助你连接到已经选择的集群。如果还没有选择集群，我们建议你学习这些概念，然后回来运行相关代码。
+阅读本章时，无需执行每一行代码，否则会非常困难，因为你需要准备不同的Spark环境。相反，如果你已经有了一个Spark集群，或者上一章让你有足够的动力去注册一个按需的集群，那么现在是学习如何连接集群的时候了。本章帮助你连接到已经选择的集群。如果还没有选择集群，我们建议你学习这些概念，然后回来运行相关代码。
 
-此外，本章还提供了各种连接故障排除技术。虽然我们不希望你需要使用它们，但还是保证你可以运用这些技术解决连接问题。
+此外，本章还提供了各种连接故障排除技术。虽然我们不希望你使用它们，但还是保证你可以运用这些技术解决连接问题。
 
 虽然本章的内容可能有点枯燥，因为连接和故障排除绝对不是大规模计算中最让人兴奋的内容，但是本章还是会介绍Spark集群的构成和交互方式,通常被称为Apache Spark*体系结构*。本章以及第8章和第9章将详细介绍Spark的工作原理，这将帮助你成长为Spark的中级用户，能够真正理解使用Apache Spark进行分布式计算的精彩内容。
 
 ## 概述
 
-Spark集群的所有连接体系结构由三种类型的计算实例组成：*驱动节点*、*工作节点*和*集群管理器*。集群管理器是一种允许Spark在集群中执行的服务。这部分内容第之前的“管理器”中有详细说明。工作节点（也称为执行器）在分区数据上执行计算任务，并将中间结果传递给其它工作节点或返回给驱动节点。驱动节点的任务是将工作委托给工作节点，同时还负责聚合它们的结果和控制计算流。在大多数情况下，聚合发生在工作节点中；然而，即使在节点聚合数据之后，驱动节点通常也需要收集工作节点的结果。因此，驱动节点通常至少配备（通常更多）一些计算资源（内存、CPU、本地存储等），可以作为工作节点。
+Spark集群所有连接的体系结构由三种类型的计算实例组成：*驱动节点*、*工作节点*和*集群管理器*。集群管理器是一种允许Spark在集群中执行的服务。这部分内容第之前的“管理器”中有详细说明。工作节点（也称为执行器）在分区数据上执行计算任务，并将中间结果传递给其它工作节点或返回给驱动节点。驱动节点的任务是将工作委托给工作节点，同时还负责聚合它们的结果和控制计算流。在大多数情况下，聚合发生在工作节点中；然而，即使在节点聚合数据之后，驱动节点通常也需要收集工作节点的结果。因此，驱动节点通常至少（通常更多）配备一些计算资源（内存、CPU、本地存储等），可以作为工作节点。
 
-严格地说，驱动节点和工作节点只是分配了具有特定角色的机器的名称，而驱动节点中的实际计算则根据*SparkContext*执行的。SparkContext是Spark功能的主要入口，因为它的任务是调度任务、管理存储、跟踪执行状态、指定访问配置的设置、取消作业等。在工作节点中，实际计算是在spark执行器下执行的，spark执行器是一个spark组件，其任务是针对特定的数据分区执行子任务。图7-1说明了这个概念，其中驱动节点通过集群管理器编排一个工作节点的工作。
+严格地说，驱动节点和工作节点只是分配了具有特定角色的机器的名称，而驱动节点中的实际计算则根据*SparkContext*执行。Spark Context是Spark功能的主要入口，因为它的任务是调度任务、管理存储、跟踪执行状态、指定访问配置的设置、取消作业等。在工作节点中，实际计算是在spark执行器下执行的，Spark执行器是一个Spark组件，其任务是针对特定的数据分区执行子任务。图7-1说明了这个概念，其中驱动节点通过集群管理器编排一个工作节点的工作。
 
 ![图7-1. Apache Spark连接体系结构](figures/7_1.png)
 
-如果你的组织中已经有一个Spark集群，那么你应该向集群管理员请求指向该集群的连接信息，仔细阅读它们的使用策略，并遵循它们的建议。因为集群可以在许多用户之间共享，所以你需要确保只请求所需的计算资源。我们将在第9章中介绍如何请求资源。系统管理员将指定它是本地集群还是云集群、使用的集群管理器、支持的连接和支持的工具。你可以使用此信息直接跳转到本地、单机、YARN、Mesos、Livy或Kubernetes，根据这些信息可以选择适合需求的方案。
+如果你的组织中已经有一个Spark集群，那么你应该向集群管理员请求指向该集群的连接信息，仔细阅读它们的使用策略，并遵循它们的建议。因为集群可以在许多用户之间共享，所以你需要确保只请求所需的计算资源。我们将在第9章中介绍如何请求资源。系统管理员将指定它是本地集群还是云集群、使用的集群管理器、支持的连接和支持的工具。你可以使用这些信息直接跳转到本地、单机、YARN、Mesos、Livy或Kubernetes，根据这些信息可以选择适合需求的方案。
 
 
 > 使用`spark_connect()`连接后，可以借助`sc`连接方法使用在前面章节中描述的技术；例如，你可以使用前面章节中介绍的相同代码进行数据分析或建模。
@@ -3051,26 +3051,29 @@ Spark集群的所有连接体系结构由三种类型的计算实例组成：*�
 
 在连接到边缘节点之后，下一步是确定Spark安装在哪里，一个名为`SPARK_HOME`的位置。在大多数情况下，集群管理器已经将`SPARK_HOME`环境变量设置为正确的安装路径。如果没有，你需要得到正确的*SPARK_HOME*路径。必须指定`SPARK_HOME`路径作为环境变量，或者在运行`spark_connect()`时显式地指定`spark_connect()`路径。
 
-如果你的集群供应商或集群管理员已经为提供了*SPARK_HOME*，那么下面的代码应该返回路径而不是空字符串：
+如果你的集群供应商或集群管理员已经提供了*SPARK_HOME*，那么下面的代码应该返回路径而不是空字符串：
 
 ```{r}
 Sys.getenv("SPARK_HOME")
 ```
+
 如果这段代码返回了空字符串，这就意味着集群中的`SPARK_HOME`环境变量没有设置。所以你需要在使用`spark_connect()`的时候指定`SPARK_HOME`，代码如下：
+
 ```{r}
 sc <- spark_connect(master = "master", spark_home = "local/path/to/spark")
 ```
+
 在这个例子里，设置`master`，为Spark单机，YARN，Mesos，Kubernetes或Livy指向集群管理器主节点。
 
 ## 本地模式
 
-当你以本地模式连接到Spark时，Spark会像SparkContext和单个执行一样，启动一个运行大多数集群组件的进程。这对于在大型计算集群上运行Spark、脱机工作、故障排查或测试代码非常理想。图7-3描述了Spark的本地连接。
+当你以本地模式连接到Spark时，Spark会像Spark Context和单个执行器一样，启动一个运行大多数集群组件的进程。这对于在大型计算集群上运行Spark、脱机工作、故障排查或测试代码非常理想。图7-3描述了Spark的本地连接。
 
 ![图7-3. 本地连接图](figures/7_3.png)
 
-注意，本地模式下既没有集群管理器，也没有工作进程，因为在本地模式下，所有工作都在驱动应用程序中运行。另外值得注意的是，`sparklyr`通过`spark-submit`启动SparkContext 。`spark-submit`是每个Spark安装程序中都提供的一个脚本，允许用户向Spark提交自定义应用程序。如果你好奇的话，第13章会解释`sparklyr`中发生的提交此应用程序并从R正确连接的内部过程。
+注意，本地模式下既没有集群管理器，也没有工作进程，因为在本地模式下，所有工作都在驱动应用程序中运行。另外值得注意的是，`sparklyr`通过`spark-submit`启动Spark Context。`spark-submit`是每个Spark安装程序中都提供的一个脚本，允许用户向Spark提交自定义应用程序。如果你好奇的话，第13章会解释`sparklyr`中发生的提交此应用程序并从R正确连接的内部过程。
 
-要执行本地连接，我们可以使用前面章节中熟悉的以下代码：
+要执行本地连接，我们可以使用前面章节中熟悉的代码：
 
 ```{r}
 # Connect to local Spark instance
@@ -3079,13 +3082,14 @@ sc <- spark_connect(master = "local")
 
 ## 单机模式
 
-连接到Spark单机集群需要集群管理器主节点实例的位置。就像之前在“单机”部分介绍的，你可以在集群管理器的web界面中找到该实例。你可以通过查找以spark://开头的URL来找到此位置。
+连接到Spark单机集群需要集群管理器主节点实例的位置。就像之前在“单机”部分介绍的，你可以在集群管理器的网络界面中找到该实例。你可以通过查找以spark://开头的URL来找到此位置。
 
-单机模式下的连接从`sparklyr`开始，它会启动`spark-submit`，然后提交`sparklyr`应用程序并创建SparkContext。该Context从运行在给定主节点地址下的Spark单机实例中请求执行器。图7-4说明了此过程，这与图7-1中的总体连接架构非常相似，但有一些单机集群和`sparklyr`特有的附加细节。
+单机模式下的连接从`sparklyr`开始，它会启动`spark-submit`，然后提交`sparklyr`应用程序并创建Spark Context。该Context从运行在给定主节点地址下的Spark单机实例中请求执行器。图7-4说明了此过程，这与图7-1中的总体连接架构非常相似，但附加一些单机集群和`sparklyr`特有的细节。
 
 ![图7-4. Spark单机连接图](figures/7_4.png)
 
 要完成连接，使用`spark_connect()`中的`master = "spark://hostname:port"`，代码如下：
+
 ```{r}
 sc <- spark_connect(master = "spark://hostname:port")
 ```
@@ -3097,38 +3101,42 @@ Hadoop YARN是Hadoop项目中的集群管理器。这是集群中最常见的集
 
 ### YARN客户端
 
-当你使用YARN客户端模式连接时，驱动实例运行R，`sparklyr`和SparkContext。这些操作需要YARN工作节点来运行Spark执行器，如图7-5所示。
+当你使用YARN客户端模式连接时，驱动实例运行R，`sparklyr`和Spark Context。这些操作需要YARN工作节点来运行Spark执行器，如图7-5所示。
 
 ![图7-5. YARN客户端连接图](figures/7_5.png)
 
 要完成连接，你只需运行`master = "yarn"`，代码如下：
+
 ```{r}
 sc <- spark_connect(master = "yarn")
 ```
-当你使用客户端模式运行YARN时，集群管理器会在后台执行你希望集群管理器执行的操作：它从集群分配资源并将它们分配给Spark应用程序。SparkContext会为你管理这些应用。在之前的的“YARN”部分中有一点需要注意，SparkContext位于运行R代码的同一台机器中；这与集群模式下运行YARN有所不同。
+
+当使用客户端模式运行YARN时，集群管理器会在后台执行你希望的操作：它从集群分配资源并把它们分配给Spark应用程序。Spark Context会为你管理这些应用。在之前的“YARN”部分中有一点需要注意，Spark Context位于运行R代码的同一台机器中；这与集群模式下运行YARN有所不同。
 
 ### YARN集群
 
 在集群模式下运行YARN与在客户端模式下运行YARN的主要区别在于，在集群模式下，不要求驱动节点是启动R和`sparklyr`的节点。相反，驱动节点仍然是专门指定的，通常与运行R的边缘节点不同。当边缘节点有太多并发用户、缺少计算资源或诸如RStudio或Jupyter的工具需要区别于其它集群资源管理工具进行独立管理时，考虑使用集群模式可能会有帮助。
 
-图7-6展示了在集群模式下运行时不同组件是如何分离的。注意，仍然有一条连接客户端和集群管理器的线路，因为首先，仍然需要从集群管理器分配资源；但是，在分配资源之后，客户端直接与驱动节点通信，驱动节点与工作节点通信。从图7-6中，你可能认为集群模式看起来比客户端模式复杂得多。这种认识是正确的；因此，如果可能的话，最好避免集群模式，因为它有额外的配置开销。
+图7-6展示了在集群模式下运行时不同组件是如何分离的。注意，仍然有一条连接客户端和集群管理器的线路，因为我们仍然需要从集群管理器分配资源；在分配资源之后，客户端直接与驱动节点通信，驱动节点与工作节点通信。从图7-6中，你可能认为集群模式看起来比客户端模式复杂得多。这种认识是正确的。因此，如果可能的话，最好避免集群模式，因为它有额外的配置开销。
 
 ![图7-6. YARN集群连接图](figures/7_6.png)
 
 为了连接YARN集群节点，只需要运行下列代码：
+
 ```{r}
 sc <- spark_connect(master = "yarn-cluster")
 ```
 
-集群模式假定运行`spark_connect()`的节点都正确配置好了，这意味着存在`yarn-site.xml`，并且`YARN_CONF_DIR`环境变量都配置正确。。当使用Hadoop作为文件系统时，还需要`HADOOP_CONF_DIR`环境变量配置正确。此外，你需要确保客户端和驱动节点之间的网络连接正确，这不仅仅是需要两台机器都可以访问，而且还需要确保它们之间有足够的带宽。此配置通常由系统管理员提供，不需要手动配置。
+集群模式假定运行`spark_connect()`的节点都正确配置好了，这意味着存在`yarn-site.xml`，并且`YARN_CONF_DIR`环境变量都配置正确。当使用Hadoop作为文件系统时，还需要`HADOOP_CONF_DIR`环境变量配置正确。此外，你需要确保客户端和驱动节点之间的网络连接正确，这不仅仅是需要两台机器都可以访问，而且还需要确保它们之间有足够的带宽。此配置通常由系统管理员提供，不需要手动配置。
 
 ## Livy
 
-与其它需要在集群中使用边缘节点的连接方法不同，Livy提供了一个web API，使Spark集群可以从集群外部访问，并且不需要在客户端中安装Spark。在通过web API连接之后，*Livy服务*通过从集群管理器请求资源并像往常一样分发工作来启动SparkContext。图7-7展示了一个Livy连接；注意，客户端通过web API远程连接到驱动节点。
+与其它需要在集群中使用边缘节点的连接方法不同，Livy提供了一个web API，使Spark集群可以从集群外部访问，并且不需要在客户端中安装Spark。在通过web API连接之后，*Livy服务*通过从集群管理器请求资源并像往常一样分发工作来启动Spark Context。图7-7展示了一个Livy连接。注意，客户端通过web API远程连接到驱动节点。
 
 ![图7-7. Livy连接图](figures/7_7.png)
 
 通过Livy连接需要指向Livy服务的URL，应该与https://hostname:port/livy类似。因为允许远程连接，连接通常至少需要基本的认证：
+
 ```{r}
 sc <- spark_connect(
 master = "https://hostname:port/livy",
@@ -3138,13 +3146,16 @@ username = "<username>",
 password = "<password>"
 ))
 ```
-要在本地机器上使用Livy，你可以想之前在“Livy”中描述的那样，安装运行Livy服务并进行连接，代码如下：
+
+要在本地机器上使用Livy，你可以像之前在“Livy”中描述的那样，安装运行Livy服务并进行连接，代码如下：
+
 ```{r}
 sc <- spark_connect(
 master = "http://localhost:8998",
 method = "livy",
 version = "2.3.1")
 ```
+
 通过Livy连接后，你可以使用`sparklyr`的任何特性；但是，Livy不适合探索性数据分析，因为执行命令会带来很大的性能开销。虽然这么说，但在长时间运行计算时，这种开销可能被认为是无关紧要的。一般来说，你应该避免使用Livy并直接在集群中的边缘节点内工作；当这种策略不可行时，使用Livy才是一种合理的方法。
 
 > 通过`spark_version`参数指定Spark版本是可选的；但是，当指定了版本时，部署与给定版本兼容的预编译Java二进制文件会显著提高集群性能。因此，在使用Livy连接到Spark时，最好指定Spark版本。
@@ -3160,7 +3171,9 @@ version = "2.3.1")
 ```{r}
 sc <- spark_connect(master = "mesos://host:port")
 ```
-The `MESOS_NATIVE_JAVA_LIBRARY`需要经过系统管理员的设置，或者在本地机器上运行Mesos的时候手动设置。例如，在MacOS中，你可以用终端安装和初始化，然后通过手动设置Mesos库，并使用`spark_connect()`进行连接：
+
+`MESOS_NATIVE_JAVA_LIBRARY`需要经过系统管理员的设置，或者在本地机器上运行Mesos的时候手动设置。例如，在MacOS中，你可以用终端安装和初始化，然后通过手动设置Mesos库，并使用`spark_connect()`进行连接：
+
 ```
 brew install mesos
 /usr/local/Cellar/mesos/1.6.1/sbin/mesos-master --registry=in_memory
@@ -3175,7 +3188,7 @@ spark_home = spark_home_dir())
 
 ## Kubernetes
 
-Kubernetes并不像Mesos或者YARN支持客户端模式。相反，连接模型类似于YARN集集群，其中的驱动节点由Kubernetes指定，如图7-9所示。
+Kubernetes并不像Mesos或者YARN支持客户端模式。相反，连接模型类似于YARN集群，其中的驱动节点由Kubernetes指定，如图7-9所示。
 
 ![图7-9. Kubernetes连接图](figures/7_9.png)
 
@@ -3189,7 +3202,9 @@ account = "default",
 image = "docker.io/owner/repo:version",
 version = "2.3.1"))
 ```
-如果你的计算机已经完成使用Kubernetes集群的配置，你可以使用下面的命令找出`apiserver-host`和`apiserver-port`：
+
+如果你的计算机已经完成使用Kubernetes集群的配置，可以使用下面的命令找出`apiserver-host`和`apiserver-port`：
+
 ```{r}
 system2("kubectl", "cluster-info")
 ```
@@ -3197,28 +3212,38 @@ system2("kubectl", "cluster-info")
 ## 云模式
 
 当你使用云服务供应商时，有不同的连接方式。例如，从Databricks连接需要下面的方法：
+
 ```{r}
 sc <- spark_connect(method = "databricks")
 ```
+
 因为亚马逊EMR使用YARN，因此你可以使用`master = "yarn"`进行连接：
+
 ```{r}
 sc <- spark_connect(master = "yarn")
 ```
+
 当使用IBM的Watson Studio连接到Spark时，需要你通过IBM提供的`load_spark_kernels()`函数获取一个配置对象：
+
 ```{r}
 kernels <- load_spark_kernels()
 sc <- spark_connect(config = kernels[2])
 ```
+
 使用微软的Azure HDInsights和ML服务（R服务器）时，Spark连接按照以下方式初始化：
+
 ```{r}
 library(RevoScaleR)
 cc <- rxSparkConnect(reset = TRUE, interop = "sparklyr")
 sc <- rxGetSparklyrConnection(cc)
 ```
+
 从Qubole连接需要使用`qubole`连接方法：
+
 ```{r}
 sc <- spark_connect(method = "qubole")
 ```
+
 如果需要帮助，参考你的云服务供应商文档和支持渠道。
 
 ## 批量模式
@@ -3233,16 +3258,21 @@ sc <- spark_connect(master = "local")
 sdf_len(sc, 10) %>% spark_write_csv("batch.csv")
 spark_disconnect(sc)
 ```
+
 然后，你可以使用`spark_submit()`给Spark提交这个申请。`master`参数应该完成设置：
+
 ```{r}
 spark_submit(master = "local", "batch.R")
 ```
+
 你也可以从Shell直接调用`spark-submit`代码如下：
+
 ```{r}
 /spark-home-path/spark-submit
  --class `sparklyr`.Shell '/spark-jars-path/sparklyr-2.3-2.11.jar'
 8880 12345 --batch /path/to/batch.R
 ```
+
 最后一个参数表示端口号8880和进程号12345。你可以将其设置为任何唯一的数字标识符。使用以下R代码获得正确的路径：
 
 ```{r}
@@ -3251,13 +3281,15 @@ spark_home_dir()
 # Retrieve spark-jars-path
 system.file("java", package = "sparklyr")
 ```
-你可以通过给`spark_submit()`传递额外的命令行参数定制你的脚本，并使用R的`commandArgs()`读取出来。
+
+你可以通过给`spark_submit()`传递额外的命令行参数来定制你的脚本，并使用R的`commandArgs()`读取出来。
 
 ## 工具
 
 使用Jupyter和RStudio等工具连接到Spark集群时，你可以运行本章中介绍的相同连接参数。但是，由于许多云供应商使用web代理来保护Spark的web界面，要使用`spark_web()`或RStudio Connections窗口扩展，你需要正确配置`sparklyr.web.spark`，然后通过`config`参数将其传递给`spark_config()`。
 
 例如，在使用亚马逊EMR时，可以通过动态检索YARN应用程序和构建EMR代理URL来配置`sparklyr.web.spark`和`sparklyr.web.yarn`：
+
 ```{r}
 domain <- "http://ec2-12-345-678-9.us-west-2.compute.amazonaws.com"
 config <- spark_config()
@@ -3269,7 +3301,7 @@ sc <- spark_connect(master = "yarn", config = config)
 
 ## 多次连接
 
-通常，我们只会连接Spark一次，而且只有一次。但是，你也可以通过连接到不同的集群或指定`app_name`参数来打开多次Spark连接。这有助于在提交到集群之前比较Spark版本或验证你的分析结果。以下示例打开了与Spark 1.6.3、2.3.0和Spark单击的连接：
+通常，我们只会连接Spark一次，而且只有一次。但是，你也可以通过连接到不同的集群或指定`app_name`参数来多次打开Spark连接。这有助于在提交到集群之前比较Spark版本或验证你的分析结果。以下示例打开了与Spark 1.6.3、2.3.0和Spark单机的连接：
 
 ```{r}
 # Connect to local Spark 1.6.3
@@ -3279,6 +3311,7 @@ sc_23 <- spark_connect(master = "local", version = "2.3", appName = "Spark23")
 # Connect to local Spark Standalone
 sc_standalone <- spark_connect(master = "spark://host:port")
 ```
+
 最后，你可以断开每个连接：
 
 ```{r}
@@ -3286,22 +3319,27 @@ spark_disconnect(sc_1_6_3)
 spark_disconnect(sc_2_3_0)
 spark_disconnect(sc_standalone)
 ```
+
 你也可以一次性断开所有连接：
+
 ```{r}
 spark_disconnect_all()
 ```
 
 ## 故障排除
 
-最后，我们介绍以下故障排除技术：日志记录、Spark Submit和Windows。如果不确定从何处开始，请在使用Windows系统时从Windows部分开始，然后是日志记录，最后是Spark Submit。当运行`spark_connect()`失败并显示错误消息时，这些技术非常有用。
+最后，我们介绍一下故障排除技术：日志记录、Spark Submit和Windows。如果不确定从何处开始，请在使用Windows系统时从Windows部分开始，然后是日志记录，最后是Spark Submit。当运行`spark_connect()`失败并显示错误消息时，这些技术非常有用。
 
 ### 记录日志
 
 第一项故障排除技术是直接打印Spark日志到控制台，帮助你定位额外的错误消息：
+
 ```{r}
 sc <- spark_connect(master = "local", log = "console")
 ```
+
 另外，你可以通过设定连接时`sparklyr.verbose`选项为`TRUE`来开启详细日志：
+
 ```{r}
 sc <- spark_connect(master = "local", log = "console",
 config = list(sparklyr.verbose = TRUE))
@@ -3310,13 +3348,16 @@ config = list(sparklyr.verbose = TRUE))
 ### Spark Submit
 
 通常，你可以通过`spark_submit()`运行一个示例任务，判断一个连接问题是R导致的还是Spark导致的，并说明没有抛出错误：
+
 ```{r}
 # Find the spark directory using an environment variable
 spark_home <- Sys.getenv("SPARK_HOME")
 # Or by getting the local spark installation
 spark_home <- sparklyr::spark_home_dir()
 ```
-然后，使用故障排除中正确的`master`参数替换`"local"`计算圆周率例子：
+
+然后，使用故障排除中正确的`master`参数替换`"local"`计算圆周率例子如下：
+
 ```{r}
 # Launching a sample application to compute Pi
 system2(
@@ -3332,7 +3373,7 @@ stderr = FALSE
 Pi is roughly 3.1415503141550314
 ```
 
-如果前面的消息没有显示，你需要调查为什么你的Spark集群没有正确配置。这超出了本书的范围。首先，重新运行圆周率例子，但是要删除`stderr = FALSE`；这会将错误消息打印到控制台，然后你可以使用控制台的消息来调查问题可能的原因。当使用云供应商或Spark发行版时，你可以联系他们的支持团队帮助进一步解决此问题；另外，Stack Overflow也是一个很好的调查问题的起点。如果你确实看到消息，这意味着你的Spark集群已正确配置，但是不知道为什么故R无法使用Spark，因此你还需要详细地解决此问题，我们接下来会解释。
+如果前面的消息没有显示，你需要调查为什么你的Spark集群没有正确配置。这超出了本书的范围。首先，重新运行圆周率例子，但是要删除`stderr = FALSE`；这会将错误消息打印到控制台，然后你可以使用控制台的消息来调查问题可能的原因。当使用云供应商或Spark发行版时，你可以联系他们的支持团队帮助进一步解决此问题；另外，Stack Overflow也是一个很好的调查问题的起点。如果你确实看到消息，这意味着你的Spark集群已正确配置，但是不知何故R无法使用Spark，因此你还需要详细地解决此问题，我们接下来会解释。
 
 #### 故障排除细节
 
@@ -3344,18 +3385,21 @@ Pi is roughly 3.1415503141550314
 dir(system.file("java", package = "sparklyr"),
 pattern = "sparklyr", full.names = T)
 ```
+
 确保你找到了匹配Saprk的正确版本。例如，`sparklyr-2.1-2.11.jar`匹配Spark 2.1。
 
 然后，在终端中运行以下代码：
+
 ```
 $SPARK_HOME/bin/spark-submit --class `sparklyr`。Shell $PATH_TO_SPARKLYR_JAR 8880 42
 18/06/11 12:13:53 INFO sparklyr: Session (42) found port 8880 is available
 18/06/11 12:13:53 INFO sparklyr: Gateway (42) is waiting for `sparklyr` client
  to connect to port 8880
 ```
+
 参数8880表示`sparklyr`中使用的默认端口，而42是进程号，这是`sparklyr`生成的加密安全号，但出于故障排除的目的，可以简化为42。
 
-如果第一个连接步骤失败，这意味着集群无法接受应用程序。这通常意味着没有足够的资源，或者存在权限限制。
+如果第一个连接步骤失败，意味着集群无法接受应用程序。这通常意味着没有足够的资源，或者存在权限限制。
 
 第二步是按如下方式从R连接（注意有60秒的超时，在运行终端命令后需要运行R命令；如果需要，你可以按照第9章中的说明配置超时参数）：
 
@@ -3363,14 +3407,15 @@ $SPARK_HOME/bin/spark-submit --class `sparklyr`。Shell $PATH_TO_SPARKLYR_JAR 88
 library(sparklyr)
 sc <- spark_connect(master = "sparklyr://localhost:8880/42", version = "2.3")
 ```
+
 如果第二个连接步骤失败，通常意味着R和驱动节点之间存在连接问题。例如，你可以尝试使用其它连接端口。
 
 ### Windows
 
 在大多数情况下，Windows连接和从Linux和macOS连接一样简单。但是，有几个常见的连接问题需要注意：
 
-* 防火墙和防病毒软件可能会阻止连接端口。`sparklyr`使用的默认端口是8880；请仔细检查此端口是否未被阻止。
-* 长路径名可能会导致问题，特别是对于像Windows 7这样的旧Windows系统。使用这些系统时，请尝试与所有文件夹一起安装的Spark连接，最多使用8个字符，名称中不要有空格。
+* 防火墙和防病毒软件可能会阻止端口连接。`sparklyr`使用的默认端口是8880；请仔细检查此端口是否未被阻止。
+* 长路径名可能会导致问题，特别是对于像Windows7这样的旧Windows系统。使用这些系统时，请尝试与所有文件夹一起安装的Spark连接，最多使用8个字符，名称中不要有空格。
 
 
 ## 小结
@@ -3379,7 +3424,7 @@ sc <- spark_connect(master = "sparklyr://localhost:8880/42", version = "2.3")
 
 要解决本章介绍的技术之外的连接问题，我们建议你在Stack Overflow、`sparklyr`问题的GitHub页面中搜索连接问题。如果需要，在`sparklyr`中打开一个新的GitHub问题以进一步获得帮助。
 
-在第8章中，我们会介绍如何使用Spark读写来自从各种数据源和格式的数据，这可以让你在数据分析时更加灵活的添加新的数据源。过去需要几天，几周，甚至几个月完成的事情，现在你可以通过拥抱数据湖在数小时内完成。
+在第8章中，我们会介绍如何使用Spark读写来自各种数据源和格式的数据，这可以让你在数据分析时更加灵活的添加新的数据源。过去需要几天，几周，甚至几个月完成的事情，现在你可以通过拥抱数据湖在数小时内完成。
 
 
 ------
