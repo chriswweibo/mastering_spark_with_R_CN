@@ -6739,6 +6739,7 @@ strip.text = ggplot2::element_text(size = 20, hjust = 0) ) }
 ```
 
 你可以使用下列代码激活：
+
 ```{r}
 ggplot2::theme_set(plot_style())
 ```
@@ -6748,6 +6749,7 @@ ggplot2::theme_set(plot_style())
 ### 全球存储信息能力
 
 下列脚本用来生成图1-1：
+
 ```{r}
 library(ggplot2)
 library(dplyr)
@@ -6769,6 +6771,7 @@ theme(legend.position = "bottom")
 ### CRAN程序包每日下载量
 
 图1-6通过以下代码生成：
+
 ```{r}
 downloads_csv <- "data/01-intro-r-cran-downloads.csv"
 if (!file.exists(downloads_csv)) {
@@ -6809,7 +6812,6 @@ labels = c("", "1M", "", "2M", "", "3M", "") )
 Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么样，我们都建议安装Java Runtime Engine 8（JRE 8）。
 
 > 如果你是一个已经在使用Java Development Kit（JDK）的高级读者，请注意JDK 9+目前不受支持。因此，你需要通过卸载JDK 9+或适当设置`JAVA_HOME`来降级到JDK 8。
-
 
 #### 安装RStudio
 
@@ -6993,7 +6995,7 @@ Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么
 算法 |函数
 ------|-------
 决策树| `ml_decision_tree_classifier()`
-梯度提升树 |`ml_gbt_classifier()`
+梯度提升分类树 |`ml_gbt_classifier()`
 线性支持向量机 |`ml_linear_svc()`
 逻辑回归|`ml_logistic_regression()`
 多层感知机 |`ml_multilayer_perceptron_classifier()`
@@ -7008,7 +7010,7 @@ Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么
 加速时效时间生成回归 |`ml_aft_survival_regression()`
 决策树 |`ml_decision_tree_regressor()`
 广义线性回归|`ml_generalized_linear_regression()`
-梯度提升树|`ml_gbt_regressor()`
+梯度提升回归树|`ml_gbt_regressor()`
 保序回归 |`ml_isotonic_regression()`
 线性回归 |`ml_linear_regression()`
 
@@ -7048,7 +7050,7 @@ Hadamard积|`ft_elementwise_product()`
 使用哈希的词频 |`export(`ft_hashing_tf)
 逆文档频率 |`ft_idf()`
 缺失值推断 |`export(`ft_imputer)
-Index to string |`ft_index_to_string()`
+索引字符化 |`ft_index_to_string()`
 特征交互转换 |`ft_interaction()`
 [–1, 1]区间缩放|`ft_max_abs_scaler()`
 [min, max]区间缩放 |`ft_min_max_scaler()`
@@ -7066,13 +7068,14 @@ SQL变换 |`ft_sql_transformer()`
 合并向量为行向量|`ft_vector_assembler()`
 为类别型特征建立索引 |`ft_vector_indexer()`
 原始特征的子数组|`ft_vector_slicer()`
-讲词转换为编码|`ft_word2vec()`
+将词转换为编码|`ft_word2vec()`
 
 ## 第6章
 
 ### 本地机（主机），云计算和Kubernetes的谷歌趋势
 
 用于创建图6-1的数据可以从https://bit.ly/2YnHkNI下载。
+
 ```{r}
 library(dplyr)
 read.csv("data/clusters-trends.csv", skip = 2) %>%
@@ -7115,6 +7118,7 @@ file.info(file.path("source", list.files("source")))[1]
 ## source/stream_4.csv 2370
 ## source/stream_5.csv 7236
 ```
+
 `stream_generate_test()`默认创建一个单个数值变量的数据框。
 
 ```{r}
@@ -7137,13 +7141,13 @@ readr::read_csv("source/stream_5.csv")
 
 ### 安装Kafka
 
-本说明是根据Kafka官方网站的快速入门页面中的信息形成的。（毫无疑问，在本书出版后不久，新版本的Kafka将面世。）此处是为了给“Kafka”中的例子中使用的版本打上“时间戳”：
+本说明是根据Kafka官方网站的快速入门页面中的信息形成的。（毫无疑问，在本书出版后不久，新版本的Kafka将面世。）此处是为了给“Kafka”中的例子使用的版本打上“时间戳”：
 
 1. 下载Kafka。
 ```
 wget http://apache.claz.org/kafka/2.2.0/kafka_2.12-2.2.0.tgz
 ```
-2. 扩展*tar*文件，并进入新的文件夹。
+2. 解压*tar*文件，并进入新的文件夹。
 ```
 tar -xzf kafka_2.12-2.2.0.tgz
 cd kafka_2.12-2.2.0
@@ -7156,12 +7160,13 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
 bin/kafka-server-start.sh config/server.properties
 ```
+
 确保总是首先启动Zookeeper，然后启动Kafka。
 
 
 # 关于作者
 
-Javier Luraschi是一名软件工程师，在从桌面、web、移动和后端开发到增强现实和深度学习应用程序的技术方面具有丰富经验。他曾供职于微软研究院和SAP，拥有数学和软件工程双学位。他是`sparklyr`、`cloudml`、`r2d3`、`mlflow`、`tfdeploy`和`kerasjs`的作者。
+Javier Luraschi是一名软件工程师，从桌面、web、移动和后端开发到增强现实和深度学习应用程序的技术方面，具有丰富经验。他曾供职于微软研究院和SAP，拥有数学和软件工程双学位。他是`sparklyr`、`cloudml`、`r2d3`、`mlflow`、`tfdeploy`和`kerasjs`的作者。
 
 Kevin Kuo为机器学习和模型部署构建了开源代码库。他曾在多个行业担任数据科学家职位，其中包括保险业，他是一名持照的精算师。Kevin是`mlflow`、`mleap`和`sparkxgb`的作者。他也是一个业余的调酒师和品酒师。
 
@@ -7171,9 +7176,9 @@ Edgar Ruiz具有部署企业报告和商业智能解决方案的背景。他是�
 
 # 结语
 
-《Mastering Spark with R》封面上的动物是一种玫瑰鱼（褐家鼠），一种深海岩鱼。虽然大多数岩鱼生活在北太平洋，但玫瑰鱼是生活在北大西洋的四种鱼类之一。
+《Mastering Spark with R》封面上的动物是一种玫瑰鱼，一种深海岩鱼。虽然大多数岩鱼生活在北太平洋，但玫瑰鱼是生活在北大西洋的四种鱼类之一。
 
-幼年玫瑰鱼生活在峡湾附近，而成年玫瑰鱼生活在3280英尺深的水域。成年玫瑰鱼平均有18英寸长，然后某些也可以达到3英尺。它们是生长缓慢的鱼类，在8或9岁左右达到完全成熟。玫瑰鱼是胎生的；在冬季，雌性会产下50000-350000个卵。玫瑰鱼寿命可达60岁。
+幼年玫瑰鱼生活在峡湾附近，而成年玫瑰鱼生活在3280英尺深的水域。成年玫瑰鱼平均有18英寸长，某些也可以达到3英尺。它们是生长缓慢的鱼类，在8或9岁左右达到完全成熟。玫瑰鱼是胎生的；在冬季，雌性会产下50000-350000个卵。玫瑰鱼寿命可达60岁。
 
 玫瑰鱼是一种商业捕捞的鱼类，年捕获量为40至60千吨。人们认为是玫瑰鱼已经被严重过度捕捞了，特别是考虑到需要8或9年才能达到生殖年龄。
 
