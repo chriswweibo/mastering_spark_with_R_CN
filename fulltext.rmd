@@ -4733,7 +4733,7 @@ Spark中的图也表示为边和顶点的数据框。但是，我们的格式略
 install.packages("graphframes")
 ```
 
-接下来，我们需要连接，复制`highschool`数据集并将图转换为扩展所期望的格式。在这里，我们将这个数据集的范围限定在到1957年的朋友关系：
+接下来，我们需要连接Spark，复制`highschool`数据集并将图数据转换为扩展所期望的格式。在这里，我们将这个数据集的范围限定在到1957年的朋友关系：
 
 ```{r}
 library(graphframes)
@@ -4806,7 +4806,7 @@ gf_degrees(graph) %>% summarise(friends = mean(degree))
 1 6.94
 ```
 
-然后我们可以找到哪一条是到某个特定顶点的最短路径（这个数据集中的一个男孩）。由于数据是匿名的，我们可以挑选一个编号为33的男孩，发现他们之间存在多少分离度：
+然后我们可以找到哪一条是到某个特定顶点的最短路径（这个数据集中的一个男孩）。由于数据是匿名的，我们可以挑选一个编号为33的男孩，发现数据之间存在多少分离度：
 
 ```{r}
 gf_shortest_paths(graph, 33) %>%
@@ -4846,7 +4846,7 @@ Edges:
  $ weight <dbl> 0.25000000, 0.25000000, 0.25000000, 0.25000000, 0.25000000,…
 ```
 
-为了让你理解数据集，图10-4使用`ggraph`画出了这个图，并高亮了下列数据集的最高PageRank得分：
+为了有助于理解数据集，图10-4使用`ggraph`画出了这个图，并高亮了下列数据集中最高PageRank得分：
 
 ```{r}
 highschool_tbl %>%
@@ -4859,7 +4859,7 @@ start_cap = circle(2, 'mm')) +
 geom_node_point(size = 2, alpha = 0.4)
 ```
 
-![图10-4. 最高PageRank得分高亮的`highschool`数据集`ggraph`可视化](figures/10_4.png)
+![图10-4. `highschool`数据集`ggraph`可视化，其中最高PageRank得分被高亮](figures/10_4.png)
 
 `graphframes`还提供了更多的图算法，例如广度优先搜索、连接分支、用于检测社区的标签传递、强连接分支和三角形计数。有关此扩展的问题，请参阅官方GitHub仓库。我们接下来介绍一个流行的梯度提升框架。确保在尝试下一个扩展之前断开连接并重新启动。
 
@@ -4872,7 +4872,7 @@ geom_node_point(size = 2, alpha = 0.4)
 虽然决策树表示很容易理解和解释，但要找出树中的决策，需要像梯度下降这样的数学技术才能找到局部最小值。梯度下降与当前点处函数梯度的负方向成比例。梯度用$\nabla$表示，学习率用$\gamma$表示。你只需从给定的状态$a_n$开始，然后按照梯度的方向计算下一次迭代：
 $$a_{n + 1} = a_n − \gamma \nabla F(a_n)$$
 
-XGBoost是一个开源软件库，它提供了一个梯度提升框架。它旨在为训练梯度提升决策树（GBDT）和梯度提升回归树（GBRT）提供可扩展、可移植和分布式的梯度提升方法。梯度提升意味着XGBoost使用梯度下降和梯度提升，这是一种按顺序选择每个预测器的技术。
+XGBoost是一个开源软件库，提供了一个梯度提升框架。它旨在为训练梯度提升决策树（GBDT）和梯度提升回归树（GBRT）提供可扩展、可移植和分布式的梯度提升方法。梯度提升意味着XGBoost使用梯度下降和梯度提升，这是一种按顺序选择预测器的技术。
 
 `sparkxgb`是一个扩展，你可以使用它在Spark中训练XGBoost模型。但是，请注意，当前不支持Windows。要使用此扩展，请首先通过CRAN安装它：
 
@@ -4889,7 +4889,7 @@ library(dplyr)
 sc <- spark_connect(master = "local", version = "2.3")
 ```
 
-在本例中，我们使用`rsample`包中的`attrition`数据集，你需要使用`install.packages("rsample")`来安装它。这是一个虚构的数据集，由IBM数据科学家创建，以揭示导致员工离职的原因：
+在本例中，我们使用`rsample`包中的`attrition`数据集。你需要使用`install.packages("rsample")`来安装它。这是一个虚构的数据集，由IBM数据科学家创建，用来揭示导致员工离职的原因：
 
 ```{r}
 attrition <- copy_to(sc, rsample::attrition)
@@ -4919,7 +4919,7 @@ attrition
 # YearsSinceLastPromotion <int>, YearsWithCurrManager <int>
 ```
 
-要在Spark中构建XGBoost模型，使用`xgboost_classifier()`。我们使用`Attrition ~ .`公式计算所有其它特性对离职的影响，并指定为2类，因为离职属性只记录员工是离开还是留下。然后，可以使用`ml_predict()`对大规模数据集进行预测：
+要在Spark中构建XGBoost模型，使用`xgboost_classifier()`。我们使用`Attrition ~ .`公式计算所有其它特性对离职的影响，并指定为二分类问题，因为离职属性只记录员工是离开还是留下。然后，可以使用`ml_predict()`对大规模数据集进行预测：
 
 ```{r}
 xgb_model <- xgboost_classifier(attrition,
@@ -4940,11 +4940,11 @@ $ probability_No <dbl> 0.753938094, 0.024780750, 0.915146366, 0.143568754, 0.07�
 $ probability_Yes <dbl> 0.24606191, 0.97521925, 0.08485363, 0.85643125, 0.927375…
 ```
 
-在希格斯玻色子机器学习挑战赛中，胜出的解决方案使用了XGBoost。之后，XGBoost在竞赛圈中广为人知，该方案使用ATLAS实验来识别希格斯玻色子。从此，XGBoost已经成为一种流行的模式，并用于大量的kaggle比赛。然而，决策树被证明能力很有限，特别是在具有非表格接数据（如图像、音频和文本）的数据集中。而这些问题使用深度学习技术会更好。提醒一下，记得断开连接并重新启动。
+在希格斯玻色子机器学习挑战赛中，胜出的解决方案使用了XGBoost。之后，XGBoost在竞赛圈中广为人知，该方案使用ATLAS实验来识别希格斯玻色子。从此，XGBoost成为一种流行的模式，并应用到大量的kaggle比赛中。然而，决策树被证明能力很有限，特别是在具有非表格数据（如图像、音频和文本）的数据集问题上。而这些问题使用深度学习技术效果会更好。提醒一下，记得断开连接并重新启动。
 
 ## 深度学习
 
-感知器是Frank Rosenblatt提出的一种数学模型[^23]，他把感知器发展成为一种假想的神经系统的理论。感知器将刺激映射到数值输入，数值输入加权到阈值函数中，阈值函数仅在存在足够的刺激时激活，数学表示如下：
+感知机是Frank Rosenblatt提出的一种数学模型[^23]，他把感知机发展成为一种假想的神经系统的理论。感知机将刺激映射到数值输入，数值输入加权到阈值函数中，阈值函数仅在受到足够的刺激时激活，数学表示如下：
 
 [^23]:Rosenblatt F (1958). “The perceptron: a probabilistic model for information storage and organization in the brain.” Psychological review.
 
@@ -4952,11 +4952,11 @@ $$
 f(x) =
 \begin{cases}
 1 & \Sigma^m _{i=1} w_ix_i+b \gt 1 \\
-0 & otherwise
+0 & 其它
 \end{cases}
 $$
 
-Minsky和Papert发现，一个感知器只能对线性可分的数据集进行分类；然而，他们在其著作《Perceptrons》中也揭示了分层感知器将带来额外的分类能力[^24]。图10-6给出了多层感知器最初的样子。
+Minsky和Papert发现，一个感知机只能对线性可分的数据集进行分类；然而，他们在其著作《Perceptrons》中也揭示了分层感知机将带来额外的分类能力[^24]。图10-6给出了多层感知机最初的样子。
 
 [^24]:Minsky M, Papert SA (2017). Perceptrons: An introduction to computational geometry. MIT press.
 
@@ -4969,7 +4969,7 @@ install.packages("sparktf")
 install.packages("tfdatasets")
 ```
 
-使用Spark，我们可以创建一个多层感知器分类器，该分类器使用`ml_multilayer_perceptron_classifier()`和梯度下降来对大型数据集进行分类和预测。Geoff Hinton将梯度下降引入分层感知器[^25]。
+使用Spark，我们可以创建一个多层感知机分类器，该分类器使用`ml_multilayer_perceptron_classifier()`和梯度下降来对大型数据集进行分类和预测。Geoff Hinton将梯度下降引入分层感知机[^25]。
 
 [^25]:Ackley DH, Hinton GE, Sejnowski TJ (1985). “A learning algorithm for Boltzmann machines.” Cognitive science.
 
@@ -4996,13 +4996,13 @@ $ probability_No <dbl> 0.8439275, 0.8439275, 0.8439275, 0.8439275, 0.8439275,…
 $ probability_Yes <dbl> 0.1560725, 0.1560725, 0.1560725, 0.1560725, 0.1560725,…
 ```
 
-注意，列必须是数值型的，因此需要使用第4章中介绍的特征变换技术手动转换它们。尝试添加更多的层来分类更复杂的数据集是很自然的。但是，添加太多的层将导致梯度散失，还需要其它技术来使用这些深层网络，也称为*深度学习模型*。
+注意，列必须是数值型的，因此需要使用第4章中介绍的特征变换技术手动转换它们。尝试添加更多的层来分类更复杂的数据集是很自然的。但是，添加太多的层将导致梯度散失，因此还需要其它技术来维持这些深层网络，也称为*深度学习模型*。
 
 深度学习模型利用特殊的激活函数、dropout、数据增强和GPU来解决梯度散失问题。你可以使用Spark检索大型数据集，并将其预处理为只包含数值的数据集，这些数据集可以在GPU中进行深度学习训练。TensorFlow是最流行的深度学习框架之一。如前所述，它支持称为TensorFlow记录的二进制格式。
 
-你可以使用Spark中的`sparktf`编写TensorFlow记录，并准备在GPU实例中使用Keras或TensorFlow等库来处理这些记录。
+你可以使用Spark中的`sparktf`编写TensorFlow记录，并在GPU实例中使用Keras或TensorFlow等库来处理这些记录。
 
-然后，可以在Spark中预处理大型数据集，并使用`spark_write_tf()`将它们作为TensorFlow记录写入：
+然后，你可以在Spark中预处理大型数据集，并使用`spark_write_tf()`将它们作为TensorFlow记录写入：
 
 ```{r}
 copy_to(sc, iris) %>%
@@ -5012,10 +5012,9 @@ labels = c("setosa", "versicolor", "virginica") ) %>%
 spark_write_tfrecord(path = "tfrecord")
 ```
 
-使用Keras或TensorFlow训练数据集后，可以使用`tfdatasets`包加载它。你还需要使用`install_tensorflow()` 安装TensorFlow runtime，并自行安装Python。要了解更多关于使用Keras训练深度学习模型的信息，建议阅读使用《Deep Learning with R》[^26]。
+使用Keras或TensorFlow训练数据集后，可以使用`tfdatasets`包加载它。你还需要使用`install_tensorflow()` 安装TensorFlow runtime，并自行安装Python。要了解更多关于使用Keras训练深度学习模型的信息，建议阅读《Deep Learning with R》[^26]。
 
 [^26]:Chollet F, Allaire J (2018). Deep Learning with R. Manning Publications.
-
 
 ```{r}
 tensorflow::install_tensorflow()
@@ -5023,11 +5022,11 @@ tfdatasets::tfrecord_dataset("tfrecord/part-r-00000")
 <DatasetV1Adapter shapes: (), types: tf.string>
 ```
 
-使用一个或多个GPU在单个本地节点上训练深度学习模型对于大多数应用程序来说通常已经足够了；但是，最近最先进的深度学习模型使用Apache Spark等分布式计算框架进行训练。分布式计算框架被用来实现更高的千万亿次浮点运算，支持系统每天都在训练这些模型。OpenAI分析了人工智能（AI）和集群计算领域的趋势（如图10-7所示）。从图中可以明显看出，近年来有使用分布式计算框架的趋势。
+使用一个或多个GPU在单个本地节点上训练深度学习模型对于大多数应用程序来说通常已经足够了；但是，一些最先进的深度学习模型会使用Apache Spark等分布式计算框架进行训练。分布式计算框架用来实现更高的千万亿次浮点运算，支持系统每天都在训练这些模型。OpenAI分析了人工智能（AI）和集群计算领域的趋势（如图10-7所示）。从图中可以明显看出，近年来有使用分布式计算框架的趋势。
 
 ![图10-7. 基于OpenAI分析使用分布式系统的训练](figures/10_7.png)
 
-通过像Horovod这样的框架，Spark和TensorFlow可以训练大规模的深度学习模型。今天，可以通过`reticulate`在R中使用Horovod和Spark，因为Horovod需要Python和Open MPI，这超出了本书的范围。接下来，我们将介绍一个基因组学领域的不同的Spark扩展。
+通过像Horovod这样的框架，Spark和TensorFlow可以训练大规模的深度学习模型。今天，我们可以通过`reticulate`在R中使用Horovod和Spark。Horovod需要Python和Open MPI，这超出了本书的范围。接下来，我们将介绍基因组学领域的另一个不同的Spark扩展。
 
 
 ## 基因组学
@@ -5036,7 +5035,7 @@ tfdatasets::tfrecord_dataset("tfrecord/part-r-00000")
 
 ![图10-8. 理想化的人类二倍体核型，显示基因组形成染色体](figures/10_8.png)
 
-`variantspark`是一个基于Scala和Spark的分析基因组数据集的框架。它是由澳大利亚的CSIRO生物信息学团队开发的。variantspark在3000个样本的数据集上进行了测试，每个样本包含8000万个非监督聚类方法或监督应用（如分类和回归）的特征。`variantspark`可以读取VCF文件并运行分析，同时使用熟悉的Spark数据框。
+`variantspark`是一个基于Scala和Spark的分析基因组数据集的框架。它是由澳大利亚的CSIRO生物信息学团队开发的。`variantspark`在3000个样本的数据集上进行了测试，每个样本包含8000万个非监督聚类方法或监督式应用（如分类和回归）的特征。`variantspark`可以读取VCF文件并运行分析，同时使用熟悉的Spark数据框。
 
 首先，从CRAN安装`variantspark`，连接到Spark，然后得到`variantspark`的`vsc`连接：
 
@@ -5057,7 +5056,7 @@ hipster_labels <- vs_read_csv(vsc, file.path(vsc_data, "hipster_labels.txt"))
 labels <- vs_read_labels(vsc, file.path(vsc_data, "hipster_labels.txt"))
 ```
 
-`variantspark`使用随机森林为每个测试的变异分配一个重要分数，反映其与兴趣表型的关联。一个重要度得分较高的变异意味着它与感兴趣的表型有更紧密的联系。你可以计算重要性并将其转换为Spark表，如下所示：
+`variantspark`使用随机森林为每个测试的变异分配一个重要分数，反映其与兴趣表型的关联。一个重要度得分较高的变异意味着它与感兴趣的表型有紧密的联系。你可以计算重要性并将其转换为Spark表，如下所示：
 
 ```{r}
 importance_tbl <- vs_importance_analysis(vsc, hipster_vcf,
@@ -5099,11 +5098,11 @@ coord_flip()
 
 ![图10-9. 使用`variantspark`的基因组重要性分析](figures/10_9.png)
 
-我们在Spark中使用`variantspark`扩展，简要介绍了基因组分析。接下来，我们将从微观基因转移到宏观数据集，这些数据集包含世界各地的地理位置。
+我们在Spark中使用`variantspark`扩展，简要介绍了基因组分析。接下来，我们将从微观基因数据转移到宏观数据集，这些数据集包含世界各地的地理位置。
 
 ## 空间数据
 
-`geospark`使用与`dplyr`和`sf`兼容的语法支持分布式地理空间计算，该语法提供了一组用于处理地理空间矢量的工具。
+`geospark`使用与`dplyr`和`sf`兼容的语法来支持分布式地理空间计算。该语法提供了一组用于处理地理空间矢量的工具。
 
 你可以从CRAN安装`geospark`，如下所示：
 
@@ -5136,7 +5135,7 @@ points_wkt <- copy_to(sc, points)
 
 ![图10-10. `geospark`上的空间操作](figures/10_10.png)
 
-例如，我们可以使用这些操作,借助`st_contains()`找出包含给定点集合的多边形：
+例如，我们可以使用这些操作，借助`st_contains()`找出包含给定点集合的多边形：
 
 ```{r}
 library(dplyr)
@@ -5190,11 +5189,11 @@ unlink("~/.ivy2", recursive = TRUE)
 
 ## 小结
 
-本章简要介绍了使用R中提供的一些Spark扩展，与安装软件包一样简单。然后，你学习了如何使用`rsparkling`扩展，该扩展提供了Spark中的请求访问，进而提供了其它建模功能，如增强度量和自动选择模型的能力。然后我们跳到`graphframes`，这个扩展可以帮助你处理图的关系数据集。你还学习了如何计算简单的连接度量或运行复杂的算法，如`PageRank`。
+本章简要介绍了R中提供的一些Spark扩展，使用它们与安装软件包一样简单。然后，你学习了如何使用`rsparkling`扩展，该扩展提供了Spark中的请求访问，进而提供了其它建模功能，如增强度量和自动选择模型的能力。然后我们跳到`graphframes`，这个扩展可以帮助你处理图的关系数据集。你还学习了如何计算简单的连接度量或运行复杂的算法，如`PageRank`。
 
-XGBoost和深度学习部分提供了使用梯度下降的备选建模技术：前者基于决策树，后者基于多层感知器。我们可以使用Spark将数据集预处理为记录，然后使用`sparktf`扩展支持TensorFlow和Keras使用。最后两部分介绍了通过`variantspark`和`geospark`扩展来处理基因组和空间数据集。
+XGBoost和深度学习部分提供了使用梯度下降的备选建模技术：前者基于决策树，后者基于多层感知机。我们可以使用Spark将数据集预处理为记录，然后使用`sparktf`扩展支持TensorFlow和Keras使用。最后两部分介绍了通过`variantspark`和`geospark`扩展来处理基因组和空间数据集。
 
-这些扩展，以及更多的扩展，提供了一个具备高级功能的综合库。结合所介绍的分析和建模技术，这些扩展应该可以涵盖集群运行中所需的大多数任务。然而，当缺少功能时，你可以考虑编写自己的扩展，这是我们在第13章中要讨论的。或者，如马上在第11章中看到的，你可以使用R代码对每个分区进行自定义转换。
+这些扩展，以及更多的扩展，提供了一个具备高级功能的综合库。结合所介绍的分析和建模技术，这些扩展应该可以涵盖集群运行中所需的大多数任务。然而，当缺少功能时，你可以考虑编写自己的扩展，这是我们在第13章中要讨论的。或者，马上在第11章中可以看到，你可以使用R代码对每个分区进行自定义转换。
 
 ------
 
