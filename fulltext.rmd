@@ -6838,47 +6838,47 @@ Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么
 
 名称 | 描述
 -------|----------
-`size(Map<K.V>)` |Returns the number of elements in the map type.
-`size(Array)` |Returns the number of elements in the array type.
-`map_keys(Map<K.V>)` |Returns an unordered array containing the keys of the input map.
-`map_values(Map<K.V>)` |Returns an unordered array containing the values of the input map.
-`array_contains(Array, value)` |Returns TRUE if the array contains a value.
-`sort_array(Array)` |Sorts the input array in ascending order according to the natural ordering of the array elements and returns it.
-`binary(string or binary)` |Casts the parameter into a binary.
-`cast(expr as a given type)` |Converts the results of the expression `expr` to the given type.
-`from_unixtime(bigint unixtime[, string format])`|Converts the number of seconds from Unix epoch (1970-01-01 00:00:00 UTC) to a string.
-`unix_timestamp()` |Gets current Unix timestamp in seconds.
-`unix_timestamp(string date)` |Converts a time string in the format yyyy-MM-dd HH:mm:ss to a Unix timestamp (in seconds).
-`to_date(string timestamp)` |Returns the date part of a timestamp string.
-`year(string date)` |Returns the year part of a date.
-`quarter(date/timestamp/string)` |Returns the quarter of the year for a date.
-`month(string date)` |Returns the month part of a date or a timestamp string.
-`day(string date) dayofmonth(date)`|Returns the day part of a date or a timestamp string.
-`hour(string date)` |Returns the hour of the timestamp.
-`minute(string date)` |Returns the minute of the timestamp.
-`second(string date)` |Returns the second of the timestamp.
-`weekofyear(string date)` |Returns the week number of a timestamp string.
-`extract(field FROM source)` |Retrieve fields such as days or hours from source. Source must be a date,timestamp, interval, or string that can be converted into either a date or timestamp.
-`datediff(string enddate, string startdate)`|Returns the number of days from `startdate` to `enddate`.
-`date_add(date/timestamp/string startdate, tinyint/smallint/int days)`|Adds a number of days to `startdate`.
-`date_sub(date/timestamp/string startdate, tinyint/smallint/int days)`|Subtracts a number of days to `startdate`.
-`from_utc_timestamp(\{any primitive type} ts, string timezone)`|Converts a timestamp in UTC to a given time zone.
-`to_utc_timestamp(\{any primitive type} ts, string timezone)`|Converts a timestamp in a given time zone to UTC.
-`current_date` |Returns the current date.
-`current_timestamp` |Returns the current timestamp.
-`add_months(string start_date, int num_months, output_date_format)`|Returns the date that is `num_months` after `start_date`.
-`last_day(string date)` |Returns the last day of the month to which the date belongs.
-`next_day(string start_date, string day_of_week)`|Returns the first date that is later than `start_date` and named as `day_of_week`.
-`trunc(string date, string format)`|Returns date truncated to the unit specified by the format.
-`months_between(date1, date2)` |Returns number of months between dates `date1` and `date2`.
-`date_format(date/timestamp/string ts, string fmt)`|Converts a date/timestamp/string to a value of `string` in the format specified by the date format `fmt`.
-`if(boolean testCondition, T valueTrue, T valueFalseOrNull)`|Returns valueTrue when `testCondition` is true; returns `valueFalseOrNull` otherwise.
-`isnull( a )` |Returns true if a is `NULL` and `false` otherwise.
-`isnotnull( a )` |Returns true if a is not `NULL` and `false` otherwise.
-`nvl(T value, T default_value)` |Returns default value if value is `NULL`; else returns `value`.
-`COALESCE(T v1, T v2, …)` |Returns the first v that is not `NULL`, or `NULL` if all vs are `NULL`.
-`CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END` |When `a = b`, returns `c`; when `a = d`, returns `e`; else returns `f`.
-`nullif( a, b )` |Returns `NULL` if `a = b`; otherwise returns `a.`
+`size(Map<K.V>)` |返回map类型元素个数。
+`size(Array)` |返回数组类型元素个数。
+`map_keys(Map<K.V>)` |返回包含输入的map键的未排序数组。
+`map_values(Map<K.V>)` |返回包含输入的map值的未排序数组。
+`array_contains(Array, value)` |如果数组包含某个值，则返回TRUE。
+`sort_array(Array)` |按照数组元素的自然顺序升序排列，并返回数组。
+`binary(string or binary)` |把参数映射为二值类型。
+`cast(expr as a given type)` |把表达式`expr`的结果转换为给定类型。
+`from_unixtime(bigint unixtime[, string format])`|把Unix时间戳（1970-01-01 00:00:00 UTC）的秒数转换为字符串。
+`unix_timestamp()` |获取当前Unix的时间戳的秒数。
+`unix_timestamp(string date)` |把格式为yyyy-MM-dd HH:mm:ss的时间字符串转换为Unix时间戳（以秒计）。
+`to_date(string timestamp)` |返回时间戳字符串的日期部分。
+`year(string date)` |返回日期的年份。
+`quarter(date/timestamp/string)` |返回日期的所在。
+`month(string date)` |返回日期的月份。
+`day(string date)`|返回日期的日数。
+`hour(string date)` |返回时间戳的小时数。
+`minute(string date)` |返回时间戳的分钟数。
+`second(string date)` |返回时间戳的秒数。
+`weekofyear(string date)` |返回时间戳的周数。
+`extract(field FROM source)` |从数据源获取特定字段，例如日期或小时。数据源必须是日期，时间戳，时间段，或者可以转成日期和时间戳的字符串。
+`datediff(string enddate, string startdate)`|返回`startdate`与`enddate`之间的天数。
+`date_add(date/timestamp/string startdate, tinyint/smallint/int days)`|给`startdate`增加天数。
+`date_sub(date/timestamp/string startdate, tinyint/smallint/int days)`|给`startdate`减掉天数。
+`from_utc_timestamp(\{any primitive type} ts, string timezone)`|把UTC的时间戳转换到给定时区。
+`to_utc_timestamp(\{any primitive type} ts, string timezone)`|把给定时区的时间戳转换到UTC时区。
+`current_date` |返回当前日期。
+`current_timestamp` |返回当前时间戳。
+`add_months(string start_date, int num_months, output_date_format)`|返回`start_date`后`num_months`月数的日期。
+`last_day(string date)` |返回日期所在月份的最后一天。
+`next_day(string start_date, string day_of_week)`|返回晚于`start_date`的第一个日期，并命名为`day_of_week`。
+`trunc(string date, string format)`|返回按照给定格式截断的日期结果。
+`months_between(date1, date2)` |返回`date1`和`date2`之间的月数。
+`date_format(date/timestamp/string ts, string fmt)`|把日期/时间戳/字符串转换为给定日期格式`fmt`的`string`取值。
+`if(boolean testCondition, T valueTrue, T valueFalseOrNull)`|当`testCondition`为真时返回`valueTrue`；否则返回`valueFalseOrNull`。
+`isnull( a )` |当a是`NULL`时返回真，否则返回假。
+`isnotnull( a )` |当a不是`NULL`时返回真，否则返回假。
+`nvl(T value, T default_value)` |当值是`NULL`时返回默认值，否则返回`value`。
+`COALESCE(T v1, T v2, …)` |返回第一个不是`NULL`的`v`，如果v都是`NULL`则返回`NULL`。
+`CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END` |当`a = b`，返回`c`；当`a = d`，返回`e`；否则返回`f`。
+`nullif( a, b )` |如果`a = b`则返回`NULL`，否则返回`a`。
 `assert_true(boolean condition)`| Throw an exception if `condition` is not true; otherwise return `NULL`.
 `ascii(string str)` |Returns the numeric value of the first character of `str`.
 `base64(binary bin)`| Converts the argument from binary to a base64 string.
