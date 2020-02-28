@@ -6879,9 +6879,9 @@ Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么
 `COALESCE(T v1, T v2, …)` |返回第一个不是`NULL`的`v`，如果v都是`NULL`则返回`NULL`。
 `CASE a WHEN b THEN c [WHEN d THEN e]* [ELSE f] END` |当`a = b`，返回`c`；当`a = d`，返回`e`；否则返回`f`。
 `nullif( a, b )` |如果`a = b`则返回`NULL`，否则返回`a`。
-`assert_true(boolean condition)`| Throw an exception if `condition` is not true; otherwise return `NULL`.
-`ascii(string str)` |Returns the numeric value of the first character of `str`.
-`base64(binary bin)`| Converts the argument from binary to a base64 string.
+`assert_true(boolean condition)`| 如果`condition`不为真则抛出异常，否则返回`NULL`。
+`ascii(string str)` | 返回`str`中第一个字符的数值编码。
+`base64(binary bin)`| 把二进制变量转换为base64字符串。
 `character_length(string str)` |Returns the number of UTF-8 characters contained in `str`.
 `chr(bigint double A)`| 
 `concat(stringǀbinary A, stringǀbinary B…)`|Returns the string or bytes resulting from concatenating the strings or bytes passed in as parameters in order. For example, `concat(foo, bar)` results in `foobar`.
