@@ -6916,28 +6916,28 @@ Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么
 `space(int n)` |返回包含n个空格的字符。
 `split(string str, string pat)`| 将`str`按照`pat`切割（`pat`是一个正则表达式）。
 `str_to_map(text[, delimiter1, delimiter2])`|使用两个分隔符将文本分成键值对。`delimiter1`将文本分成键值对，`delimiter2`分开每组 键值对。默认的分隔符包括，`delimiter1`的,和`delimiter2`的:。
-`substr(string binary A, int start)`|Returns the substring or slice of the byte array of A starting from start position till the end of string A.
-`substring_index(string A, string delim, int count)`|Returns the substring from string A before count occurrences of the delimiter `delim`.
-`translate(stringǀcharǀvarchar input, stringǀcharǀvarchar from, stringǀcharǀvarchar to)`|Translates the input string by replacing the characters present in the from string with the corresponding characters in the to string.
-`trim(string A)` |Returns the string resulting from trimming spaces from both ends of A.
-`unbase64(string str)`| Converts the argument from a `base64` string to `BINARY`.
-`upper(string A) ucase(string A)`|Returns the string resulting from converting all characters of A to uppercase. For example, `upper(fOoBaR)` results in `FOOBAR’\`.
-`initcap(string A)` |Returns string, with the first letter of each word in uppercase, and all other letters in lowercase. Words are delimited by whitespace.
-`levenshtein(string A, string B)`|Returns the Levenshtein distance between two strings.
-`soundex(string A)` |Returns `soundex` code of the string.
-`mask(string str[, string upper[, string lower[, string number]]])`|Returns a masked version of `str`.
-`mask_first_n(string str[, int n])`|Returns a masked version of `str` with the first n values masked.
-`mask_first_n("1234-5678-8765-4321", 4) `|Results in nnnn-5678-8765-4321.
-`mask_last_n(string str[, int n])`|Returns a masked version of `str` with the last n values masked.
-`mask_show_first_n(string str[, int n])`|Returns a masked version of `str`, showing the first n characters unmasked.
-`mask_show_last_n(string str[, int n])`|Returns a masked version of `str`, showing the last n characters unmasked.
-`mask_hash(stringǀcharǀvarchar str)`|Returns a hashed value based on `str`.
-`java_method(class, method[, arg1[, arg2..]])`|Synonym for reflect.
-`reflect(class, method[, arg1[, arg2..]])`|Calls a Java method by matching the argument signature, using reflection.
-`hash(a1[, a2…])` |Returns a hash value of the arguments.
-`current_user()` |Returns current username from the configured authenticator manager.
-`logged_in_user()` |Returns current username from the session state.
-`current_database()` |Returns current database name.
+`substr(string binary A, int start)`|返回子串或字节数组A的片段，其从`start`位置开始直到字符串A结束。
+`substring_index(string A, string delim, int count)`|返回字符串A在分隔符`delim`的`count`次出现前的子串。
+`translate(stringǀcharǀvarchar input, stringǀcharǀvarchar from, stringǀcharǀvarchar to)`|将`input`字符串中出现在`from`中的字符替换为 `to`字符串中的相应字符。
+`trim(string A)` |返回删除A两侧空格后的字符串。
+`unbase64(string str)`| 将`base64`字符串转换为`BINARY`。
+`upper(string A) ucase(string A)`|返回A的所有字符的大写结果。例如，`upper(fOoBaR)`的结果是`FOOBAR’\`。
+`initcap(string A)` |返回首字母为大写，其它字母为小写的字符串。单词使用空格分割。
+`levenshtein(string A, string B)`|返回两个字符串的Levenshtein距离。
+`soundex(string A)` |返回字符串的`soundex`编码。
+`mask(string str[, string upper[, string lower[, string number]]])`|返回`str`的掩码结果。
+`mask_first_n(string str[, int n])`|返回前n个字符被掩盖的`str`的掩码结果。
+`mask_first_n("1234-5678-8765-4321", 4) `|生成结果`nnnn-5678-8765-4321`。
+`mask_last_n(string str[, int n])`|返回后n个字符被掩盖的`str`的掩码结果。
+`mask_show_first_n(string str[, int n])`|返回前n个字符未掩盖的`str`的掩码结果。
+`mask_show_last_n(string str[, int n])`|返回后n个字符未掩盖的`str`的掩码结果。
+`mask_hash(stringǀcharǀvarchar str)`|返回`str`的哈希值。
+`java_method(class, method[, arg1[, arg2..]])`|`reflect`等效函数。
+`reflect(class, method[, arg1[, arg2..]])`|通过匹配参数签名和反射，调用Java方法。
+`hash(a1[, a2…])` |返回参数的哈希值。
+`current_user()` |返回经过配置的身份验证程序管理器中的当前用户名。
+`logged_in_user()` |返回当前进程状态的用户名。
+`current_database()` |返回当前数据库名。
 `md5(string/binary)`| Calculates an MD5 128-bit checksum for the string or binary.
 `sha1(string/binary) sha(string/binary)`|Calculates the SHA-1 digest for string or binary and returns the value as a hex string.
 `crc32(string/binary)`| Computes a cyclic redundancy check value for string or binary argument and returns bigint value.
