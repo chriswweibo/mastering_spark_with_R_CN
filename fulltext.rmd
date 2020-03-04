@@ -6882,40 +6882,40 @@ Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么
 `assert_true(boolean condition)`| 如果`condition`不为真则抛出异常，否则返回`NULL`。
 `ascii(string str)` | 返回`str`中第一个字符的数值编码。
 `base64(binary bin)`| 把二进制变量转换为base64字符串。
-`character_length(string str)` |Returns the number of UTF-8 characters contained in `str`.
+`character_length(string str)` |返回`str`中UTF-8字符的数量。
 `chr(bigint double A)`| 
-`concat(stringǀbinary A, stringǀbinary B…)`|Returns the string or bytes resulting from concatenating the strings or bytes passed in as parameters in order. For example, `concat(foo, bar)` results in `foobar`.
-`context_ngrams(array<array>,array, int K, int pf)`|Returns the top-k contextual N-grams from a set of tokenized sentences.
-`concat_ws(string SEP, string A, string B…)`|Like `concat()`, but with custom separator `SEP`.
-`decode(binary bin, string charset)`|Decodes the first argument into a string using the provided character set (one of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, or UTF-16). If either argument is `NULL`, the result will also be `NULL`.
-`elt(N int,str1 string,str2 string,str3 string,…)`|Return string at index number; `elt(2,hello,world)` |Returns world.
-`encode(string src, string charset)`|Encodes the first argument into a BINARY using the provided character set (one of US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16).
-`field(val T,val1 T,val2 T,val3 T,…)`|Returns the index of val in the `val1`,`val2`,`val3`,… list or 0 if not found.
-`find_in_set(string str, string strList)`|Returns the first occurance of `str` in `strList` where `strList` is a comma-delimited string.
-`format_number(number x, int d)`|Formats the number `x` to a format like '#,###,###.##', rounded to `d` decimal places, and returns the result `as a string`. If `d` is 0, the result has no decimal point or fractional part.
-`get_json_object(string json_string, string path)`|Extracts JSON object from a JSON string based on JSON path specified, and returns JSON string of the extracted JSON object.
-`in_file(string str, string filename)`|Returns `true` if the string `str` appears as an entire line in filename.
-`instr(string str, string substr)`|Returns the position of the first occurrence of `substr` in `str`.
-`length(string A)` |Returns the length of the string.
-`locate(string substr, string str[, int pos])`|Returns the position of the first occurrence of substr in `str` after position `pos`.
-`lower(string A) lcase(string A)`|Returns the string resulting from converting all characters of B to lowercase.
-`lpad(string str, int len, string pad)`|Returns `str`, left-padded with pad to a length of `len`. If `str` is longer than `len`, the return value is shortened to `len` characters.
-`ltrim(string A)` |Returns the string resulting from trimming spaces from the beginning (left side) of A.
-`ngrams(array<array>, int N, int K, int pf)`|Returns the top-k N-grams from a set of tokenized sentences, such as those returned by the `sentences() UDAF`.
-`octet_length(string str)` |Returns the number of octets required to hold the string str in UTF-8 encoding.
-`parse_url(string urlString, string partToExtract [, string keyToExtract])`|Returns the specified part from the URL. Valid values for `partToExtract` include `HOST`, `PATH`, `QUERY`, `REF`, `PROTOCOL`, `AUTHORITY`, `FILE`, and `USERINFO`.
-`printf(String format, Obj… args)`|Returns the input formatted according do `printf`-style format strings.
-`regexp_extract(string subject, string pattern, int index)`|Returns the string extracted using the pattern.
-`regexp_replace(string INITIAL_STRING, string PATTERN, string REPLACEMENT)`|Returns the string resulting from replacing all substrings in `INITIAL_STRING` that match the Java regular expression syntax defined in PATTERN with instances of `REPLACEMENT`.
-`repeat(string str, int n)` |Repeats `str` `n` times.
-`replace(string A, string OLD, string NEW)`|Returns the string A with all non-overlapping occurrences of `OLD` replaced with `NEW`.
-`reverse(string A)` |Returns the reversed string.
-`rpad(string str, int len, string pad)`|Returns `str`, right-padded with `pad` to a length of `len`.
-`rtrim(string A)` |Returns the string resulting from trimming spaces from the end (right side) of A.
-`sentences(string str, string lang, string locale)`|Tokenizes a string of natural language text into words and sentences, where each sentence is broken at the appropriate sentence boundary and returned as an array of words.
-`space(int n)` |Returns a string of n spaces.
-`split(string str, string pat)`| Splits `str` around `pat` (`pat` is a regular expression).
-`str_to_map(text[, delimiter1, delimiter2])`|Splits text into key-value pairs using two delimiters. `delimiter1` separates text into key-value pairs, and `delimiter2` splits each key-value pair. Default delimiters are , for `delimiter1` and : for `delimiter2`.
+`concat(stringǀbinary A, stringǀbinary B…)`|返回拼接通过有序传参的字符串或字节的结果，也为字符串或字节格式。例如，`concat(foo, bar)`的结果是`foobar`。
+`context_ngrams(array<array>,array, int K, int pf)`|返回句子经切分后的前k个N-gram结果。
+`concat_ws(string SEP, string A, string B…)`|类似`concat()`，但是使用定制分隔符`SEP`。
+`decode(binary bin, string charset)`|把第一个参数解码为使用给定字符集合（US-ASCII，ISO-8859-1，UTF-8，UTF-16BE，UTF-16LE， 和UTF-16其中的一个）的字符串。如果任何一个参数是`NULL`，则结果也是`NULL`。
+`elt(N int,str1 string,str2 string,str3 string,…)`|返回索引数字处的字符串。`elt(2,hello,world)`返回`world`。
+`encode(string src, string charset)`|把第一个参数编码为使用给定字符集合（US-ASCII，ISO-8859-1，UTF-8，UTF-16BE，UTF-16LE， 和UTF-16其中的一个）的二进制结果。
+`field(val T,val1 T,val2 T,val3 T,…)`|返回`val`（取值来自`val1`,`val2`,`val3`的列表）的索引，若没有找到则返回0。
+`find_in_set(string str, string strList)`|返回`str`在`strList`中的第一次出现，其中`strList`是逗号分割的字符串。
+`format_number(number x, int d)`|讲数字`x`格式化为诸如'#,###,###.##'的格式，四舍五入`d`个小数点位，并返回`as a string`的结果。如果`d` 是0，则结果没有小数点，也没有小数部分。
+`get_json_object(string json_string, string path)`|根据给定的JSON路径，抽取JSON字符串中中的JSON对象，并返回JSON对象的字符串。
+`in_file(string str, string filename)`|如果`str`出现在`filename`中，则返回`true`。
+`instr(string str, string substr)`|返回`str`中`substr`第一次出现的位置。
+`length(string A)` |返回字符串长度。
+`locate(string substr, string str[, int pos])`|返回`str`中，`pos`位置之后`substr`第一次出现的位置。
+`lower(string A) lcase(string A)`|返回A的所有字符的小写结果。
+`lpad(string str, int len, string pad)`|返回经过长度为`len`的`pad`左补全的`str`结果。如果`str`长度大于`len`，则返回截断至`len`长度的字符串。
+`ltrim(string A)` |返回删除A左侧空格后的字符串。
+`ngrams(array<array>, int N, int K, int pf)`|返回句子切分后前k个N-gram结，例如`sentences()`返回的结果。
+`octet_length(string str)` |返回`str`在UTF-8编码下所需的八进制编码的长度。
+`parse_url(string urlString, string partToExtract [, string keyToExtract])`|返回URL的特定部分。`partToExtract`的合法取值包括`HOST`， `PATH`，`QUERY`，`REF`，`PROTOCOL`，`AUTHORITY`，`FILE`和`USERINFO`。
+`printf(String format, Obj… args)`|返回按照`printf`风格格式化的输入结果。
+`regexp_extract(string subject, string pattern, int index)`|返回使用模式抽取的字符串。
+`regexp_replace(string INITIAL_STRING, string PATTERN, string REPLACEMENT)`|返回替换`INITIAL_STRING`中所有子串的结果，Java正则表达语法通过`PATTERN`和实例`REPLACEMENT`来定义。
+`repeat(string str, int n)` |将`str`重复`n`次。
+`replace(string A, string OLD, string NEW)`|返回字符串A经过所有由`OLD`到`NEW`的非重叠替换的结果。
+`reverse(string A)` |返回逆向字符串。
+`rpad(string str, int len, string pad)`|返回经过长度为`len`的`pad`右补全的`str`结果。
+`rtrim(string A)` |返回删除A右侧空格后的字符串。
+`sentences(string str, string lang, string locale)`|将自然语言文本字符切分为单词和句子，每一个句子通过合适的句子边界切分，并返回单词数组。
+`space(int n)` |返回包含n个空格的字符。
+`split(string str, string pat)`| 将`str`按照`pat`切割（`pat`是一个正则表达式）。
+`str_to_map(text[, delimiter1, delimiter2])`|使用两个分隔符将文本分成键值对。`delimiter1`将文本分成键值对，`delimiter2`分开每组 键值对。默认的分隔符包括，`delimiter1`的,和`delimiter2`的:。
 `substr(string binary A, int start)`|Returns the substring or slice of the byte array of A starting from start position till the end of string A.
 `substring_index(string A, string delim, int count)`|Returns the substring from string A before count occurrences of the delimiter `delim`.
 `translate(stringǀcharǀvarchar input, stringǀcharǀvarchar from, stringǀcharǀvarchar to)`|Translates the input string by replacing the characters present in the from string with the corresponding characters in the to string.
