@@ -173,6 +173,14 @@ Max Kuhn，感谢你对第4章的宝贵反馈。在他的允许下，我们采�
 
 ![图1-1. 全球信息存储能力](figures/1_1.png)
 
+图中文字：
+
+* World。。。Growth，全球信息增长趋势
+* Storage。。。terabytes，每年存储能力，太字节为单位
+* terabytes，太字节
+* analog，模拟信息
+* digital，数字信息
+
 ## Hadoop
 
 一年以后，谷歌发表了新的文章，描述了如何在谷歌文件系统上执行操作，也就是后来的*MapReduce*技术。[^5]。正如你可以预见到的，MapReduce中有两种操作：map和reduce。*map*操作提供任意一种方法把每个文件转化为一个新的文件，而*reduce*操作可以合并两个文件。两种操作都需要定制计算机代码，而MapReduce框架关注一次性在多个电脑上的自动执行。这两个操作足够支持网络上所有数据的处理，同时也提供足够的灵活性从数据中得到有意义的信息。
@@ -184,6 +192,13 @@ Max Kuhn，感谢你对第4章的宝贵反馈。在他的允许下，我们采�
 词语计数通常是最基础的MapReduce示例，但是我们也可以使用MapReduce完成更加复杂和有趣的应用。例如，我们可以在谷歌的PageRank算法中对网页排序，该算法可以基于链接到一个网页的超链接数对所有网页排序，以及给出该网页的排位。
 
 ![图1-2. 跨多个文件的词语计数MapReduce作业示例](figures/1_2.png)
+图中文字：
+
+* Alice's file, Alice的文件
+* Alice's words Alice的词语
+* Bob's file, Alice的文件
+* Bob's words Alice的词语
+* Word counts，词语计数
 
 在谷歌发表了这些文献之后，雅虎的一个团队致力于将谷歌文件系统和MapReduce作为一个单一的开源项目。这个项目就是2006发布的*Hadoop*，其中谷歌文件系统通过*Hadoop分布式文件系统（Hadoop Distributed File System，HDFS）*实现。Hadoop项目使得基于分布式文件的计算可以被更多的用户和组织获取，这也使得MapReduce的能力突破了网络数据处理的限制。
 
@@ -196,6 +211,11 @@ Max Kuhn，感谢你对第4章的宝贵反馈。在他的允许下，我们采�
 [^6]: Zaharia M, Chowdhury M, Franklin MJ, Shenker S, Stoica I (2010). “Spark: Cluster computing with working sets.” HotCloud, 10(10-10), 95.
 
 ![图1-3. 逻辑回归在Hadoop和Spark上的性能](figures/1_3.png)
+图中文字：
+
+* Logistic。。。time，逻辑回归执行时间
+* seconds，秒数
+* iterations，迭代次数
 
 尽管Spark以内存操作的性能而闻名，而当初设计时是作为支持内存和磁盘操作的一种通用执行引擎。例如，Spark创造了新的大规模排序记录，而这些数据并没有存在内存中。相反，Spark改进了网络序列化，网络改组，CPU缓存的高效利用，进而极大的提高了性能。如果你需要对大规模数据进行排序，世界上没有比Spark更快的系统了。
 
@@ -243,6 +263,11 @@ Spark可以看做是一种*引擎*，因为它是通用的和高效的。它的�
 作为一种*统一*的平台，Spark可以支持许多集群技术和多种数据源。你可以分别在第6章和第8章中了解到。它也支持许多不同的库，例如Spark SQL，MLlib，GraphX和Spark Streaming，分别支持分析，建模，图处理和实时数据处理。总之，Spark是一种支持请求集群，数据源和各种库的平台，进而实现大规模计算，如图1-4所示。
 
 ![图1-4. Spark，面向大规模数据处理的统一分析引擎](figures/1_4.png)
+图中文字：
+
+* Libraries，程序库
+* cluster，集群
+* sources，数据源
 
 Spark支持大规模运算，意味着Spark的良好用例应该是使用多台机器解决问题。例如，当数据无法在单个磁盘或内存中存放，Spark会是一种良好的备选方案。然而，你也可以在面对非大规模问题的时候考虑使用Spark。此时，多台计算机可以加速计算。例如，CPU密集型的模型和科学模拟也可以从Spark中受益。
 
@@ -289,6 +314,11 @@ R语言是S语言的一种现代而自由的实现。特别的，根据《R Proj
     R社区通过*R语言综合文档网络（Comprehensive R Archive Network，CRAN）*提供了丰富的程序包，并支持安装即时可用的程序包，来执行各种任务——最享有盛名的高质量数据操作，可视化，和统计模型。许多操作只能在R中进行。另外，R社区是一个热情的，活跃的组织，这些优秀的朋友都愿意帮助你成功。R社区提供的许多程序包，到目前为止，都是统计计算的最优选择。一些下载最多的程序包包括：操作数据的`dplyr`，分析聚类的`cluster`，可视化数据的`ggplot2`。通过画出每天CRAN里R程序包的下载量，图1-6定量刻画了R社区的增长。
 
 ![图1-6. CRAN程序包每日下载量](figures/1_6.png)
+
+图中文字：
+* CRAN packages，CRAN程序包
+* Total。。。time，每日下载量随时间变化
+* downlowds，下载量
 
 除了统计分析，R也用在其它领域。以下领域和本书高度相关：
 
@@ -582,6 +612,12 @@ plot()
 
 ![图2-5. 马力vs每加仑英里数](figures/2_5.png)
 
+图中文字：
+
+* Vehicle Effiency，车辆效率
+* miles。。。galon，每加仑英里数
+* horsepower，马力
+
 ### 建模
 
 尽管数据分析可以让你快速理解数据，但是构建数学模型描述和泛化数据集也非常有用。在第1章中，你学习了机器学习和数据科学领域使用数学模型进行预测和发现重要的观点。例如，我们可以使用线性模型估计燃料效率和马力的关系：
@@ -607,6 +643,14 @@ plot()
 ```
 
 ![图2-6. 马力vs每加仑英里数预测结果](figures/2_6.png)
+
+图中文字：
+
+* Vehicle Effiency，车辆效率
+* miles。。。galon，每加仑英里数
+* horsepower，马力
+* original，原始数据
+* predicted，预测数据
 
 尽管前面的例子缺少建模中所用的诸多技术，但是也足以作为一个简单的例子简要介绍Spark的建模能力。我们会在第4章中介绍所有的Spark模型，技术和最佳实践。
 
@@ -859,6 +903,15 @@ spark_disconnect_all()
 
 ![图3-1. 数据分析一般步骤](figures/3_1.png)
 
+图中文字：
+
+* Import，导入
+* wrangle，操作
+* Understand，理解
+* Visualize，可视化
+* Model，建模
+* Communicate，沟通
+
 当处理小规模数据集，也就是内存允许的数据集时，我们可以按照R语言的步骤执行，不用使用Spark。但是，当数据及无法放入内存，或者计算太慢时，我们可以结合Spark优化这些步骤。但是如何优化呢？
 
 对于数据分析师而言，理想的方法是让Spark做它擅长的事情。Spark是并行计算的引擎，可以在大数据集上工作，并提供SQL查询引擎和建模所用的各种库。你可以使用这些技术执行大部分与R相同的操作。这些操作，包括数据选取，转换，建模。
@@ -869,13 +922,28 @@ spark_disconnect_all()
 
 ![图3-2. Spark进行数据计算，R收集计算结果](figures/3_2.png)
 
+图中文字：
+
+* Push compute，推动计算
+* Collect Results，收集结果
+
+
 `sparklyr`程序包助力实现“推动计算，收集结果”的原则。其大部分函数都是Spark API调用的顶层封装。这可以让我们利用Spark的分析组件，而不是R的分析组件。例如，当你需要拟合线性回归模型的时候，不要使用R的熟知的`lm()`函数，你应该使用Spark对应的`ml_linear_regression()`函数。 这个R函数会调用Spark创建模型。图3-3给出了具体的例子。
 
 ![图3-3. R函数调用Spark函数](figures/3_3.png)
 
+图中文字：
+
+* Invoke，调用
+
 对于更常见的数据任务，`sparklyr`提供了`dplyr`的强大支持。这就意味着，你可以使用R中已经熟知的`dplyr`操作，然后`sparklyr`和`dplyr`会把这些操作转换成Spark SQL语句。这些语句通常比SQL语句更加紧凑，易读（见图3-4）。所以，如果你对R和`dplyr`很熟悉，那就无需过多学习。这样介绍可能让人觉得有点虎头蛇尾。的确有点这种感觉。但是，可以只专注学习大规模计算技能也是很棒的体验。
 
 ![图3-4. `dplyr`在Spark中执行SQL语句](figures/3_4.png)
+
+
+图中文字：
+
+* Invoke，调用
 
 为了边学边练，本章后边的代码使用简单的练习，可以在本地Spark集群上运行。这样，你可以在自己的电脑上重跑代码。确保`sparklyr`可以使用，第2章已经有过相关介绍。
 
@@ -903,6 +971,13 @@ sc <- spark_connect(master = "local", version = "2.3")
 使用Spark和R的时候，你需要使用不同的导入数据方法。通常，导入意味着R会读取文件，并加载到内存中。而使用Spark的时候，数据导入Spark，而不是R。在图3-5中，我们可以看到数据源是如何与Spark连接而不是和R连接的。
 
 ![图3-5. 数据导入到Spark，而不是R](figures/3_5.png)
+
+图中文字：
+
+* Push compute，推动计算
+* Collect Results，收集结果
+* Import，导入
+* Data Source，数据源
 
 > 当你进行分析大规模数据集的时候，Spark集群中大部分所需的数据都可以进行操作（通常允许用户通过hive表或直接请求文件系统而实现）。第八章或详细介绍这些内容。
 
@@ -1087,9 +1162,25 @@ R擅长数据可视化。R语言的绘图能力可以通过许多关注分析的
 
 ![图3-7. 一个R图形的各个阶段](figures/3_7.png)
 
+
+图中文字：
+
+* Raw data，原始数据
+* Transformed data，转换后数据
+* Map。。。coordinates，把数据映射为坐标
+* Draw plot，绘图
+
 可视化方法本质上与数据操作一样：让Saprk做计算，然后收集结果绘制图形。如图3-8，准备数据的繁重工作，例如按照分组或者分箱聚合数据可以在Spark中完成，而规模小很多的数据集可以在R中操作。R中的绘图变成了非常基本的操作。例如，一个直方图的分箱可以在Spark中计算，而R语言不用绘制直方图，而是实现简单的柱形图绘制。R语言没有必要再计算一次分箱。
 
 ![图3-8. 使用Spark和R绘图](figures/3_8.png)
+
+图中文字：
+
+* Raw data，原始数据
+* Transformed data，转换后数据
+* Map。。。coordinates，把数据映射为坐标
+* Draw plot，绘图
+
 
 让我们借助`ggplot2`来应用这个概念模型。
 
@@ -1149,6 +1240,13 @@ subtitle = "Histogram over miles per gallon")
 
 ![图3-10. `dbplot`创建的直方图](figures/3_10.png)
 
+图中文字：
+
+* MPG distribution，MPG数据分布
+* Histogram。。。galon，每加仑英里数直方图
+* count，计数
+
+
 直方图是分析单变量的好方法。要分析两个变量，我们经常会用到散点图或栅格图。散点图用来对比两个连续型变量的关系。例如，一个散点图会展示汽车重量和汽油消耗之间的关系。图3-11说明，汽车越重，汽油消耗越多，因为这些点几乎靠拢成一条线，从左上角下降到右下角。下面是生成图形的代码：
 
 ```{r}
@@ -1157,6 +1255,11 @@ geom_point()
 ```
 
 ![图3-11. Spark中的散点图示例](figures/3_11.png)
+
+图中文字：
+
+* Weight。。。MPG ，重量和MPG和重量
+* A。。。galon，每加仑英里数与车重的散点图
 
 然而，对于散点图，再多的“推动计算”也无助于解决这个问题，因为数据必须用单独的点绘制。
 
@@ -1170,7 +1273,13 @@ dbplot_raster(cars, mpg, wt, resolution = 16)
 
 如图3-12所示，生成的图返回不大于$5 \times 5$的网格。这会把需要收集到R中的记录数限制为25。
 
-![图3-12. 使用Spark绘制的](figures/3_12.png)
+![图3-12. 使用Spark绘制的点阵图](figures/3_12.png)
+
+图中文字：
+
+* Weight。。。MPG ，重量和MPG和重量
+* A。。。galon，使用Spark计算的每加仑英里数与车重的点阵图
+
 
 > **你也可以使用`dbplot`获取原始数据并用其它方式做可视化。要获取聚合结果，而不是图形，使用`db_compute_bins()`，`db_compute_count()`，`db_compute_raster()`和`db_compute_boxplot()`。**
 
@@ -1553,6 +1662,13 @@ dbplot_histogram(okc_train, age)
 
 ![图4-1. 年龄分布](figures/4_1.png)
 
+图中文字：
+
+* Distribution of age，年龄分布
+* Age。。。dataset，OKcupid数据集中的年龄直方图
+* Age，年龄
+* count，计数
+
 一般的EDA操作是要查看响应变量个各个预测变量之间的关系。通常，你可能有些先验知识理解这些关系的含义，所以这些知识可以用在数据质量的检查。而且，一些异常的趋势可以展示变量的交互，你也可能把这些交互信息建模到模型中。作为一个例子，我们可以探索`religion`变量：
 ```{r}
 prop_data <- okc_train %>%
@@ -1591,6 +1707,7 @@ sum(prop_data$count))
 ```
 
 ![图4-2. 当期失业人群按地区占比](figures/4_2.png)
+
 
 然后，我们看一下两个预测变量之间的关系：饮酒和毒品。我们希望它们之间有某种相关性。你可以通过`sdf_crosstab()`计算出一个列联表：
 ```{r}
@@ -1631,6 +1748,11 @@ weight = count))
 
 ![图4-3. 毒品和酒精使用的马赛克图](figures/4_3.png)
 
+图中文字：
+
+* Contingency table，列联表
+* Mosiac。。。use，毒品和酒精使用的马赛克图
+
 要进一步探索这两个变量之间的关系，我们可以使用`FactoMineR`程序包进行对应分析[^17]。这项技术可以通过把每个因子映射到平面上的一个点，让我们刻画高维因子水平之间的关系。首先，我们使用`FactoMineR::CA()`获取映射，代码如下：
 
 [^17]: Greenacre M (2017). Correspondence analysis in practice. Chapman and Hall/CRC.
@@ -1667,6 +1789,12 @@ coord_equal()
 
 ![图4-4. 毒品和酒精使用的对应分析主坐标](figures/4_4.png)
 
+图中文字：
+
+* Correspondence analysis，对应分析
+* Principal。。。use，毒品和酒精使用的对应分析主坐标
+
+
 在图4-4中，我们看到对应分析流程把因子转换成名为*主坐标*的变量，它对应因子的坐标轴并表示列联表包含了多少信息。例如，我们可以把“drinking often”和“using drugs very
 often”之间的距离看成是指示性关联。
 
@@ -1700,6 +1828,12 @@ dbplot_histogram(okc_train, scaled_age)
 Feature Engineering | 63
 
 ![图4-5. 缩放后`age`变量的分布](figures/4_5.png)
+
+图中文字：
+
+* Distribution。。。age，缩放后`age`变量的分布
+* Scaled。。。dataset，OKcupid数据集中的缩放后`age`直方图
+
 
 由于一些特征会被多次选取，换句话说，一个人可能对一个变量关联多个选择，我们需要在构建有意义的模型前做些处理。例如，如果我们看一下`ethnicity`列，可以发现有许多组合：
 ```{r}
@@ -1756,6 +1890,12 @@ dbplot_histogram(okc_train, essay_length, bins = 100)
 我们可以看到`essay_length`变量的分布，如图4-6所示。
 
 ![图4-6. 文章长度分布](figures/4_6.png)
+
+图中文字：
+
+* Distribution。。。Length，缩放后文章长度变量的分布
+* Essay。。。dataset，OKcupid数据集中缩放后的文章长度直方图
+
 
 我们会在第5章中使用这个数据集，所以让我们先存成一个Parquet文件，一种数值型数据的高效文件格式：
 ```{r}
@@ -1866,6 +2006,11 @@ ROC曲线绘制了真阳性率（敏感性）与假阳性率（1-特异性）之
 
 ![图4-7. 逻辑回归模型的ROC曲线](figures/4_7.png)
 
+图中文字：
+
+* ROC curve，ROC曲线
+* Receiver。。。model，逻辑回归模型的受试者操作特性曲线
+
 ```{r}
 validation_summary$area_under_roc()
 [1] 0.7872754
@@ -1905,6 +2050,12 @@ geom_line() + geom_abline(lty = "dashed")
 
 ![图4-8. 逻辑回归模型的交叉验证ROC曲线](figures/4_8.png)
 
+图中文字：
+
+* ROC curve，ROC曲线
+* Cross。。。model，逻辑回归模型的交叉验证ROC曲线
+
+
 我们可以获取AUC度量的平均值：
 ```{r}
 mean(cv_results$auc)
@@ -1935,6 +2086,11 @@ geom_hline(yintercept = 0, linetype = "dashed")
 ```
 
 ![图4-9. 95%置信区间的系数估计](figures/4_9.png)
+
+图中文字：
+
+* Confidence Interval，置信区间
+* Coefficient。。。intervals，95%置信区间的系数估计
 
 > `ml_logistic_regression()`和`ml_linear_regression()`都支持通过`reg_param`和`elastic_net_param`参数，实现弹性网正则化[^19]。`reg_param`对应$\lambda$，而`elastic_net_param`对应$\alpha$。`ml_generalized_linear_regression()`只支持`reg_param`。 
 
