@@ -6938,49 +6938,49 @@ Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么
 `current_user()` |返回经过配置的身份验证程序管理器中的当前用户名。
 `logged_in_user()` |返回当前进程状态的用户名。
 `current_database()` |返回当前数据库名。
-`md5(string/binary)`| Calculates an MD5 128-bit checksum for the string or binary.
-`sha1(string/binary) sha(string/binary)`|Calculates the SHA-1 digest for string or binary and returns the value as a hex string.
-`crc32(string/binary)`| Computes a cyclic redundancy check value for string or binary argument and returns bigint value.
-`sha2(string/binary, int)`| Calculates the SHA-2 family of hash functions (SHA-224, SHA-256, SHA-384, and SHA-512).
-`aes_encrypt(input string/binary, key string/binary)`|Encrypt input using AES.
-`aes_decrypt(input binary, key string/binary)`|Decrypt input using AES.
-`version()` |Returns the Hive version.
-`count(expr)` |Returns the total number of retrieved rows.
-`sum(col), sum(DISTINCT col)` |Returns the sum of the elements in the group or the sum of the distinct values of the column in the group.
-`avg(col), avg(DISTINCT col)` |Returns the average of the elements in the group or the average of the distinct values of the column in the group.
-`min(col)` |Returns the minimum value of the column in the group.
-`max(col)` |Returns the maximum value of the column in the group.
-`variance(col), var_pop(col)` |Returns the variance of a numeric column in the group.
-`var_samp(col)` |Returns the unbiased sample variance of a numeric column in the group.
-`stddev_pop(col)` |Returns the standard deviation of a numeric column in the group.
-`stddev_samp(col)` |Returns the unbiased sample standard deviation of a numeric column in the group.
-`covar_pop(col1, col2)` |Returns the population covariance of a pair of numeric columns in the group.
-`covar_samp(col1, col2)` |Returns the sample covariance of a pair of a numeric columns in the group.
-`corr(col1, col2)` |Returns the Pearson coecient of correlation of a pair of a numeric columns in the group.
-`percentile(BIGINT col, p)` |Returns the exact _p_th percentile of a column in the group (does not work with floating-point types). p must be between 0 and 1.
-`percentile(BIGINT col, array(p1 [, p2]…))`|Returns the exact percentiles p1, p2, … of a column in the group. pi must be between 0 and 1.
-`percentile_approx(DOUBLE col, p [, B])`|Returns an approximate _p_th percentile of a numeric column (including floating point types) in the group. The B parameter controls approximation accuracy at the cost of memory. Higher values yield better approximations, and the default is 10,000. When the number of distinct values in `col` is smaller than B, this gives an exact percentile value.
-`percentile_approx(DOUBLE col, array(p1 [, p2]…) [, B])`|Same as previous, but accepts and returns an array of percentile values instead of a single one.
-`regr_avgx(independent, dependent)`|Equivalent to `avg(dependent)`.
-`regr_avgy(independent, dependent)`|Equivalent to `avg(independent)`.
-`regr_count(independent, dependent)`|Returns the number of non-null pairs used to fit the linear regression line.
-`regr_intercept(independent, dependent)`|Returns the y-intercept of the linear regression line—that is, the value of b in the equation `dependent = a * independent + b`.
-`regr_r2(independent, dependent)`|Returns the coecient of determination for the regression.
-`regr_slope(independent, dependent)`|Returns the slope of the linear regression line—that is, the value of a in the equation `dependent = a * independent + b`.
-`regr_sxx(independent, dependent)`|Equivalent to `regr_count(independent, dependent) * var_pop(dependent)`.
-`regr_sxy(independent, dependent)`|Equivalent to `regr_count(independent, dependent) * covar_pop(independent, dependent)` 
-`regr_syy(independent, dependent)`|Equivalent to `regr_count(independent, dependent) * var_pop(independent)`.
-`histogram_numeric(col, b)`| Computes a histogram of a numeric column in the group using b non￾uniformly spaced bins. The output is an array of size b of double-valued (x,y) coordinates that represent the bin centers and heights.
-`collect_set(col)` |Returns a set of objects with duplicate elements eliminated.
-`collect_list(col)` |Returns a list of objects with duplicates.
-`ntile(INTEGER x)`| Divides an ordered partition into x groups called buckets and assigns a bucket number to each row in the partition. This allows easy calculation of tertiles, quartiles, deciles, percentiles, and other common summary statistics.
-`explode(ARRAY a)`| Explodes an array to multiple rows. Returns a row-set with a single column (`col`), one row for each element from the array.
-`explode(MAP<Tkey,Tvalue> m)`| Explodes a map to multiple rows. Returns a row-set with a two columns `(key,value)`, one row for each key-value pair from the input map.
-`posexplode(ARRAY a)`|Explodes an array to multiple rows with additional positional column of int type (position of items in the original array, starting with 0). Returns a row￾set with two columns (`pos,val`), one row for each element from the array.
-`inline(ARRAY<STRUCT<f1:T1,…,fn:Tn>> a)`|Explodes an array of structs to multiple rows. Returns a row-set with N columns (N = number of top-level elements in the struct), one row per struct from the array.
-`stack(int r,T1 V1,…,Tn/r Vn)`| Breaks up n values V1,…,Vn into r rows. Each row will have `n/r` columns. `r` must be constant.
-`json_tuple(string jsonStr,string k1,…,string kn)`|Takes JSON string and a set of n keys, and returns a tuple of n values.
-`parse_url_tuple(string urlStr,string p1,…,string pn)`|Takes URL string and a set of n URL parts, and returns a tuple of n values.
+`md5(string/binary)`| 计算字符串或二进制表示的128位MD5校验码。
+`sha1(string/binary) sha(string/binary)`|计算字符串或二进制表示的SHA-1摘要，并返回十六进制字符结果串。
+`crc32(string/binary)`| 计算字符串或二进制表示的循环冗余校验值并返回bigint值。
+`sha2(string/binary, int)`| 计算哈希函数（SHA-224，SHA-256，SHA-384和SHA-512）的SHA-2结果。
+`aes_encrypt(input string/binary, key string/binary)`|使用AES对输入加密。
+`aes_decrypt(input binary, key string/binary)`|使用AES对输入解密。
+`version()` |返回Hive版本号。
+`count(expr)` |返回获取的总行数。
+`sum(col), sum(DISTINCT col)` |返回列元素的加和或列元素中唯一值的加和。 
+`avg(col), avg(DISTINCT col)` |返回列元素的平均值或列元素中唯一值的平均值。
+`min(col)` |返回列元素的最小值。
+`max(col)` |返回列元素的最大值。
+`variance(col), var_pop(col)` |返回数值列的方差。
+`var_samp(col)` |返回数值列的无偏采样方差。
+`stddev_pop(col)` |返回数值列的标准差。
+`stddev_samp(col)` |返回数值列的无偏采样标准差。
+`covar_pop(col1, col2)` |返回一对数值列的总体协方差。
+`covar_samp(col1, col2)` |返回一对数值列的样本协方差。
+`corr(col1, col2)` |返回一对数值列的皮尔逊相关性系数。
+`percentile(BIGINT col, p)` |返回数值列的第p个精确分位数（不使用浮点类型）。p必须在0和1之间。
+`percentile(BIGINT col, array(p1 [, p2]…))`|返回数值列的第p1，p2等精确分位数。pi必须在0和1之间。
+`percentile_approx(DOUBLE col, p [, B])`|返回数值列的第p个近似分位数（使用浮点类型）。参数`B`控制内存成本的近似精确度。值越大，产生的近似越好。默认是10,000。当`col`中唯一值个数小于`B`时，会给出精确分位数。
+`percentile_approx(DOUBLE col, array(p1 [, p2]…) [, B])`|同前，但是接受和返回一个分位数数组，而不是单个值。
+`regr_avgx(independent, dependent)`|等价于`avg(dependent)`.
+`regr_avgy(independent, dependent)`|等价于`avg(independent)`.
+`regr_count(independent, dependent)`|返回用于拟合线性回归曲线的非null数值对的数量。
+`regr_intercept(independent, dependent)`|返回线性回归曲线在y轴的截距。也就是等式`dependent = a * independent + b`中`b`的值。
+`regr_r2(independent, dependent)`|返回回归结果的确定性系数。
+`regr_slope(independent, dependent)`|返回线性回归的斜率。也就是等式`dependent = a * independent + b`中`a`的值。
+`regr_sxx(independent, dependent)`|等价于`regr_count(independent, dependent) * var_pop(dependent)`。
+`regr_sxy(independent, dependent)`|等价于`regr_count(independent, dependent) * covar_pop(independent, dependent)` 。
+`regr_syy(independent, dependent)`|等价于`regr_count(independent, dependent) * var_pop(independent)`。
+`histogram_numeric(col, b)`| 使用`b`个非均匀分割的分箱，计算数值列的直方图。输出是大小`b`的双值（x，y）坐标数组。其中的元素代表分箱的中心和高度。
+`collect_set(col)` |返回去除重复元素的对象集合。
+`collect_list(col)` |返回带有重复值的对象列表。
+`ntile(INTEGER x)`| 把一个有序划分分成x个名为`bucket`的分桶,并给划分中的每一行指认一个分桶号。这样易于计算三位数、四位数、十位数、百分位数和其他常用汇总统计量。
+`explode(ARRAY a)`| 将一个数组转换为多个行。返回单列（`col`）的集合，其中每一行对应数组中的一个元素。
+`explode(MAP<Tkey,Tvalue> m)`| 将一个map转换为多个行。返回两列（`(key,value)`）的集合，其中每个键值对对应map中的一个输入。
+`posexplode(ARRAY a)`|将一个数组转换为多个行，并带有额外的`int`类型的位置列（原始数组中元素的位置，从0开始）。返回两列（`(pos,val)`）的集合，其中每一行对应数组中的一个元素。
+`inline(ARRAY<STRUCT<f1:T1,…,fn:Tn>> a)`|将一个结构体数组转换为多个行。返回N列（`(pos,val)`）的集合（N=结构体中顶层元素数量），其中每一行对应数组中的一个结构体。
+`stack(int r,T1 V1,…,Tn/r Vn)`| 把`n`的值`V1`，`Vn`分成r行。每一行有`n/r`列。`r`必须是常数。
+`json_tuple(string jsonStr,string k1,…,string kn)`|接受JSON字符串和n个键的集合，返回n个值的元组。
+`parse_url_tuple(string urlStr,string p1,…,string pn)`|接受URL字符串和n个URL组件，返回n个值的元组。
 
 ## 第4章
 
