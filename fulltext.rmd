@@ -2794,6 +2794,13 @@ service$interrupt()
 
 ![图6-1. 内部部署（主机），云计算和Kubernetes的谷歌趋势](figures/6_1.png)
 
+图中文字：
+
+* Cluster。。。trend，聚类计算趋势
+* search。。。kubernetes，内部部署（主机），云计算和Kubernetes的搜索流行趋势
+* popularity，流行趋势
+
+
 在购买成百上千个计算实例的时候，将它们放在熟悉的常见机箱中是没有意义的；相反，尽可能高效地将它们堆叠在一起以最小化使用空间是有意义的。这组高效堆叠的计算实例称为*机架*。当集群增长到数千台计算机之后，你需要托管数百个计算设备机架；在这种规模下，你还需要大量的物理空间来托管这些机架。
 
 提供计算实例机架的建筑通常称为*数据中心*。在数据中心的维度上，你还需要找到提高建筑物利用率的方法，特别是冷却系统、电源、网络连接等。由于这是一项耗时的工作，一些组织以开放计算项目计划（open Compute Project initiative）的名义联合起来，开放其基础设施的源代码。该计划为任何人免费提供一组数据中心蓝图。
@@ -3185,6 +3192,13 @@ Spark集群所有连接的体系结构由三种类型的计算实例组成：*�
 
 ![图7-1. Apache Spark连接体系结构](figures/7_1.png)
 
+图中文字：
+
+* Driver，驱动节点
+* Cluster manager，集群管理器
+* Worker，工作节点
+* Spark executor， Spark执行器
+
 如果你的组织中已经有一个Spark集群，那么你应该向集群管理员请求指向该集群的连接信息，仔细阅读它们的使用策略，并遵循它们的建议。因为集群可以在许多用户之间共享，所以你需要确保只请求所需的计算资源。我们将在第9章中介绍如何请求资源。系统管理员将指定它是本地集群还是云集群、使用的集群管理器、支持的连接和支持的工具。你可以使用这些信息直接跳转到本地、单机、YARN、Mesos、Livy或Kubernetes，根据这些信息可以选择适合需求的方案。
 
 
@@ -3202,6 +3216,16 @@ Spark集群所有连接的体系结构由三种类型的计算实例组成：*�
 图7-2形象的解释了这些概念。左边部分通常是你的网络浏览器，右边部分是边缘节点。在使用网路浏览器的时候，客户端和边缘节点使用HTTP通信；在使用终端的时候，客户端和边缘节点使用Secure Shell （SSH）通信。
 
 ![图7-2. 连接到Spark边缘节点](figures/7_2.png)
+
+图中文字：
+
+* Client，客户
+* Terminal，终端
+* web browser，网络浏览器
+* Edge，边缘节点
+* Secure shell Server，Secure shell服务器
+* RStudi server，RStudio服务器
+* Jupyter server，Jupyter服务器
 
 ### Spark主目录
 
@@ -3227,6 +3251,11 @@ sc <- spark_connect(master = "master", spark_home = "local/path/to/spark")
 
 ![图7-3. 本地连接图](figures/7_3.png)
 
+图中文字：
+
+* Driver，驱动节点
+* Spark Executor，Spark执行器
+
 注意，本地模式下既没有集群管理器，也没有工作进程，因为在本地模式下，所有工作都在驱动应用程序中运行。另外值得注意的是，`sparklyr`通过`spark-submit`启动Spark Context。`spark-submit`是每个Spark安装程序中都提供的一个脚本，允许用户向Spark提交自定义应用程序。如果你好奇的话，第13章会解释`sparklyr`中发生的提交此应用程序并从R正确连接的内部过程。
 
 要执行本地连接，我们可以使用前面章节中熟悉的代码：
@@ -3243,6 +3272,14 @@ sc <- spark_connect(master = "local")
 单机模式下的连接从`sparklyr`开始，它会启动`spark-submit`，然后提交`sparklyr`应用程序并创建Spark Context。该Context从运行在给定主节点地址下的Spark单机实例中请求执行器。图7-4说明了此过程，这与图7-1中的总体连接架构非常相似，但附加一些单机集群和`sparklyr`特有的细节。
 
 ![图7-4. Spark单机连接图](figures/7_4.png)
+
+图中文字：
+
+* Driver，驱动节点
+* Cluster manager，集群管理器
+* Spark Standlone，Spark单机
+* Worker，工作节点
+* Spark executor（S）， Spark执行器
 
 要完成连接，使用`spark_connect()`中的`master = "spark://hostname:port"`，代码如下：
 
@@ -3261,6 +3298,14 @@ Hadoop YARN是Hadoop项目中的集群管理器。这是集群中最常见的集
 
 ![图7-5. YARN客户端连接图](figures/7_5.png)
 
+
+图中文字：
+
+* Driver，驱动节点
+* Cluster manager，集群管理器
+* Worker，工作节点
+* Spark executor（S）， Spark执行器
+
 要完成连接，你只需运行`master = "yarn"`，代码如下：
 
 ```{r}
@@ -3277,6 +3322,14 @@ sc <- spark_connect(master = "yarn")
 
 ![图7-6. YARN集群连接图](figures/7_6.png)
 
+图中文字：
+
+* Client，客户
+* Driver，驱动节点
+* Cluster manager，集群管理器
+* Worker，工作节点
+* Spark executor（S）， Spark执行器
+
 为了连接YARN集群节点，只需要运行下列代码：
 
 ```{r}
@@ -3290,6 +3343,15 @@ sc <- spark_connect(master = "yarn-cluster")
 与其它需要在集群中使用边缘节点的连接方法不同，Livy提供了一个web API，使Spark集群可以从集群外部访问，并且不需要在客户端中安装Spark。在通过web API连接之后，*Livy服务*通过从集群管理器请求资源并像往常一样分发工作来启动Spark Context。图7-7展示了一个Livy连接。注意，客户端通过web API远程连接到驱动节点。
 
 ![图7-7. Livy连接图](figures/7_7.png)
+
+图中文字：
+
+* Client，客户
+* Driver，驱动节点
+* Livy service，Livy服务
+* Cluster manager，集群管理器
+* Worker，工作节点
+* Spark executor（S）， Spark执行器
 
 通过Livy连接需要指向Livy服务的URL，应该与https://hostname:port/livy类似。因为允许远程连接，连接通常至少需要基本的认证：
 
@@ -3322,6 +3384,13 @@ version = "2.3.1")
 
 ![图7-8. Mesos连接图](figures/7_8.png)
 
+图中文字：
+
+* Driver，驱动节点
+* Cluster manager，集群管理器
+* Worker，工作节点
+* Spark executor（S）， Spark执行器
+
 连接需要指向Mesos主节点的网址。对于使用ZooKeeper的Mesos，通常形式是mesos://host:port或者mesos://zk://host1:2181,host2:2181,host3:2181/mesos。
 
 ```{r}
@@ -3347,6 +3416,15 @@ spark_home = spark_home_dir())
 Kubernetes并不像Mesos或者YARN支持客户端模式。相反，连接模型类似于YARN集群，其中的驱动节点由Kubernetes指定，如图7-9所示。
 
 ![图7-9. Kubernetes连接图](figures/7_9.png)
+
+图中文字：
+
+* Client，客户
+* Driver，驱动节点
+* Cluster manager，集群管理器
+* Worker，工作节点
+* Spark executor（S）， Spark执行器
+
 
 要使用Kubernetes，你需要准备一个安装了Spark并完成正确配置的虚拟机；但是，本书不讨论如何创建一个虚拟机。完成创建后，Kubernetes连接的流程如下：
 
@@ -3612,6 +3690,13 @@ sc <- spark_connect(master = "sparklyr://localhost:8880/42", version = "2.3")
 
 ![图8-1. Spark处理来自数据湖，数据库和数据仓库的原始数据](figures/8_1.png)
 
+图中文字：
+
+* Data Lake，数据湖
+* Storage system，存储系统
+* Databases，数据库
+* Data warehouses，数据仓库
+
 为了支持各种各样的数据源，Spark需要能够读写几种不同的文件格式（CSV、JSON、Parquet和其它格式），并访问存储在几个文件系统（HDFS、S3、DBFS等）中的数据，并且可能与其它存储系统（数据库、数据仓库等）进行交互。我们会讨论所有这些内容，但首先，我们会介绍如何使用Spark读取、写入和复制数据。
 
 ## 读取数据
@@ -3778,9 +3863,25 @@ copy_to(sc, iris, overwrite = TRUE)
 
 ![图8-2. 写入大型数据集时Spark的错误使用](figures/8_2.png)
 
+图中文字：
+
+* Source，数据源
+* Read，读取
+* Process，处理
+* Write，写入
+* Target，目标地址
+
 应该尽一切努力将Spark连接到最终目标位置。这样，读、处理和写就发生在同一个Spark进程中。如图8-3所示，更好的方法是使用Spark来读取、处理和写入目标位置。这种方法能够扩展到Spark集群能力所及的范围，并防止R成为瓶颈。
 
-![图8-3. 写入大型数据集时Spark的正确使用](figures/8_3.png)
+![图8-3. 写入大型数据集时Spark的正确方式](figures/8_3.png)
+
+图中文字：
+
+* Source，数据源
+* Reads，读取
+* Process，处理
+* Write，写入
+* Target，目标地址
 
 考虑以下场景：一个Spark作业刚刚处理了一个大型数据集的预测任务，产生了大量的预测值。选择写入结果的方法取决于你正在使用的基础技术架构。更具体地说，它将取决于Spark和目标位置是否在同一集群中运行。
 
@@ -3989,6 +4090,11 @@ spark_disconnect(sc)
 
 ![图8-4. 使用CSV，JSON，Parquet和ORC写入100万行的基准表现](figures/8_4.png)
 
+图中文字：
+
+* time，时间
+* expression，表现格式
+
 ### 其它
 
 Spark是一个非常灵活的计算平台。它可以通过使用扩展程序包来添加功能。你可以使用适当的包访问新的源类型或文件系统。
@@ -4190,6 +4296,11 @@ data %>% arrange(id) %>% collect()
 为了有效地调试Spark，我们首先熟悉Spark的计算图和Spark的事件时间线。两者都可以通过Spark的web界面访问。
 
 ![图9-1. 使用Apache Spark对分布式数据排序](figures/9_1.png)
+
+图中文字：
+
+* Data，数据
+* Worker，工作节点
 
 ### 计算图
 
@@ -4509,6 +4620,10 @@ times = 10
 图9-6说明使用两个分区对数据进行排序的速度几乎是之前的两倍。这是因为程序可以使用两个CPU执行此操作。但是，不一定是更高的分区就产生更快的计算；相反，分区数据与计算集群，以及正在执行的数据分析操作有关。
 
 ![图9-6. 额外显式分区的计算速度](figures/9_6.png)
+
+图中文字：
+
+* Time[milliseconds]，时间[毫秒]
 
 ## 缓存
 
@@ -5025,6 +5140,14 @@ geom_node_point(size = 2, alpha = 0.4)
 
 ![图10-5. 基于已知因素的预测离职的决策树](figures/10_5.png)
 
+图中文字：
+
+* Job Satisfaction，工作是否满意
+* Over。。。hours，加班时间
+* Job level，职级
+* Yes，是
+* No，否
+
 虽然决策树表示很容易理解和解释，但要找出树中的决策，需要像梯度下降这样的数学技术才能找到局部最小值。梯度下降与当前点处函数梯度的负方向成比例。梯度用$\nabla$表示，学习率用$\gamma$表示。你只需从给定的状态$a_n$开始，然后按照梯度的方向计算下一次迭代：
 $$a_{n + 1} = a_n − \gamma \nabla F(a_n)$$
 
@@ -5182,6 +5305,14 @@ tfdatasets::tfrecord_dataset("tfrecord/part-r-00000")
 
 ![图10-7. 基于OpenAI分析使用分布式系统的训练](figures/10_7.png)
 
+图中文字：
+
+* Distributed。。。learning，分布式深度学习
+* petaflops，千万亿次浮点
+* distributed，分布式
+* local，本地
+
+
 通过像Horovod这样的框架，Spark和TensorFlow可以训练大规模的深度学习模型。今天，我们可以通过`reticulate`在R中使用Horovod和Spark。Horovod需要Python和Open MPI，这超出了本书的范围。接下来，我们将介绍基因组学领域的另一个不同的Spark扩展。
 
 
@@ -5253,6 +5384,13 @@ coord_flip()
 ```
 
 ![图10-9. 使用`variantspark`的基因组重要性分析](figures/10_9.png)
+
+图中文字：
+
+* Importance Analysis，重要性分析
+* Genomic。。。variantspark，使用`variantspark`的基因组重要性分析
+* variable，变量
+* importance，重要性
 
 我们在Spark中使用`variantspark`扩展，简要介绍了基因组分析。接下来，我们将从微观基因数据转移到宏观数据集，这些数据集包含世界各地的地理位置。
 
@@ -5370,6 +5508,11 @@ XGBoost和深度学习部分提供了使用梯度下降的备选建模技术：�
 第1章介绍了MapReduce可以作为一种能够处理大规模数据集的技术。它还介绍了Apache Spark如何提供一个操作超集，以便更轻松、更高效地执行MapReduce计算。第9章通过对分布式数据集的每个分区应用自定义转换，深入阐述了Spark是如何工作的。例如，如果我们将一个分布式数值数据集的每个元素重复10次，Spark将通过多个工作节点在每个分区上应用一个映射操作。这个过程的概念图如图11-1所示。
 
 ![图11-1. 重复10次的映射操作](figures/11_1.png)
+
+图中文字：
+
+* Data，数据
+* worker，工作节点
 
 本章介绍如何使用`spark_apply()`定义一个自定义的`f(x)`映射操作；对于之前的例子，`spark_apply()`支持定义`10 * x`，如下所示：
 
@@ -5544,6 +5687,11 @@ ggplot2::geom_point())
 ```
 
 ![图11-3. `iris`数据集在不同品种上的建模结果](figures/11_3.png)
+
+图中文字：
+
+* Modeling。。。species，在品种上建模
+* Petal。。。species，花瓣长度和宽度在品种上建模
 
 我们简单介绍了如何在几个不同的可分区数据集上执行建模。类似的技术可以应用于同一个数据集上的使用不同参数的建模，下面就会介绍。
 
@@ -5802,6 +5950,11 @@ context = 100
 
 ![图11-5. 乘以`context`参数的Map操作](figures/11_5.png)
 
+图中文字：
+
+* Data，数据
+* worker，工作节点
+
 网格搜索示例使用这个参数将数据框传递给每个工作节点；但是，由于`context`参数被序列化为R对象，因此它可以包含任何内容。例如，如果需要传递多个值甚至多个数据集，你甚至可以传递包含值的列表。
 
 下面的例子定义了一个`f(x) = m * x + b`函数，并运行`m = 10`和`b = 2`：
@@ -5940,6 +6093,10 @@ sdf_len(sc, 10) %>% spark_apply(function(e) e)
 一些计算系统在内部按行存储数据；然而，大多数有意义的数值运算要求按列处理数据。例如，计算列的平均值需要单独处理每一列，而不是整行。Spark默认按行存储数据，因为它更容易分区；但是，R按列存储数据。因此，当数据在Spark和R之间传输时，需要对这两种表示进行转换，如图11-6所示。
 
 ![图11-6. Spark和R之间的数据转换](figures/11_6.png)
+
+图中文字：
+
+* Transform，转换
 
 每个分区都需要进行从行到列的转换。此外，数据还必须从Scala的内部表示转换为R的内部表示。Apache Arrow减少了这些浪费大量CPU周期的转换。
 
@@ -6223,6 +6380,20 @@ Debugging spark_apply(), connect to worker debugging session as follows:
 
 ![图12-1. 使用Spark Streaming](figures/12_1.png)
 
+图中文字：
+
+* Real-Time，实时
+* File source，文件源
+* Kafla source，Kafka源
+* Static，静态
+* File system，文件系统
+* storage system，存储系统
+* Transform，转换
+* Feature transformors，特征转换器
+* Pipelines，工作流
+* Distributed R，分布式R
+* File sink，文件sink
+
 让我们具体看一下这些概念：
 
 * 读取
@@ -6492,6 +6663,13 @@ Kafka将数据流存储为记录，记录由键、值和时间戳组成。它可
 
 ![图12-3. 一个基本的Kafka工作流](figures/12_3.png)
 
+图中文字：
+
+* Producer，生产者
+* Stream，数据流
+* Subscribe，订阅
+* consumer，消费者
+
 如果你是Kafka新手，我们不建议你运行本节中的代码。但是，如果你非常想继续研究，那么首先需要按照附录A中的说明安装Kafka或将其部署到集群中。
 
 使用Kafka还需要在连接到Spark时安装Kafka包。请确保在连接的`config`中指定此选项：
@@ -6520,6 +6698,12 @@ subscribe = "<topic-name>"
 尽管我们已经介绍了包含一个生产者和一个消费者简单用例，Kafka也支持更复杂的交互。接下来，我们从一个主题中读取数据、处理数据，然后将结果写入另一个主题。属于同一主题的生产者和消费者的系统称为流处理器。在图12-4中，流处理器读取主题A，然后将结果写入主题B。这考虑到给定的消费者程序读取结果，而不是读取“原始”feed数据。
 
 ![图12-4. 使用数据流处理器的Kafka工作流](figures/12_4.png)
+
+图中文字：
+
+* Producer，生产者
+* Stream processor，数据流处理器
+* consumer，消费者
 
 在Spark中处理Kafka流时，有三种模式可用：`complete`，`update`和`append`。`complete`模式在每次有新的批量数据时为每组提供全部信息；`update`仅为最近批量数据中有更新的组提供全部信息；`append`将原始记录添加到目标主题。`append`模式不适用于聚合，但适用于将筛选的子集传递到目标主题。
 
@@ -6682,6 +6866,12 @@ spark_read_text(sc, "/path/that/is/hard/to/remember/data.csv") }
 
 ![图13-1. 使用Spark API，Spark扩展，或编写Scala代码来扩展Spark](figures/13_1.png)
 
+图中文字：
+
+* R package，R程序包
+* Spark Extension，Spark扩展
+* Scala code，Scala代码
+
 我们会首先关注使用Spark API扩展Spark，因为调用Spark API所需的技术也适用于调用Spark扩展或自定义Scala代码。
 
 ## Spark API
@@ -6802,6 +6992,12 @@ sparklyr::register_extension(pkgname) }
 Scala代码允许你使用Spark API、Spark扩展或Java库中的任何方法。此外，在Spark中运行编写的Scala代码可以在使用`spark_apply()`的R代码时提供性能改进。通常，R包结构会包含R代码和Scala代码；但是，Scala代码需要编译为JAR包（Java归档文件）并包含在程序包中。图13-2展示了这种结构。
 
 ![图13-2. 使用Scala代码时的R程序包结构](figures/13_2.png)
+
+图中文字：
+
+* R code，R代码
+* R package，R程序包
+* Scala code，Scala代码
 
 通常，R代码应该放在顶层R文件夹下，Scala代码放在java文件夹下，编译的JAR包放在*inst/java*文件夹下。尽管支持手动编译Scala代码，但是你可以使用帮助函数下载所需的编译器并编译Scala代码。
 
