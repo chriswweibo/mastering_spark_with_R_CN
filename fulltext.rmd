@@ -12,7 +12,7 @@ output:
 ```{r, echo=F}
 library(knitr)
 library(formatR)
-opts_chunk$set(tidy=T, message=FALSE, fig.align='center', eval=F)
+opts_chunk$set(tidy=T, message=FALSE, fig.align='center', eval=F,warning=F)
 ```
 
 -------
@@ -7235,7 +7235,6 @@ Spark 2.1需要Java 8。但是，之前的Spark版本支持Java 7。不管怎么
 `ascii(string str)` | 返回`str`中第一个字符的数值编码。
 `base64(binary bin)`| 把二进制变量转换为base64字符串。
 `character_length(string str)` |返回`str`中UTF-8字符的数量。
-`chr(bigint double A)`| 
 `concat(stringǀbinary A, stringǀbinary B…)`|返回拼接通过有序传参的字符串或字节的结果，也为字符串或字节格式。例如，`concat(foo, bar)`的结果是`foobar`。
 `context_ngrams(array<array>,array, int K, int pf)`|返回句子经切分后的前k个N-gram结果。
 `concat_ws(string SEP, string A, string B…)`|类似`concat()`，但是使用定制分隔符`SEP`。
