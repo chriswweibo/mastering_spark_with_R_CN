@@ -893,6 +893,7 @@ spark_disconnect_all()
 
 本章会介绍使用Spark和R进行数据分析的工具和概念。需要注意的是，这些工具和你只使用R的时候一样！这并非偶然。我们只是希望数据科学家能够屏蔽一些技术细节，而只使用自己熟知和喜欢的程序包，并且确实在Spark框架下可行。现在我们离这个目标还有点距离，但是并不远。所以，你会在本章学到一些广泛使用的R程序包和实际操作来进行数据分析——`dplyr`，`ggplot2`，`formulas`，`rmarkdown`等，这些程序包在Spark框架下依然有效。
 
+
 第4章会关注创建统计模型来预测，估计和描述数据集。但是首先，我们从分析工作开始！
 
 ## 概述
@@ -1545,6 +1546,7 @@ install.packages("FactoMineR")
 * 确认数据质量；确认缺失值的含义和缺失程度，根据当期条件确定统计量。
 * 理解单变量的含义。
 * 初步评估纳入的变量和需要的转换。
+
 
 首先，连接到Spark，加载相关的库，读取数据：
 
@@ -2368,6 +2370,7 @@ okc_train <- spark_read_parquet(sc, "data/okc-train.parquet")
 okc_train <- okc_train %>%
 select(not_working, age, sex, drinks, drugs, essay1:essay9, essay_length)
 ```
+
 
 首先，我们展示管道，包括特征工程和建模步骤，然后逐步走通：
 
@@ -3545,6 +3548,7 @@ sc_23 <- spark_connect(master = "local", version = "2.3", appName = "Spark23")
 # Connect to local Spark Standalone
 sc_standalone <- spark_connect(master = "spark://host:port")
 ```
+
 
 最后，你可以断开每个连接：
 
@@ -7492,23 +7496,25 @@ readr::read_csv("source/stream_5.csv")
 
 本说明是根据Kafka官方网站的快速入门页面中的信息形成的。（毫无疑问，在本书出版后不久，新版本的Kafka将面世。）此处是为了给“Kafka”中的例子使用的版本打上“时间戳”：
 
-1. 下载Kafka。
+
+    1. 下载Kafka。
 ```
 wget http://apache.claz.org/kafka/2.2.0/kafka_2.12-2.2.0.tgz
 ```
-2. 解压*tar*文件，并进入新的文件夹。
+    2. 解压*tar*文件，并进入新的文件夹。
 ```
 tar -xzf kafka_2.12-2.2.0.tgz
 cd kafka_2.12-2.2.0
 ```
-3. 启动带有Kafka的Zookeeper服务。
+    3. 启动带有Kafka的Zookeeper服务。
 ```
 bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
-4. 启动Kafka服务。
+    4. 启动Kafka服务。
 ```
 bin/kafka-server-start.sh config/server.properties
 ```
+
 
 确保总是首先启动Zookeeper，然后启动Kafka。
 
