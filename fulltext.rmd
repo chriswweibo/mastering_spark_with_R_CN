@@ -15,6 +15,37 @@ library(formatR)
 opts_chunk$set(tidy=T, message=FALSE, fig.align='center', eval=F,warning=F)
 ```
 
+----------
+
+O'REILLY
+
+《用R玩转Spark——大规模数据分析和建模完全手册》
+
+如果你和大多数R语言用户一样，那你肯定喜欢统计学，也能够深入理解统计学。但是随着组织内部不断收集大量数据，添加Apache Spark这类工具就变得理所当然。在本书中，数据科学家和使用大规模数据应用的专业人员会学到如何使用Spark和R解决大数据和大计算问题。
+
+几位作者，Javier Luraschi，Kevin Kuo，Edgar Ruiz会展示如何将Spark和R结合起来进行大数据分析。本书涵盖相关的数据科学话题，聚类计算，甚至高级用户都会感兴趣的问题。
+
+* 在Apache Spark环境下，使用R来分析，探索，转换，可视化数据。
+* 构建统计模型来抽取信息并预测输出，自动化生产级的工作流程。
+* 使用分布式计算技术在多台机器上进行分析和建模。
+* 轻松使用Spark处理来自多个数据源和格式的大规模数据。
+* 学习其它建模框架进行大规模图处理，地理空间分析和基因组学分析。
+* 深入高级话题，包括定制转换，实时数据处理和创建定制化Spark扩展。
+
+
+```
+从编写了流行的sparklyr库发明者身上，学习如何在R项目中利用分布式计算的力量。这是成为R强力用户的进阶之道。
+--Bryan Jonas，美国军事科学院数学系讲师
+```
+
+
+Javier Luraschi是大规模数据科学诸多程序包的发明者，包括`sparklyr`，`r2d3`，`pins`和`cloudml`。
+
+Kevin Kuogou构建了机器学习库，并领导了KASA AI的开放保险研究。
+
+Edgar Ruiz构建了企业级的数据解决方案工具，包括`dbplot`，`tidepredict`和`modeldb`。
+
+
 -------
 
 致Adrian，Clara，Julian，Max，Mila和Roman。
